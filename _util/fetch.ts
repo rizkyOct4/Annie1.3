@@ -33,6 +33,26 @@ const ISGQuery = async ({
   });
 };
 
+// * SSR
+const SSRQuery = async ({
+  queryKey,
+  config,
+  queryClient,
+}: {
+  queryKey: any[];
+  config: string;
+  queryClient: QueryClient;
+}) => {
+  return await queryClient.prefetchQuery({
+    queryKey,
+    queryFn: async () => {
+      const URL = config;
+      const res = await fetch(URL);
+      return res.json();
+    },
+  });
+};
+
 // * SSR Infinite
 const SSRInfiniteQuery = async ({
   queryKey,
@@ -85,6 +105,6 @@ const SSRInfiniteQuery = async ({
   });
 };
 
-export { ISGQuery, SSRInfiniteQuery };
+export { ISGQuery, SSRQuery, SSRInfiniteQuery };
 
 export default Fetching;

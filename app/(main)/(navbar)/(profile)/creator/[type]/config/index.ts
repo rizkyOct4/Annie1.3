@@ -27,7 +27,7 @@ export const ROUTES_PROFILE = {
         )}&section=${pageParam}&limit=${folderNameLimit}`;
       case "id":
         return `${BASE_URL}/creator/${type}/api?folder-name=${encodeURIComponent(
-          `${folderName}`
+          folderName
         )}&id=${id}`;
       default:
         return ""; // ! fallback aman (tidak undefined)
@@ -43,21 +43,24 @@ export const ROUTES_PROFILE = {
         return "";
     }
   },
-};
-
-export const CREATOR_CRUD = (
-  key: string,
-  method: string,
-  type: "photo" | "video"
-) => {
-  switch (key) {
-    case "photoPost": {
-      return `${BASE_URL}/creator/api?method=${method}&type=${type}`;
+  POST_IMAGE: ({
+    key,
+    method,
+    type,
+    path,
+  }: {
+    key: string;
+    method: string;
+    type: "photo" | "video";
+    path: string
+  }) => {
+    switch (key) {
+      case "photoPost":
+      case "videoPost": {
+        return `${BASE_URL}/creator/${path}/api/post-button?method=${method}&type=${type}`;
+      }
+      default:
+        return "";
     }
-    case "videoPost": {
-      return `${BASE_URL}/creator/api?method=${method}&type=${type}`;
-    }
-    default:
-      return "";
-  }
+  },
 };

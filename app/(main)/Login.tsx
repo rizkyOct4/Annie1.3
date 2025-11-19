@@ -40,12 +40,12 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
   const submit = handleSubmit(async (values) => {
     try {
       const URL = AUTH("login");
-      const { data } = await axios.post(URL, {
+      const { data, message } = await axios.post(URL, {
         email: values.email,
         password: values.password,
       });
       console.log(data);
-      showToast({ type: "success", fallback: data.message });
+      showToast({ type: "success", fallback: message });
       setData(data.data);
       if (data.cookiesRedirectMiddleware) {
         router.push(data.cookiesRedirectMiddleware);

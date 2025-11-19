@@ -3,16 +3,16 @@ import CreatorContext from "./data/context";
 
 const layout = ({
   children,
-  model,
+  modal,
 }: {
   children: React.ReactNode;
-  model: React.ReactNode;
+  modal: React.ReactNode;
 }) => {
   return (
     <CreatorContext>
       <Dashboard />
       {children}
-      {model}
+      {modal}
     </CreatorContext>
   );
 };

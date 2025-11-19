@@ -42,7 +42,7 @@ const usePost = (
             ...oldData,
             pages: oldData.pages.flatMap((page) => ({
               ...page,
-              data: page?.data.map((i) =>
+              data: page?.data.map((i: { iuProduct: number; totalLike: number }) =>
                 i.iuProduct === mutate.tar_iu_product
                   ? {
                       ...i,

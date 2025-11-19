@@ -2,10 +2,11 @@
 
 import {
   useQuery,
+  useQueryClient,
   keepPreviousData,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   ListFolderType,
   ItemFolderType,
@@ -15,7 +16,7 @@ import type {
 import axios from "axios";
 import { useSearchParams, useParams } from "next/navigation";
 import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/config";
-import { usePost } from "./gPost";
+import { usePost } from "./sub-post";
 
 const useCreatorButton = (publicId: string) => {
   // ? url
@@ -54,6 +55,7 @@ const useCreatorButton = (publicId: string) => {
 };
 
 const useCreatorPhoto = (publicId: string) => {
+  const queryClient = useQueryClient();
   const { type } = useParams<{ type: string }>();
 
   const [openFolder, setOpenFolder] = useState({
@@ -129,22 +131,30 @@ const useCreatorPhoto = (publicId: string) => {
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
     retry: false,
-  });``
+  });
+  ``;
 
   // * Description item
   const { data: descriptionItemFolderPhoto } = useQuery({
     queryKey: ["keyDescriptionItemFolder", publicId, openFolder.isFolder, id],
-    // queryFn: async () => {
-    //   const URL = ROUTES_PROFILE.GET({
-    //     typeConfig: "id",
-    //     type: type,
-    //     folderName: openFolder.isFolder,
-    //     id: id,
-    //   });
-    //   const { data } = await axios.get(URL);
-    //   return data;
-    // },
-    queryFn: undefined,
+    queryFn: async () => {
+      const queryKey = [
+        "keyDescriptionItemFolder",
+        publicId,
+        openFolder.isFolder,
+        id,
+      ];
+      if (!queryClient.getQueryData(queryKey)) {
+        const URL = ROUTES_PROFILE.GET({
+          typeConfig: "id",
+          type: type,
+          folderName: openFolder.isFolder,
+          id: id,
+        });
+        const { data } = await axios.get(URL);
+        return data;
+      }
+    },
     staleTime: 1000 * 60 * 5,
     enabled: !!id,
     gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
@@ -154,10 +164,10 @@ const useCreatorPhoto = (publicId: string) => {
     retry: false,
   });
 
-  // // *** SUB ========================================= ***
-  // const listFolderKey = ["listFolders", publicId, slug];
-  // const itemFolderKey = ["itemFolders", publicId, slug, folderName];
-  // const { postPhoto } = usePost({ listFolderKey, itemFolderKey });
+  // *** SUB ========================================= ***
+  const keyListFolder = ["keyListFolderPhoto", publicId, type];
+  const keyItemFolder = ["keyItemFolderPhoto", publicId, type, openFolder.isFolder];
+  const { postPhoto } = usePost({ keyListFolder, keyItemFolder, type });
 
   const listFolderData = useMemo(
     () => listFolderPhoto?.pages.flatMap((page) => page.data ?? []),
@@ -171,6 +181,9 @@ const useCreatorPhoto = (publicId: string) => {
     () => descriptionItemFolderPhoto ?? [],
     [descriptionItemFolderPhoto]
   );
+
+  console.log(listFolderPhoto)
+  console.log(`2 :`,itemFolderPhoto)
 
   return {
     listFolderData,
@@ -189,8 +202,9 @@ const useCreatorPhoto = (publicId: string) => {
     // listFolderData,
     // itemFolderData,
     // descriptionItemFolderData,
-    // // * SUB
-    // postPhoto,
+
+    // * SUB - PHOTO ===
+    postPhoto,
   };
 };
 

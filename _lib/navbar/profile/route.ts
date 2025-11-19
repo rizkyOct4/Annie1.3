@@ -124,27 +124,23 @@ export const ListPostFolder = async (
   publicId: string | undefined,
   type: string | null
 ) => {
-  try {
-    const [query] = await prisma.$queryRaw<
-      { iu: number }[]
-    >`SELECT iu FROM users WHERE public_id = ${publicId}::uuid`;
-    const iu = query.iu;
+  const [query] = await prisma.$queryRaw<
+    { iu: number }[]
+  >`SELECT iu FROM users WHERE public_id = ${publicId}::uuid`;
+  const iu = query.iu;
 
-    const get = await prisma.$queryRaw<
-      {
-        iu_product: number;
-        folder_name: string;
-      }[]
-    >`SELECT folder_name FROM users_product WHERE tar_iu = ${iu} AND type = ${type}::type_product GROUP BY folder_name`;
+  const get = await prisma.$queryRaw<
+    {
+      iu_product: number;
+      folder_name: string;
+    }[]
+  >`SELECT folder_name FROM users_product WHERE tar_iu = ${iu} AND type = ${type}::type_product GROUP BY folder_name`;
 
-    if (get.length === 0) return [];
+  if (get.length === 0) return [];
 
-    return get.map((i) => ({
-      folderName: i.folder_name,
-    }));
-  } catch (err: any) {
-    throw new Error(err);
-  }
+  return get.map((i) => ({
+    folderName: i.folder_name,
+  }));
 };
 
 // * POST CLOUD ===========================
@@ -157,40 +153,36 @@ export const PostCloudinary = async ({
   imagePath: string;
   publicId: string;
 }) => {
-  try {
-    // ? Check Cloudinary
-    // --- 1. Decode base64 jadi buffer ---
-    const [header, base64Data] = imagePath.split(",", 2);
-    const imageBuffer = Buffer.from(base64Data, "base64");
+  // ? Check Cloudinary
+  // --- 1. Decode base64 jadi buffer ---
+  const [header, base64Data] = imagePath.split(",", 2);
+  const imageBuffer = Buffer.from(base64Data, "base64");
 
-    // --- 2. Resize + convert ke WEBP pakai sharp ---
-    const processedImage = await sharp(imageBuffer)
-      .resize(800, 800, { fit: "inside" }) // max 800x800
-      .webp({ quality: 85 }) // convert ke WEBP
-      .toBuffer();
+  // --- 2. Resize + convert ke WEBP pakai sharp ---
+  const processedImage = await sharp(imageBuffer)
+    .resize(800, 800, { fit: "inside" }) // max 800x800
+    .webp({ quality: 85 }) // convert ke WEBP
+    .toBuffer();
 
-    // --- 3. Upload ke Cloudinary ---
-    const result = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder: `usersProduct/${publicId}/`,
-            public_id: webpName, // hapus ekstensi lama
-            resource_type: "image",
-            format: "webp",
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        )
-        .end(processedImage); // isi stream dengan buffer hasil sharp
-    });
+  // --- 3. Upload ke Cloudinary ---
+  const result = await new Promise<any>((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        {
+          folder: `usersProduct/${publicId}/`,
+          public_id: webpName, // hapus ekstensi lama
+          resource_type: "image",
+          format: "webp",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      )
+      .end(processedImage); // isi stream dengan buffer hasil sharp
+  });
 
-    return result.secure_url;
-  } catch (err: any) {
-    throw err;
-  }
+  return result.secure_url;
 };
 // * POST DB ===========================
 export const PostDb = async ({

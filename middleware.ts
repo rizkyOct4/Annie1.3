@@ -13,7 +13,6 @@ const middleware = async (req: NextRequest) => {
   const publicRes = PublicPath({ pathname, role, req });
   if (publicRes) return publicRes;
 
-
   // * 2. Verify Token
   const verifyRes = await VerifyToken({
     accessToken,

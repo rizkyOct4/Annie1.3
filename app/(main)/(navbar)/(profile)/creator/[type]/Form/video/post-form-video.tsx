@@ -240,6 +240,3 @@ const PostFormVideo = ({
 };
 
 export default PostFormVideo;
-
-
-//todo besok kondisikan video lagi sma kau !!! 

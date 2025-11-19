@@ -2,16 +2,14 @@
 
 import { RandomId, LocalISOTime } from "@/_util/GenerateData";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useCallback, useContext } from "react";
-// import axios from "axios";
 import { creatorContext } from "@/app/context";
 import { zPostFormSchema } from "./schema";
-import { ToggleStateType } from "../../interface";
-import { Loader2Icon } from "lucide-react";
-// import { CREATOR_CRUD } from "@/config/api/creator";
+import { ToggleStateType } from "../../type/interface";
+// import { Loader2Icon } from "lucide-react";
+import { z } from "zod";
 
 type PostFormSchema = z.infer<typeof zPostFormSchema>;
 
@@ -29,7 +27,7 @@ export type PhotoPostType = {
 };
 
 const categories = [
-  { name: "Photography", icon: "🎥" },
+  { name: "Photography", icon: "📸" },
   { name: "Videography", icon: "🎥" },
   { name: "Digital Art", icon: "🎨" },
   { name: "Architecture", icon: "🏙️" },
@@ -53,19 +51,26 @@ const PhotoPostForm = ({
   const { ListPostFolderData, isLoadingListPost, publicId, postPhoto } =
     useContext(creatorContext);
 
-  const { register, handleSubmit, formState, setValue, getValues, trigger } =
-    useForm<PostFormSchema>({
-      // ? REGEXNYA DISINI TERJADI !!!!
-      resolver: zodResolver(zPostFormSchema),
-      mode: "onChange",
-      defaultValues: {
-        imageName: "",
-        imagePath: "",
-        folderName: "",
-        hashtag: [],
-        category: [],
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    formState,
+    setValue,
+    getValues,
+    watch,
+    trigger,
+  } = useForm<PostFormSchema>({
+    resolver: zodResolver(zPostFormSchema),
+    mode: "onChange",
+    defaultValues: {
+      imageName: "",
+      imagePath: "",
+      folderName: "",
+      hashtag: [],
+      category: [],
+      description: "",
+    },
+  });
 
   const submit = handleSubmit(async (values) => {
     try {
@@ -82,10 +87,7 @@ const PhotoPostForm = ({
         createdAt: LocalISOTime(),
       };
       await postPhoto(payload);
-      setIsOpen({
-        open: false,
-        type: "",
-      });
+      setIsOpen({ open: false, type: "" });
     } catch (error) {
       console.error(error);
     }
@@ -96,13 +98,12 @@ const PhotoPostForm = ({
       if (e.key === "Enter") {
         e.preventDefault();
         const input = e.currentTarget.value.trim().replace(/^#/, "");
+        if (!input) return;
 
         const current = getValues("hashtag");
-        if (current.includes(input)) return;
+        if (current.includes(input) || current.length >= 3) return;
 
-        const update = [...current, input];
-        setValue("hashtag", update, { shouldValidate: true });
-
+        setValue("hashtag", [...current, input], { shouldValidate: true });
         e.currentTarget.value = "";
       }
     },
@@ -110,139 +111,96 @@ const PhotoPostForm = ({
   );
 
   return (
-    <div className="overlay backdrop-blur-sm">
-      <form
-        onSubmit={submit}
-        className="relative bg-black rounded-2xl p-6 w-full max-w-3xl mx-auto shadow-lg border-f"
-      >
-        {/* close */}
+    <div className="overlay">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl p-6 relative">
+        {/* Close button */}
         <button
           type="button"
-          onClick={() =>
-            setIsOpen({
-              open: false,
-              type: "",
-            })
-          }
-          className="absolute top-2 right-4 text-2xl leading-none text-white"
+          onClick={() => setIsOpen({ open: false, type: "" })}
+          className="absolute top-4 right-4 text-2xl leading-none text-gray-800 hover:text-black hover:cursor-pointer"
         >
           &times;
         </button>
 
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* // ? preview + upload */}
-          <div className="flex flex-col gap-2 md:w-1/3">
-            {getValues("imagePath") && (
-              <Image
-                src={getValues("imagePath")}
-                alt=""
-                width={200}
-                height={200}
-                className="w-auto h-auto aspect-square rounded-xl object-cover bg-gray-100"
-              />
-            )}
-            <label htmlFor="image" className="text-sm font-medium">
-              Upload Photo:
-            </label>
-            <input
-              type="file"
-              onChange={(e) => {
-                const file = (e.target as HTMLInputElement).files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setValue("imageName", file.name, { shouldValidate: true }); // ? Set hasil baca ke name image
-                    setValue("imagePath", reader.result as string, {
-                      shouldValidate: true,
-                    }); // ? Set hasil baca ke state preview
-                  };
-                  // ? let imagePath: string; // Deklarasi variabel dengan tipe string
-                  // ? imagePath = reader.result as string;
-                  reader.readAsDataURL(file); // ? Baca file sebagai URL
-                }
-              }}
-              className="text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-200 file:text-gray-700"
-            />
-          </div>
+        <h2 className="text-2xl font-semibold mb-6 text-black">Upload Photo</h2>
 
-          {/* // ? form */}
-          <div className="flex flex-col gap-4 md:flex-1">
-            {/* // * FOLDER NAME */}
-            <div className="flex flex-col gap-1">
-              <label htmlFor="folder" className="text-sm font-medium">
-                Folder
+        <form className="flex flex-col gap-6" onSubmit={submit}>
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Left side */}
+            <div className="flex-1 flex flex-col gap-4">
+              {getValues("imagePath") && (
+                <Image
+                  src={getValues("imagePath")}
+                  alt="Preview"
+                  width={160}
+                  height={140}
+                  className="object-cover rounded-xl"
+                />
+              )}
+              <label className="flex flex-col text-sm text-black w-full">
+                Upload Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setValue("imageName", file.name, {
+                          shouldValidate: true,
+                        });
+                        setValue("imagePath", reader.result as string, {
+                          shouldValidate: true,
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  required
+                />
               </label>
 
-              <div className="flex items-center relative">
-                <input
-                  type="text"
-                  placeholder={getValues("folderName")}
-                  className="w-[100%] border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  {...register("folderName")}
+              <label className="flex flex-col text-sm text-black">
+                Description
+                <textarea
+                  {...register("description")}
+                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  rows={5}
                 />
-                {!isLoadingListPost ? (
-                  Array.isArray(ListPostFolderData) &&
-                  ListPostFolderData.length > 0 && (
-                    <select
-                      defaultValue="prev"
-                      className="border rounded-md w-[16%] absolute right-2"
-                      onChange={(e) =>
-                        setValue("folderName", e.target.value, {
-                          shouldValidate: true,
-                        })
-                      }
-                    >
-                      <option value="">Prev</option>
-                      {ListPostFolderData.map((i) => (
-                        <option value={i.folderName} key={i.folderName}>
-                          {i.folderName}
-                        </option>
-                      ))}
-                    </select>
-                  )
-                ) : (
-                  <Loader2Icon />
-                )}
-              </div>
-              {formState.errors.folderName && (
-                <p className="text-red-600">
-                  {formState.errors.folderName.message}
-                </p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Description:</label>
-              <input
-                type="text"
-                id="description"
-                className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                {...register("description")}
-              />
+              </label>
               {formState.errors.description && (
-                <p className="text-red-600">
+                <p className="text-red-600 text-sm">
                   {formState.errors.description.message}
                 </p>
               )}
             </div>
 
-            {/* Hashtags */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Hashtags:</label>
-              <input
-                type="text"
-                id="hashtag"
-                placeholder="Type and press Enter..."
-                className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                onKeyDown={(e) => handleHashtagKeyDown(e)}
-              />
-              <input type="hidden" {...register("hashtag")} />
-              {formState.errors.hashtag && (
-                <p className="text-red-600">
-                  {formState.errors.hashtag.message}
-                </p>
-              )}
+            {/* Right side */}
+            <div className="flex-1 flex flex-col gap-4">
+              {/* Folder */}
+              <label className="flex flex-col text-sm text-black">
+                Folder
+                <input
+                  type="text"
+                  placeholder={watch("folderName")}
+                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  {...register("folderName")}
+                />
+              </label>
+
+              {/* Hashtags */}
+              <label className="flex flex-col text-sm text-black">
+                Hashtags
+                <input
+                  type="text"
+                  placeholder="Type and press Enter..."
+                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  onKeyDown={handleHashtagKeyDown}
+                />
+                <input type="hidden" {...register("hashtag")} />
+              </label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {getValues("hashtag").map((i) => (
                   <span
@@ -260,66 +218,63 @@ const PhotoPostForm = ({
                           { shouldValidate: true }
                         );
                       }}
-                      className="text-xs text-gray-600 hover:text-red-500"
+                      className="text-xs text-gray-700 hover:text-red-500"
                     >
                       &times;
                     </button>
                   </span>
                 ))}
               </div>
-            </div>
 
-            {/* Categories */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Category:</label>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((i) => {
-                  const selected = getValues("category").includes(i.name);
-                  return (
-                    <button
-                      key={i.name}
-                      type="button"
-                      onClick={() => {
-                        const current = getValues("category");
-
-                        if (current.includes(i.name)) {
-                          setValue(
-                            "category",
-                            current.filter((v) => v !== i.name),
-                            { shouldValidate: true }
-                          );
-                        } else if (current.length < 3) {
-                          setValue("category", [...current, i.name], {
-                            shouldValidate: true,
-                          });
-                        } else {
-                          trigger("category");
-                        }
-                      }}
-                      className={`flex items-center gap-1 border px-3 py-1 rounded-full text-sm transition 
-                  ${
-                    selected
-                      ? "bg-black text-white border-black border-f"
-                      : "bg-white text-gray-700 hover:bg-gray-100"
-                  }`}
-                    >
-                      {i.icon} {i.name}
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Categories */}
+              <label className="flex flex-col text-sm text-black gap-2">
+                Category
+                <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                  {categories.map((i) => {
+                    const selected = getValues("category").includes(i.name);
+                    return (
+                      <button
+                        key={i.name}
+                        type="button"
+                        onClick={() => {
+                          const current = getValues("category");
+                          if (current.includes(i.name)) {
+                            setValue(
+                              "category",
+                              current.filter((v) => v !== i.name),
+                              { shouldValidate: true }
+                            );
+                          } else if (current.length < 3) {
+                            setValue("category", [...current, i.name], {
+                              shouldValidate: true,
+                            });
+                          } else {
+                            trigger("category");
+                          }
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border transition-colors ${
+                          selected
+                            ? "bg-blue-600 text-white border-blue-600"
+                            : "bg-gray-100 text-black border-gray-300 hover:bg-gray-200"
+                        }`}
+                      >
+                        {i.icon} {i.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </label>
             </div>
           </div>
-        </div>
 
-        {/* Tombol submit */}
-        <button
-          type="submit"
-          className="mt-6 w-full bg-white text-black py-3 rounded-md text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          Submit
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

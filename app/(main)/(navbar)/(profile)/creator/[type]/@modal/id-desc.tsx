@@ -3,20 +3,14 @@
 import { creatorContext } from "@/app/context";
 import { useContext, memo } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 const ItemDescription = () => {
   const { descriptionItemFolderData } = useContext(creatorContext);
 
-  const router = useRouter();
 
   return (
     <div
       className="overlay"
-      onClick={(e) => {
-        e.stopPropagation();
-        router.back();
-      }}
     >
       <div className="space-y-4 p-4 bg-neutral-50 rounded-2xl shadow-sm">
         {Array.isArray(descriptionItemFolderData) &&
@@ -79,4 +73,4 @@ const ItemDescription = () => {
   );
 };
 
-export default memo(ItemDescription);
+export default ItemDescription;
