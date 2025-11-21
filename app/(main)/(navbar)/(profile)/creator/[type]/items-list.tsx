@@ -9,24 +9,43 @@ import { MdUpdate } from "react-icons/md";
 import { Delete } from "lucide-react";
 import { BiExit } from "react-icons/bi";
 import { MdDescription } from "react-icons/md";
+import { Move3DIcon } from "lucide-react";
 import { SLoading } from "@/_util/Spinner-loading";
+import { IsRenderComponent } from "./folder-list";
 
-interface LocalState {
+const btnList = [
+  { name: "update", icon: <MdUpdate />, title: "Update" },
+  { name: "move", icon: <Move3DIcon />, title: "Move" },
+  { name: "delete", icon: <Delete />, title: "Delete" },
+  {
+    name: "openDescription",
+    icon: <MdDescription />,
+    title: "Open Description",
+  },
+];
+
+export interface ItemListState {
   open: boolean;
-  idProduct: number | null;
-  value: string;
+  iuProduct: number | null;
+  value?: string;
 }
 
-const ItemsList = ({ folderName }: { folderName: string }) => {
-  const { itemFolderData, isLoading } =
+const ItemsList = ({
+  folderName,
+  setIsRender,
+}: {
+  folderName: string;
+  setIsRender: React.Dispatch<React.SetStateAction<IsRenderComponent>>;
+}) => {
+  const { itemFolderData, isLoadingItemFolderPhoto, setIuProduct } =
     useContext(creatorContext);
 
   const pathname = usePathname();
   const router = useRouter();
 
-  const [isOpen, setIsOpen] = useState<LocalState>({
+  const [isOpen, setIsOpen] = useState<ItemListState>({
     open: false,
-    idProduct: null,
+    iuProduct: null,
     value: "",
   });
 
@@ -36,17 +55,46 @@ const ItemsList = ({ folderName }: { folderName: string }) => {
         case "toggle": {
           setIsOpen((prev) => ({
             ...prev,
-            open: prev.idProduct === tarIuProduct ? false : true,
-            idProduct: prev.idProduct === tarIuProduct ? null : tarIuProduct,
+            open: prev.iuProduct === tarIuProduct ? false : true,
+            iuProduct: prev.iuProduct === tarIuProduct ? null : tarIuProduct,
           }));
+          setIuProduct(tarIuProduct);
           break;
+        }
+        case "update": {
+          setIsRender({
+            iuProduct: tarIuProduct,
+            value: value,
+          });
+          break;
+        }
+        // case "update": {
+        //   setIsOpen((prev) => ({
+        //     ...prev,
+        //     value: value,
+        //   }));
+        //   break;
+        // }
+        case "openDescription": {
+          const newUrl = `${pathname}?folder-name=${folderName}&id=${tarIuProduct}`;
+          history.pushState({}, "", newUrl);
+          break;
+          // history.pushState()
+          // router.push(
+          //   `${pathname}?folder-name=${folderName}&id=${tarIuProduct}`
+          // );
+          // break;
+
+          // router.push(
+          //   `${pathname}?folder-name=${folderName}&id=${tarIuProduct}`
+          // );
         }
       }
     },
-    []
+    [folderName, pathname, setIsRender, setIuProduct]
   );
 
-  if (isLoading) return <SLoading />;
+  if (isLoadingItemFolderPhoto) return <SLoading />;
 
   return (
     <div className="w-full flex flex-wrap justify-start gap-5 my-4 h-[300px]">
@@ -70,48 +118,35 @@ const ItemsList = ({ folderName }: { folderName: string }) => {
                 fill
                 className="object-cover"
               />
-              <div className="absolute bottom-3 right-3 flex gap-2">
-                <button
-                  className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm text-gray-700 flex justify-center items-center hover:bg-white hover:text-black"
-                  onClick={() => handleAction("toggle", i.tarIuProduct, "")}
-                >
-                  {isOpen.idProduct === i.tarIuProduct && isOpen.open ? (
-                    <IoMdOpen />
-                  ) : (
-                    <BiExit />
+              <div className="absolute bottom-3 left-3 flex gap-2 flex-wrap">
+                <>
+                  <button
+                    className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm text-gray-700 flex justify-center items-center hover:bg-white hover:text-black"
+                    onClick={() => handleAction("toggle", i.tarIuProduct, "")}
+                  >
+                    {isOpen.iuProduct === i.tarIuProduct && isOpen.open ? (
+                      <IoMdOpen />
+                    ) : (
+                      <BiExit />
+                    )}
+                  </button>
+                  {isOpen.open && isOpen.iuProduct === i.tarIuProduct && (
+                    <>
+                      {btnList.map((btn, idx) => (
+                        <button
+                          key={idx}
+                          className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm text-gray-700 flex justify-center items-center hover:bg-white hover:text-black"
+                          onClick={() =>
+                            handleAction(btn.name, i.tarIuProduct, btn.name)
+                          }
+                          title={btn.title}
+                        >
+                          {btn.icon}
+                        </button>
+                      ))}
+                    </>
                   )}
-                </button>
-                {isOpen.open && isOpen.idProduct === i.tarIuProduct && (
-                  <>
-                    <button
-                      className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm text-gray-700 flex justify-center items-center hover:bg-white hover:text-black"
-                      onClick={() => console.log("Update clicked")}
-                      title="Update"
-                    >
-                      <MdUpdate />
-                    </button>
-
-                    <button
-                      className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm text-gray-700 flex justify-center items-center hover:bg-white hover:text-black"
-                      onClick={() => console.log("Delete clicked")}
-                      title="Delete"
-                    >
-                      <Delete />
-                    </button>
-
-                    <button
-                      className="w-9 h-9 rounded-xl bg-white/80 backdrop-blur-md border border-gray-200 shadow-sm text-gray-700 flex justify-center items-center hover:bg-white hover:text-black"
-                      onClick={() =>
-                        router.push(
-                          `${pathname}?folder-name=${folderName}&id=${i.tarIuProduct}`
-                        )
-                      }
-                      title="Open Description"
-                    >
-                      <MdDescription />
-                    </button>
-                  </>
-                )}
+                </>
               </div>
             </div>
           </div>
@@ -120,7 +155,4 @@ const ItemsList = ({ folderName }: { folderName: string }) => {
   );
 };
 
-export default memo(ItemsList);
-
-//todo ganti semua file nama kau !! buat huruf kecil + -
-// * ROUTE HANDLER KAU PISAHKAN KALAU UDAH TERLALU BANYAK !!!
+export default ItemsList;

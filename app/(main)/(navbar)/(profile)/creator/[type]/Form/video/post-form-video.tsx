@@ -155,6 +155,7 @@ const PostFormVideo = ({
                       !input.match(ForbiddenRegex()) &&
                       hashtags.length < 3
                     ) {
+                      e.preventDefault();
                       if (hashtags.includes(input)) return;
                       setValue("hashtag", [...hashtags, input], {
                         shouldValidate: true,

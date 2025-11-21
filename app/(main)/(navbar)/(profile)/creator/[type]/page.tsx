@@ -2,6 +2,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/config";
 import FolderList from "./folder-list";
 import Fetching, { SSRInfiniteQuery } from "@/_util/fetch";
+import ItemDescription from "./id-desc";
 
 const page = async ({ params }: { params: Promise<{ type: string }> }) => {
   const type = (await params).type;
@@ -25,6 +26,7 @@ const page = async ({ params }: { params: Promise<{ type: string }> }) => {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <FolderList />
+      <ItemDescription />
     </HydrationBoundary>
   );
 };

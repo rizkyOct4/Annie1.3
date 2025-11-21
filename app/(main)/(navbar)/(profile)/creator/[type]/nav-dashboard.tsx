@@ -70,13 +70,11 @@ export const Dashboard = () => {
       setTypeBtn(typeBtn);
       if (!queryClient.getQueryData(queryKey)) {
         // Belum ada, buat prefetch baru
-        const url = ROUTES_PROFILE.GET_BTN({ key: typeBtn });
+        const url = ROUTES_PROFILE.GET_BTN({ key: typeBtn, typeBtn: typeBtn });
         await queryClient.prefetchQuery({
           queryKey,
           queryFn: async () => {
-            const { data } = await axios.get(url, {
-              params: { typeBtn: typeBtn },
-            });
+            const { data } = await axios.get(url);
             return data;
           },
         });

@@ -33,16 +33,30 @@ export const ROUTES_PROFILE = {
         return ""; // ! fallback aman (tidak undefined)
     }
   },
-  GET_BTN: ({ key }: { key: string }) => {
+  GET_BTN: ({
+    key,
+    path,
+    typeBtn,
+    iuProduct,
+  }: {
+    key: string;
+    path?: string,
+    typeBtn?: string;
+    iuProduct?: number;
+  }) => {
     switch (key) {
       case "photo":
       case "video": {
-        return `${BASE_URL}/creator/${key}/api/post-button`;
+        return `${BASE_URL}/creator/${key}/api/get-button?type-btn=${typeBtn}`;
+      }
+      case "updatePhoto": {
+        return `${BASE_URL}/creator/${path}/api/get-button?iu-product=${iuProduct}`;
       }
       default:
         return "";
     }
   },
+  // * ======
   POST_IMAGE: ({
     key,
     method,
@@ -52,7 +66,7 @@ export const ROUTES_PROFILE = {
     key: string;
     method: string;
     type: "photo" | "video";
-    path: string
+    path: string;
   }) => {
     switch (key) {
       case "photoPost":
@@ -63,4 +77,24 @@ export const ROUTES_PROFILE = {
         return "";
     }
   },
+  PUT: ({
+    key,
+    method,
+    type,
+    path,
+  }: {
+    key: string;
+    method: string;
+    type: "photo" | "video";
+    path: string;
+  }) => {
+    switch (key) {
+      case "putImage":
+      case "videoPost": {
+        return `${BASE_URL}/creator/${path}/api/post-button?method=${method}&type=${type}`;
+      }
+      default:
+        return "";
+    }
+  }
 };

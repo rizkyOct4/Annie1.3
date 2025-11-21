@@ -39,3 +39,14 @@ export type ResultGetPostDB = {
   tar_iu_product: number;
   url: string;
 };
+
+export type GetUpdateImageType = {
+  iu_product: number;
+  folder_name: string;
+  created_at: Date;
+  description: string;
+  image_name: string;
+  url: string;
+  hashtag: string[];
+  category: string[];
+};

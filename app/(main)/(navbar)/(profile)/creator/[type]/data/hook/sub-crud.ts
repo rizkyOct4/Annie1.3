@@ -85,10 +85,6 @@ const usePost = ({
       const { data } = response.data;
       console.log(data);
       showToast({ type: "loading", fallback: false });
-
-      // const prevItemFolderData = queryClient.getQueryData(keyItemFolder);
-
-      // if (Array.isArray(prevItemFolderData)) {
       queryClient.setQueryData<InfiniteData<OriginaItemFolderType>>(
         keyItemFolder,
         (oldData) => {
@@ -120,9 +116,105 @@ const usePost = ({
   return { postPhoto };
 };
 
-export { usePost };
+const usePut = ({
+  keyDescriptionItem,
+  type,
+}: {
+  keyDescriptionItem: any[];
+  type: string;
+}) => {
+  const queryClient = useQueryClient();
 
+    const URL = ROUTES_PROFILE.PUT({
+    key: "putImage",
+    method: "put",
+    type: "photo",
+    path: type,
+  });
 
-// todo rendering page ISG, SSG, SSR kau betulin besok !!!
-// todo HATI" KAU SAMA ROUTE !!! GA SEMUA HARUS PAKAI QUERYSTRING !!
-// TODO 
+  const { mutateAsync: putPhoto } = useMutation({
+    mutationFn: async (data) =>
+      await axios.post(URL, data, {
+        withCredentials: true, // kalau perlu cookie/session
+      }),
+    onMutate: async (mutate) => {
+      showToast({ type: "loading", fallback: true });
+
+      await queryClient.cancelQueries({
+        queryKey: keyDescriptionItem,
+      });
+
+      const prevDescriptionItemData =
+        queryClient.getQueryData(keyDescriptionItem);
+
+      // queryClient.setQueryData<InfiniteData<OriginalListFolderType>>(
+      //   keyListFolder,
+      //   (oldData) => {
+      //     if (!oldData) return oldData;
+
+      //     return {
+      //       ...oldData,
+      //       pages: oldData?.pages.flatMap((page: any) => {
+      //         const isExist = page.data.some(
+      //           (i: { folderName: string }) =>
+      //             i.folderName === mutate.folderName
+      //         );
+      //         if (isExist) {
+      //           return page.data.map(
+      //             (i: { folderName: string; totalProduct: number }) =>
+      //               i.folderName === mutate.folderName
+      //                 ? { ...i, totalProduct: i.totalProduct + 1 }
+      //                 : i
+      //           );
+      //         } else {
+      //           return {
+      //             ...page,
+      //             data: [
+      //               ...page.data,
+      //               { folderName: mutate.folderName, totalProduct: 1 },
+      //             ],
+      //           };
+      //         }
+      //       }),
+      //     };
+      //   }
+      // );
+
+      return { prevDescriptionItemData };
+    },
+    // onSuccess: (response) => {
+    //   const { data } = response.data;
+    //   console.log(data);
+    //   showToast({ type: "loading", fallback: false });
+    //   queryClient.setQueryData<InfiniteData<OriginaItemFolderType>>(
+    //     keyItemFolder,
+    //     (oldData) => {
+    //       if (!oldData) return oldData;
+
+    //       return {
+    //         ...oldData,
+    //         pages: oldData?.pages.flatMap((page) => ({
+    //           ...page,
+    //           data: [
+    //             ...page.data,
+    //             { tarIuProduct: data.tarIuProduct, url: data.url },
+    //           ],
+    //         })),
+    //       };
+    //     }
+    //   );
+    // },
+    // onError: (error, _variables, context) => {
+    //   showToast({ type: "loading", fallback: false });
+    //   showToast({ type: "error", fallback: error });
+    //   console.error(error);
+    //   // if (context?.prevListFolderData) {
+    //     queryClient.setQueryData(keyListFolder, context.prevListFolderData);
+    //   }
+    // },
+  });
+
+  return { putPhoto };
+};
+
+export { usePost, usePut };

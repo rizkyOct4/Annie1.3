@@ -27,15 +27,15 @@ const page = async ({
     queryClient: queryClient,
   });
 
-  // * LIST PRODUCT USERS
-  const queryKeyList = ["keyListProductCreators", publicId, path];
-  await SSRInfiniteQuery({
-    queryKey: queryKeyList,
-    config: ROUTES_CREATORS.GET,
-    typeConfig: "listCreatorsProduct",
-    path: path,
-    queryClient: queryClient,
-  });
+  // // * LIST PRODUCT USERS
+  // const queryKeyList = ["keyListProductCreators", publicId, path];
+  // await SSRInfiniteQuery({
+  //   queryKey: queryKeyList,
+  //   config: ROUTES_CREATORS.GET,
+  //   typeConfig: "listCreatorsProduct",
+  //   path: path,
+  //   queryClient: queryClient,
+  // });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

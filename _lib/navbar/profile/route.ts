@@ -85,17 +85,15 @@ export const ItemFolder = async (
 };
 // ? ITEM DESCRIPTION
 export const ItemFolderDescription = async (
-  publicId: string | undefined,
   id: number
 ) => {
   const query = await prisma.$queryRaw<
     ItemFolderDescriptionType[]
-  >`SELECT upi.tar_iu_product, upi.description,upi.url, upi.hashtag, upi.category, COALESCE(COUNT(upiv.like), 0)::int AS total_like, COALESCE(COUNT(upiv.dislike), 0)::int AS total_dislike, up.created_at
+  >`SELECT upi.tar_iu_product, upi.description,upi.url, upi.hashtag, upi.category, COALESCE(SUM(upiv.like), 0)::int AS total_like, COALESCE(SUM(upiv.dislike), 0)::int AS total_dislike, up.created_at
     FROM users_product_image upi
     JOIN users_product up ON (up.iu_product = upi.tar_iu_product)
-    JOIN users u ON (u.iu = up.tar_iu)
     LEFT JOIN users_product_image_vote upiv ON (upiv.tar_iu_product = up.iu_product)
-    WHERE upi.tar_iu_product = ${id} AND u.public_id = ${publicId}::uuid
+    WHERE upi.tar_iu_product = ${id}
     GROUP BY
     upi.description,
     upi.tar_iu_product,
@@ -116,30 +114,6 @@ export const ItemFolderDescription = async (
     totalLike: i.total_like,
     totalDislike: i.total_dislike,
     createdAt: i.created_at,
-  }));
-};
-
-// * LIST POST FOLDER ===========================
-export const ListPostFolder = async (
-  publicId: string | undefined,
-  type: string | null
-) => {
-  const [query] = await prisma.$queryRaw<
-    { iu: number }[]
-  >`SELECT iu FROM users WHERE public_id = ${publicId}::uuid`;
-  const iu = query.iu;
-
-  const get = await prisma.$queryRaw<
-    {
-      iu_product: number;
-      folder_name: string;
-    }[]
-  >`SELECT folder_name FROM users_product WHERE tar_iu = ${iu} AND type = ${type}::type_product GROUP BY folder_name`;
-
-  if (get.length === 0) return [];
-
-  return get.map((i) => ({
-    folderName: i.folder_name,
   }));
 };
 

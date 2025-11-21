@@ -8,8 +8,8 @@ import { useCallback, useContext } from "react";
 import { creatorContext } from "@/app/context";
 import { zPostFormSchema } from "./schema";
 import { ToggleStateType } from "../../type/interface";
-// import { Loader2Icon } from "lucide-react";
 import { z } from "zod";
+import { ForbiddenRegex } from "@/_util/Regex";
 
 type PostFormSchema = z.infer<typeof zPostFormSchema>;
 
@@ -93,23 +93,6 @@ const PhotoPostForm = ({
     }
   });
 
-  const handleHashtagKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const input = e.currentTarget.value.trim().replace(/^#/, "");
-        if (!input) return;
-
-        const current = getValues("hashtag");
-        if (current.includes(input) || current.length >= 3) return;
-
-        setValue("hashtag", [...current, input], { shouldValidate: true });
-        e.currentTarget.value = "";
-      }
-    },
-    [getValues, setValue]
-  );
-
   return (
     <div className="overlay">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl p-6 relative">
@@ -126,7 +109,7 @@ const PhotoPostForm = ({
 
         <form className="flex flex-col gap-6" onSubmit={submit}>
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Left side */}
+            {/* // * Left side */}
             <div className="flex-1 flex flex-col gap-4">
               {getValues("imagePath") && (
                 <Image
@@ -177,7 +160,7 @@ const PhotoPostForm = ({
               )}
             </div>
 
-            {/* Right side */}
+            {/* // * Right side */}
             <div className="flex-1 flex flex-col gap-4">
               {/* Folder */}
               <label className="flex flex-col text-sm text-black">
@@ -197,7 +180,24 @@ const PhotoPostForm = ({
                   type="text"
                   placeholder="Type and press Enter..."
                   className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  onKeyDown={handleHashtagKeyDown}
+                  onKeyDown={(e) => {
+                    const input = e.currentTarget.value
+                      .trim()
+                      .replace(/^#/, "");
+                    const hashtags = watch("hashtag");
+                    if (
+                      e.key === "Enter" &&
+                      !input.match(ForbiddenRegex()) &&
+                      hashtags.length < 3
+                    ) {
+                      e.preventDefault();
+                      if (hashtags.includes(input)) return;
+                      setValue("hashtag", [...hashtags, input], {
+                        shouldValidate: true,
+                      });
+                      e.currentTarget.value = "";
+                    }
+                  }}
                 />
                 <input type="hidden" {...register("hashtag")} />
               </label>

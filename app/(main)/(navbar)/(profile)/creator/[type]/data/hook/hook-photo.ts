@@ -16,20 +16,21 @@ import type {
 import axios from "axios";
 import { useSearchParams, useParams } from "next/navigation";
 import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/config";
-import { usePost } from "./sub-post";
+import { usePost, usePut } from "./sub-crud";
 
 const useCreatorButton = (publicId: string) => {
   // ? url
-  const [typeBtn, setTypeBtn] = useState<string>("");
-  const url = ROUTES_PROFILE.GET_BTN({ key: typeBtn });
+  const { type } = useParams<{ type: string }>();
 
+  const [typeBtn, setTypeBtn] = useState<string>("");
+  // const [iuProduct, setIuProduct] = useState<number>();
+
+  // * LIST POST FOLDER
   const { data: listPostFolder, isLoading: isLoadingListPost } = useQuery({
     queryKey: ["listFolderPost", publicId, typeBtn],
     queryFn: async () => {
-      if (!typeBtn) return [];
-      const { data } = await axios.get(url, {
-        params: { type: typeBtn },
-      });
+      const url = ROUTES_PROFILE.GET_BTN({ key: typeBtn, typeBtn: typeBtn });
+      const { data } = await axios.get(url);
       return data;
     },
     enabled: !!typeBtn,
@@ -41,22 +42,52 @@ const useCreatorButton = (publicId: string) => {
     retry: false,
   });
 
+  // // * UPDATE PHOTO DATA
+  // const { data: UpdatePhoto, isLoading: isLoadingUpdatePhoto } = useQuery({
+  //   queryKey: ["keyUpdatePhoto", publicId, iuProduct],
+  //   queryFn: async () => {
+  //     const URL = ROUTES_PROFILE.GET_BTN({
+  //       key: "updatePhoto",
+  //       path: type,
+  //       iuProduct: iuProduct,
+  //     });
+  //     const { data } = await axios.get(URL);
+  //     return data;
+  //   },
+  //   enabled: !!iuProduct,
+  //   staleTime: 1000 * 60 * 1,
+  //   gcTime: 1000 * 60 * 60,
+  //   placeholderData: keepPreviousData,
+  //   refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+  //   refetchOnMount: false,
+  //   retry: false,
+  // });
+
   const ListPostFolderData: ListPostFolderType[] = useMemo(
     () => listPostFolder,
     [listPostFolder]
   );
+
+  // const UpdatePhotoData = useMemo(() => UpdatePhoto ?? [], [UpdatePhoto]);
 
   return {
     listPostFolder,
     isLoadingListPost,
     ListPostFolderData,
     setTypeBtn,
+
+    // ? updateDataPhoto
+    // UpdatePhotoData,
+    // setIuProduct,
+    // isLoadingUpdatePhoto,
   };
 };
 
 const useCreatorPhoto = (publicId: string) => {
   const queryClient = useQueryClient();
   const { type } = useParams<{ type: string }>();
+  const [iuProduct, setIuProduct] = useState<number>();
+
 
   const [openFolder, setOpenFolder] = useState({
     isOpen: false,
@@ -100,7 +131,7 @@ const useCreatorPhoto = (publicId: string) => {
   // * Item Folder
   const {
     data: itemFolderPhoto,
-    isLoading,
+    isLoading: isLoadingItemFolderPhoto,
     // fetchNextPage,
     // hasNextPage,
     // isFetchingNextPage,
@@ -138,22 +169,14 @@ const useCreatorPhoto = (publicId: string) => {
   const { data: descriptionItemFolderPhoto } = useQuery({
     queryKey: ["keyDescriptionItemFolder", publicId, openFolder.isFolder, id],
     queryFn: async () => {
-      const queryKey = [
-        "keyDescriptionItemFolder",
-        publicId,
-        openFolder.isFolder,
-        id,
-      ];
-      if (!queryClient.getQueryData(queryKey)) {
-        const URL = ROUTES_PROFILE.GET({
-          typeConfig: "id",
-          type: type,
-          folderName: openFolder.isFolder,
-          id: id,
-        });
-        const { data } = await axios.get(URL);
-        return data;
-      }
+      const URL = ROUTES_PROFILE.GET({
+        typeConfig: "id",
+        type: type,
+        folderName: openFolder.isFolder,
+        id: id,
+      });
+      const { data } = await axios.get(URL);
+      return data;
     },
     staleTime: 1000 * 60 * 5,
     enabled: !!id,
@@ -164,10 +187,44 @@ const useCreatorPhoto = (publicId: string) => {
     retry: false,
   });
 
+  //   // * UPDATE PHOTO DATA
+  // const { data: UpdatePhoto, isLoading: isLoadingUpdatePhoto } = useQuery({
+  //   queryKey: ["keyUpdatePhoto", publicId, iuProduct],
+  //   queryFn: async () => {
+  //     const URL = ROUTES_PROFILE.GET_BTN({
+  //       key: "updatePhoto",
+  //       path: type,
+  //       iuProduct: iuProduct,
+  //     });
+  //     const { data } = await axios.get(URL);
+  //     return data;
+  //   },
+  //   enabled: !!iuProduct,
+  //   staleTime: 1000 * 60 * 1,
+  //   gcTime: 1000 * 60 * 60,
+  //   placeholderData: keepPreviousData,
+  //   refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+  //   refetchOnMount: false,
+  //   retry: false,
+  // });
+
   // *** SUB ========================================= ***
   const keyListFolder = ["keyListFolderPhoto", publicId, type];
-  const keyItemFolder = ["keyItemFolderPhoto", publicId, type, openFolder.isFolder];
+  const keyItemFolder = [
+    "keyItemFolderPhoto",
+    publicId,
+    type,
+    openFolder.isFolder,
+  ];
+  const keyDescriptionItem = [
+    "keyDescriptionItemFolder",
+    publicId,
+    openFolder.isFolder,
+    id,
+  ];
+
   const { postPhoto } = usePost({ keyListFolder, keyItemFolder, type });
+  const { putPhoto } = usePut({ keyDescriptionItem, type });
 
   const listFolderData = useMemo(
     () => listFolderPhoto?.pages.flatMap((page) => page.data ?? []),
@@ -182,9 +239,6 @@ const useCreatorPhoto = (publicId: string) => {
     [descriptionItemFolderPhoto]
   );
 
-  console.log(listFolderPhoto)
-  console.log(`2 :`,itemFolderPhoto)
-
   return {
     listFolderData,
     fetchNextPage,
@@ -195,10 +249,11 @@ const useCreatorPhoto = (publicId: string) => {
     itemFolderData,
     openFolder,
     setOpenFolder,
-    isLoading,
+    isLoadingItemFolderPhoto,
 
     // ? === DESCRIPTION ===
     descriptionItemFolderData,
+    setIuProduct,
     // listFolderData,
     // itemFolderData,
     // descriptionItemFolderData,
@@ -209,3 +264,10 @@ const useCreatorPhoto = (publicId: string) => {
 };
 
 export { useCreatorPhoto, useCreatorButton };
+
+
+
+// todo KONDISIKAN BESOK SAMA KAU !! GANTI SAMA KAU DESCRIPSI CUMA 1 !! ROUTENYA CUMA 1
+// TODO UPDATE SEKALIAN !! DIKIT LAGI ITU !! 
+// todo FIX UR FKING CODE  !! ITS FKING MESS !! THE STATE LIKE SHIITTTT !! FIXIT !!
+//todo 1 CLICK 1 DATA 2 COMPONENT USE IT !! UPDATE + DESCRIPTION

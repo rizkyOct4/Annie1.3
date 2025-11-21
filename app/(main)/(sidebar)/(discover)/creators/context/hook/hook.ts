@@ -52,9 +52,6 @@ const useCreators = () => {
     [listCreators?.pages]
   );
 
-  console.log(listCreators)
-  console.log(listCreatorsData)
-
   return { listCreatorsData, fetchNextPage, hasNextPage, isFetchingNextPage };
 };
 
@@ -73,15 +70,15 @@ const useCreatorsDescription = (publicIdUser: string) => {
   const { data: creatorDescription } = useQuery({
     queryKey: ["keyCreatorDescription", publicIdUser, publicId],
     queryFn: async () => {
-      const queryKey = ["keyCreatorDescription", publicIdUser, publicId]
-      if (queryClient.getQueryData(queryKey)) {
-        const URL = ROUTES_CREATORS.GET({
-          typeConfig: "creatorsDescription",
-          publicId: publicId,
-        });
-        const { data } = await axios.get(URL);
-        return data;
-      }
+      // const queryKey = ["keyCreatorDescription", publicIdUser, publicId]
+      // if (queryClient.getQueryData(queryKey)) {
+      const URL = ROUTES_CREATORS.GET({
+        typeConfig: "creatorsDescription",
+        publicId: publicId,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+      // }
     },
     staleTime: 1000 * 60 * 5,
     enabled: !!publicId,
