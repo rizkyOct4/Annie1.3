@@ -1,7 +1,9 @@
-const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+import ModalListItem from "./components/modal";
 
-export default page
+const page = async ({ params }: { params: Promise<{ type: string }> }) => {
+  const pathUrl = (await params).type;
+
+  return <ModalListItem currentPath={pathUrl} />;
+};
+
+export default page;

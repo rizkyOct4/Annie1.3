@@ -1,6 +1,4 @@
-"use client";
-
-import Dashboard from "./dashboard";
+import Dashboard from "./components/dashboard";
 
 const page = async ({ params }: { params: Promise<{ type: string }> }) => {
   const currentPath = (await params)?.type;

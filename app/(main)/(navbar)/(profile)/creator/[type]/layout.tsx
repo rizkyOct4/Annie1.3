@@ -14,8 +14,8 @@ const layout = ({
       <main className="w-full">
         <section>{dashboard}</section>
         <section className="flex w-full">
-          <div className="w-[20%]">{list}</div>
-          <div className="w-[80%]">{content}</div>
+          <div className="w-[15%] h-auto">{list}</div>
+          <div className="w-[85%]">{content}</div>
         </section>
       </main>
     </CreatorContext>

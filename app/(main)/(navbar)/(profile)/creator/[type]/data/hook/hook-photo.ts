@@ -6,7 +6,7 @@ import {
   keepPreviousData,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type {
   ListFolderType,
   ItemFolderType,
@@ -18,6 +18,8 @@ import { useParams, useSearchParams } from "next/navigation";
 import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/config";
 import { usePost, usePut } from "./sub-crud";
 import { ROUTES_LIST_FOLDER } from "../../config/list-folder";
+import { ROUTES_ITEM_FOLDER } from "../../config/item-folder";
+import { TItemFolderPhoto, TListItemFolderPhoto } from "../../type/content/type";
 
 const useListFolder = (publicId: string) => {
   const { type } = useParams<{ type: string }>();
@@ -29,18 +31,16 @@ const useListFolder = (publicId: string) => {
     isFetchingNextPage: IFNPListFolderPhoto,
   } = useInfiniteQuery({
     queryKey: ["keyListFolderPhoto", publicId, type],
-    // queryFn: async ({ pageParam = 1 }) => {
-    //   const { data } = await axios.get(
-    //     ROUTES_LIST_FOLDER.GET({
-    //       typeConfig: "listFolderPhoto",
-    //       path: type,
-    //       pageParam: pageParam,
-    //     })
-    //   );
-    //   return data;
-    // },
-    queryFn: undefined,
-    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await axios.get(
+        ROUTES_LIST_FOLDER.GET({
+          typeConfig: "listFolderPhoto",
+          path: type,
+          pageParam: pageParam,
+        })
+      );
+      return data;
+    },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage?.hasMore ? allPages.length + 1 : undefined;
     },
@@ -54,21 +54,129 @@ const useListFolder = (publicId: string) => {
     retry: false,
   });
 
-  const listFolderData2 = useMemo(
+  const listFolderData = useMemo(
     () => listFolderPhoto?.pages.flatMap((page) => page?.data ?? []),
     [listFolderPhoto?.pages]
   );
 
-  console.log(listFolderPhoto)
+  // console.log(listFolderPhoto)
 
   return {
     // * LIST FOLDER PHOTO
-    listFolderData2,
+    listFolderData,
     FNPListFolderPhoto,
     HNPListFolderPhoto,
     IFNPListFolderPhoto,
   };
 };
+
+const useListItemFolder = (publicId: string) => {
+  const { type } = useParams<{ type: string }>();
+  const [stateContent, setStateContent] = useState({
+    year: null,
+    month: null,
+  });
+
+  // * List Item Folder
+  const { data: listItemFolder } = useInfiniteQuery({
+    queryKey: [
+      "keyListItemFolder",
+      publicId,
+      stateContent.year,
+      stateContent.month,
+    ],
+    queryFn: async ({ pageParam = 1 }) => {
+      const URL = ROUTES_ITEM_FOLDER.GET({
+        typeConfig: "listItemFolderPhoto",
+        path: type,
+        pageParam: pageParam,
+        year: stateContent.year,
+        month: stateContent.month,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+
+    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.hasMore ? allPages.length + 1 : undefined;
+    },
+    staleTime: 1000 * 60 * 3,
+    gcTime: 1000 * 60 * 60,
+    initialPageParam: 1,
+    enabled: !!stateContent.year && !!stateContent.month,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
+
+  const listItemFolderPhotoData: TListItemFolderPhoto[] = useMemo(
+    () => listItemFolder?.pages.flatMap((page) => page.data) ?? [],
+    [listItemFolder?.pages]
+  );
+  // console.log(listItemFolderPhotoData)
+
+  return {
+    // ? STATE
+    setStateContent,
+
+    // ? DATA
+    listItemFolderPhotoData,
+  };
+};
+
+const useItemFolder = (publicId: string) => {
+  const { type } = useParams<{ type: string }>();
+  const [stateFolder, setStateFolder] = useState({
+    isOpen: false,
+    isFolder: "",
+    isIuProduct: null,
+  });
+
+  const { data: itemFolderPhoto } = useInfiniteQuery({
+    queryKey: ["keyItemFolderPhoto", publicId, stateFolder.isFolder],
+    queryFn: async ({ pageParam = 1 }) => {
+      const URL = ROUTES_ITEM_FOLDER.GET({
+        typeConfig: "itemFolderPhoto",
+        path: type,
+        pageParam: pageParam,
+        folderName: stateFolder.isFolder,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+
+    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.hasMore ? allPages.length + 1 : undefined;
+    },
+    staleTime: 1000 * 60 * 3,
+    gcTime: 1000 * 60 * 60,
+    initialPageParam: 1,
+    enabled: !!stateFolder.isFolder,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
+
+  const itemFolderPhotoData: TItemFolderPhoto[] = useMemo(
+    () => itemFolderPhoto?.pages.flatMap((page) => page.data) ?? [],
+    [itemFolderPhoto?.pages]
+  );
+
+  return {
+    // ? STATE
+    stateFolder,
+    setStateFolder,
+
+    // ? DATA
+    itemFolderPhotoData,
+  };
+};
+
+// ? ===============
 
 const useCreatorButton = (publicId: string) => {
   const [typeBtn, setTypeBtn] = useState<string>("");
@@ -181,7 +289,6 @@ const useCreatorPhoto = (publicId: string) => {
     refetchOnMount: false, // "always" => refetch jika stale saja
     retry: false,
   });
-  ``;
 
   // * Description item
   const { data: descriptionItemFolderPhoto } = useQuery({
@@ -254,13 +361,13 @@ const useCreatorPhoto = (publicId: string) => {
   // console.log(queryClient.getQueryCache().getAll());
 
   return {
-    listFolderData,
+    // listFolderData,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
 
     // ? === ITEM FOLDER ===
-    itemFolderData,
+    // itemFolderData,
     isLoadingItemFolderPhoto,
     fetchNextPageItemFolder,
     isHasPageItemFolder,
@@ -286,4 +393,10 @@ const useCreatorPhoto = (publicId: string) => {
   };
 };
 
-export { useListFolder, useCreatorPhoto, useCreatorButton };
+export {
+  useListFolder,
+  useListItemFolder,
+  useItemFolder,
+  useCreatorPhoto,
+  useCreatorButton,
+};

@@ -112,12 +112,12 @@ const FolderList = () => {
                       </button>
                     )}
                   </div>
-                  {folderNamePath === f.folderName && (
+                  {/* {folderNamePath === f.folderName && (
                     <ItemsList
                       folderName={f.folderName}
                       setIsRender={setIsRender}
                     />
-                  )}
+                  )} */}
                 </div>
               </div>
             ))}

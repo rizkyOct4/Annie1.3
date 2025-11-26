@@ -17,7 +17,7 @@ const page = async ({ params }: { params: Promise<{ type: string }> }) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ListFolder />
+      <ListFolder currentPath={pathUrl}/>
     </HydrationBoundary>
   );
 };

@@ -20,6 +20,7 @@ import { Move3DIcon } from "lucide-react";
 import { SLoading } from "@/_util/Spinner-loading";
 import { IsRenderComponent } from "./folder-list";
 import { useInView } from "react-intersection-observer";
+import { TItemFolderPhoto } from "../../type/content/type";
 
 const btnList = [
   { name: "update", icon: <MdUpdate />, title: "Update" },
@@ -39,20 +40,22 @@ export interface ItemListState {
 }
 
 const ItemsList = ({
+  data,
   folderName,
-  setIsRender,
+  setStateFolder,
 }: {
+  data: TItemFolderPhoto[]
   folderName: string;
-  setIsRender: React.Dispatch<React.SetStateAction<IsRenderComponent>>;
+  setStateFolder: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const {
-    itemFolderData,
     isLoadingItemFolderPhoto,
     setIsIdDescription,
     fetchNextPageItemFolder,
     isHasPageItemFolder,
     isFetchingNextPageItemFolder,
   } = useContext(creatorContext);
+
 
   // ? 🔹 ref untuk container scrollable
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -99,14 +102,14 @@ const ItemsList = ({
           );
           break;
         }
-        case "update": {
-          setIsRender({
-            isOpen: true,
-            iuProduct: tarIuProduct,
-            value: value,
-          });
-          break;
-        }
+        // case "update": {
+        //   setStateFolder({
+        //     isOpen: true,
+        //     iuProduct: tarIuProduct,
+        //     value: value,
+        //   });
+        //   break;
+        // }
         case "openDescription": {
           const newUrl = `${pathname}?folder-name=${folderName}&id=${tarIuProduct}`;
           history.pushState({}, "", newUrl);
@@ -114,7 +117,7 @@ const ItemsList = ({
         }
       }
     },
-    [folderName, pathname, setIsRender, setIsIdDescription]
+    [folderName, pathname, setIsIdDescription]
   );
 
   return (
@@ -122,11 +125,11 @@ const ItemsList = ({
       ref={containerRef}
       className="flex justify-center flex-wrap gap-5 w-full my-4 max-h-[400px] overflow-y-auto"
     >
-      {Array.isArray(itemFolderData) &&
-        itemFolderData.length > 0 &&
-        itemFolderData.map(
-          (i: { tarIuProduct: number; url: string; title: string }, idx) => {
-            const isLast = idx === itemFolderData.length - 1;
+      {Array.isArray(data) &&
+        data.length > 0 &&
+        data.map(
+          (i: { tarIuProduct: number; url: string }, idx) => {
+            const isLast = idx === data.length - 1;
             return (
               <div
                 key={idx}
@@ -137,7 +140,7 @@ const ItemsList = ({
                 <div className="relative w-full md:h-64 lg:h-72">
                   <Image
                     src={i.url}
-                    alt={i.title ?? "Image"}
+                    alt={"Image"}
                     fill
                     className="object-cover"
                   />
@@ -173,13 +176,6 @@ const ItemsList = ({
                       ))}
                   </div>
                 </div>
-
-                {/* Optional: title / description */}
-                {i.title && (
-                  <div className="p-2 text-sm font-medium text-gray-800 truncate">
-                    {i.title}
-                  </div>
-                )}
               </div>
             );
           }
