@@ -11,7 +11,7 @@ import type {
   ListFolderType,
   ItemFolderType,
   ListPostFolderType,
-  ItemFolderDescriptionType,
+  TItemFolderDescription,
 } from "../../type/type";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
@@ -19,8 +19,13 @@ import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/c
 import { usePost, usePut } from "./sub-crud";
 import { ROUTES_LIST_FOLDER } from "../../config/list-folder";
 import { ROUTES_ITEM_FOLDER } from "../../config/item-folder";
-import { TItemFolderPhoto, TListItemFolderPhoto } from "../../type/content/type";
+import { ROUTES_CREATOR_PHOTO_PANEL } from "../../config/config-panel";
+import {
+  TItemFolderPhoto,
+  TListItemFolderPhoto,
+} from "../../type/content/type";
 
+// * LEFT ====
 const useListFolder = (publicId: string) => {
   const { type } = useParams<{ type: string }>();
 
@@ -70,6 +75,7 @@ const useListFolder = (publicId: string) => {
   };
 };
 
+// * RIGHT ====
 const useListItemFolder = (publicId: string) => {
   const { type } = useParams<{ type: string }>();
   const [stateContent, setStateContent] = useState({
@@ -134,7 +140,13 @@ const useItemFolder = (publicId: string) => {
     isIuProduct: null,
   });
 
-  const { data: itemFolderPhoto } = useInfiniteQuery({
+  const {
+    data: itemFolderPhoto,
+    isLoading: isLoadingItemFolderPhoto,
+    fetchNextPage: fetchNextPageItemFolder,
+    hasNextPage: isHasPageItemFolder,
+    isFetchingNextPage: isFetchingNextPageItemFolder,
+  } = useInfiniteQuery({
     queryKey: ["keyItemFolderPhoto", publicId, stateFolder.isFolder],
     queryFn: async ({ pageParam = 1 }) => {
       const URL = ROUTES_ITEM_FOLDER.GET({
@@ -175,40 +187,61 @@ const useItemFolder = (publicId: string) => {
 
     // ? DATA
     itemFolderPhotoData,
+    isLoadingItemFolderPhoto,
+    fetchNextPageItemFolder,
+    isHasPageItemFolder,
+    isFetchingNextPageItemFolder,
   };
 };
 
 const useItemDescription = (publicId: string) => {
+  const queryClient = useQueryClient();
 
+  const { type, panel } = useParams<{ type: string; panel: string }>();
+  const folderName = useSearchParams().get("folder-name") ?? "";
+  const id = useSearchParams().get("id") ?? "";
 
-    // * Description item
-  // const { data: descriptionItemFolderPhoto } = useQuery({
-  //   queryKey: [
-  //     "keyDescriptionItemFolder",
-  //     publicId,
-  //     folderNamePath,
-  //     isIdDescription,
-  //   ],
-  //   queryFn: async () => {
-  //     const URL = ROUTES_PROFILE.GET({
-  //       typeConfig: "id",
-  //       type: type,
-  //       folderName: folderNamePath,
-  //       id: isIdDescription,
-  //     });
-  //     const { data } = await axios.get(URL);
-  //     return data;
-  //   },
-  //   staleTime: 1000 * 60 * 5,
-  //   enabled: !!isIdDescription,
-  //   gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
-  //   placeholderData: keepPreviousData,
-  //   refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-  //   refetchOnMount: false,
-  //   retry: false,
-  // });
-  return
-}
+  const { data: descriptionItemFolderPhoto } = useQuery({
+    queryKey: ["keyDescriptionItemFolder", publicId, panel, folderName, id],
+    queryFn: async () => {
+      const queryKey = [
+        "keyDescriptionItemFolder",
+        publicId,
+        panel,
+        folderName,
+        id,
+      ];
+      if (queryClient.getQueryData(queryKey)) {
+        const URL = ROUTES_CREATOR_PHOTO_PANEL.GET({
+          typeConfig: "panelDescriptionPhoto",
+          prevPath: type,
+          currentPath: panel,
+          folderName: folderName,
+          id: id,
+        });
+        const { data } = await axios.get(URL);
+        return data;
+      }
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: !!panel && !!id,
+    gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false,
+    retry: false,
+  });
+  const descriptionItemFolderData = useMemo(
+    () => descriptionItemFolderPhoto ?? [],
+    [descriptionItemFolderPhoto]
+  );
+  // const descriptionItemFolderData: TItemFolderDescription[] = useMemo(
+  //   () => descriptionItemFolderPhoto ?? [],
+  //   [descriptionItemFolderPhoto]
+  // );
+
+  return { descriptionItemFolderData };
+};
 
 // ? ===============
 
@@ -250,187 +283,188 @@ const useCreatorButton = (publicId: string) => {
   };
 };
 
-const useCreatorPhoto = (publicId: string) => {
-  const { type } = useParams<{ type: string }>();
-  const folderNamePath = useSearchParams().get("folder-name");
-  const [isIdDescription, setIsIdDescription] = useState(null);
-  const idPath = useSearchParams().get("id");
+// const useCreatorPhoto = (publicId: string) => {
+//   const { type } = useParams<{ type: string }>();
+//   const folderNamePath = useSearchParams().get("folder-name");
+//   const [isIdDescription, setIsIdDescription] = useState(null);
+//   const idPath = useSearchParams().get("id");
 
-  // * List Folder
-  const {
-    data: listFolderPhoto,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["keyListFolderPhot", publicId, type],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await axios.get(
-        ROUTES_PROFILE.GET({
-          typeConfig: "type",
-          type: type,
-          pageParam: pageParam,
-        })
-      );
-      return data;
-    },
-    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage?.hasMore ? allPages.length + 1 : undefined;
-    },
-    staleTime: 1000 * 60 * 3,
-    gcTime: 1000 * 60 * 60,
-    initialPageParam: 1,
-    enabled: !!type,
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-    refetchOnMount: false, // "always" => refetch jika stale saja
-    retry: false,
-  });
+//   // * List Folder
+//   const {
+//     data: listFolderPhoto,
+//     fetchNextPage,
+//     hasNextPage,
+//     isFetchingNextPage,
+//   } = useInfiniteQuery({
+//     queryKey: ["keyListFolderPhot", publicId, type],
+//     queryFn: async ({ pageParam = 1 }) => {
+//       const { data } = await axios.get(
+//         ROUTES_PROFILE.GET({
+//           typeConfig: "type",
+//           type: type,
+//           pageParam: pageParam,
+//         })
+//       );
+//       return data;
+//     },
+//     // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+//     getNextPageParam: (lastPage, allPages) => {
+//       return lastPage?.hasMore ? allPages.length + 1 : undefined;
+//     },
+//     staleTime: 1000 * 60 * 3,
+//     gcTime: 1000 * 60 * 60,
+//     initialPageParam: 1,
+//     enabled: !!type,
+//     placeholderData: keepPreviousData,
+//     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+//     refetchOnMount: false, // "always" => refetch jika stale saja
+//     retry: false,
+//   });
 
-  // * Item Folder
-  const {
-    data: itemFolderPhoto,
-    isLoading: isLoadingItemFolderPhoto,
-    fetchNextPage: fetchNextPageItemFolder,
-    hasNextPage: isHasPageItemFolder,
-    isFetchingNextPage: isFetchingNextPageItemFolder,
-  } = useInfiniteQuery({
-    queryKey: ["keyItemFolderPhoto", publicId, type, folderNamePath],
-    queryFn: async ({ pageParam = 1 }) => {
-      const URL = ROUTES_PROFILE.GET({
-        typeConfig: "folderName",
-        type: type,
-        folderName: folderNamePath,
-        pageParam: pageParam,
-      });
-      const { data } = await axios.get(URL, {
-        params: { folderName: folderNamePath },
-      });
-      return data;
-    },
+//   // * Item Folder
+//   const {
+//     data: itemFolderPhoto,
+//     isLoading: isLoadingItemFolderPhoto,
+//     fetchNextPage: fetchNextPageItemFolder,
+//     hasNextPage: isHasPageItemFolder,
+//     isFetchingNextPage: isFetchingNextPageItemFolder,
+//   } = useInfiniteQuery({
+//     queryKey: ["keyItemFolderPhoto", publicId, type, folderNamePath],
+//     queryFn: async ({ pageParam = 1 }) => {
+//       const URL = ROUTES_PROFILE.GET({
+//         typeConfig: "folderName",
+//         type: type,
+//         folderName: folderNamePath,
+//         pageParam: pageParam,
+//       });
+//       const { data } = await axios.get(URL, {
+//         params: { folderName: folderNamePath },
+//       });
+//       return data;
+//     },
 
-    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage?.hasMore ? allPages.length + 1 : undefined;
-    },
-    staleTime: 1000 * 60 * 3,
-    gcTime: 1000 * 60 * 60,
-    initialPageParam: 1,
-    enabled: !!folderNamePath,
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-    refetchOnMount: false, // "always" => refetch jika stale saja
-    retry: false,
-  });
+//     // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+//     getNextPageParam: (lastPage, allPages) => {
+//       return lastPage?.hasMore ? allPages.length + 1 : undefined;
+//     },
+//     staleTime: 1000 * 60 * 3,
+//     gcTime: 1000 * 60 * 60,
+//     initialPageParam: 1,
+//     enabled: !!folderNamePath,
+//     placeholderData: keepPreviousData,
+//     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+//     refetchOnMount: false, // "always" => refetch jika stale saja
+//     retry: false,
+//   });
 
-  // * Description item
-  const { data: descriptionItemFolderPhoto } = useQuery({
-    queryKey: [
-      "keyDescriptionItemFolder",
-      publicId,
-      folderNamePath,
-      isIdDescription,
-    ],
-    queryFn: async () => {
-      const URL = ROUTES_PROFILE.GET({
-        typeConfig: "id",
-        type: type,
-        folderName: folderNamePath,
-        id: isIdDescription,
-      });
-      const { data } = await axios.get(URL);
-      return data;
-    },
-    staleTime: 1000 * 60 * 5,
-    enabled: !!isIdDescription,
-    gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-    refetchOnMount: false,
-    retry: false,
-  });
+//   // * Description item
+//   // const { data: descriptionItemFolderPhoto } = useQuery({
+//   //   // queryKey: [
+//   //   //   "keyDescriptionItemFolder",
+//   //   //   publicId,
+//   //   //   folderNamePath,
+//   //   //   isIdDescription,
+//   //   // ],
+//   //   // queryFn: async () => {
+//   //   //   const URL = ROUTES_PROFILE.GET({
+//   //   //     typeConfig: "id",
+//   //   //     type: type,
+//   //   //     folderName: folderNamePath,
+//   //   //     id: isIdDescription,
+//   //   //   });
+//   //   //   const { data } = await axios.get(URL);
+//   //   //   return data;
+//   //   // },
+//   //   staleTime: 1000 * 60 * 5,
+//   //   enabled: !!isIdDescription,
+//   //   gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
+//   //   placeholderData: keepPreviousData,
+//   //   refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+//   //   refetchOnMount: false,
+//   //   retry: false,
+//   // });
 
-  // *** SUB ========================================= ***
-  const keyListFolder = ["keyListFolderPhoto", publicId, type];
-  const keyItemFolder = ["keyItemFolderPhoto", publicId, type, folderNamePath];
-  const keyDescriptionItem = [
-    "keyDescriptionItemFolder",
-    publicId,
-    folderNamePath,
-    isIdDescription,
-  ];
+//   // *** SUB ========================================= ***
+//   const keyListFolder = ["keyListFolderPhoto", publicId, type];
+//   const keyItemFolder = ["keyItemFolderPhoto", publicId, type, folderNamePath];
+//   const keyDescriptionItem = [
+//     "keyDescriptionItemFolder",
+//     publicId,
+//     folderNamePath,
+//     isIdDescription,
+//   ];
 
-  const { postPhoto } = usePost({ keyListFolder, keyItemFolder, type });
-  const { putPhoto } = usePut({ keyDescriptionItem, keyItemFolder, type });
+//   const { postPhoto } = usePost({ keyListFolder, keyItemFolder, type });
+//   const { putPhoto } = usePut({ keyDescriptionItem, keyItemFolder, type });
 
-  // * DATA =====
-  const listFolderData = useMemo(
-    () => listFolderPhoto?.pages.flatMap((page) => page.data ?? []),
-    [listFolderPhoto?.pages]
-  );
-  const itemFolderData = useMemo(
-    () => itemFolderPhoto?.pages.flatMap((page) => page.data) ?? [],
-    [itemFolderPhoto?.pages]
-  );
-  // const itemFolderData = useMemo(
-  //   () =>
-  //     itemFolderPhoto?.pages.flatMap((page) => ({
-  //       folderName: page.folderName,
-  //       data: page.data,
-  //     })) ?? [],
-  //   [itemFolderPhoto?.pages]
-  // );
-  const descriptionItemFolderData: ItemFolderDescriptionType[] = useMemo(
-    () => descriptionItemFolderPhoto ?? [],
-    [descriptionItemFolderPhoto]
-  );
+//   // * DATA =====
+//   const listFolderData = useMemo(
+//     () => listFolderPhoto?.pages.flatMap((page) => page.data ?? []),
+//     [listFolderPhoto?.pages]
+//   );
+//   const itemFolderData = useMemo(
+//     () => itemFolderPhoto?.pages.flatMap((page) => page.data) ?? [],
+//     [itemFolderPhoto?.pages]
+//   );
+//   // const itemFolderData = useMemo(
+//   //   () =>
+//   //     itemFolderPhoto?.pages.flatMap((page) => ({
+//   //       folderName: page.folderName,
+//   //       data: page.data,
+//   //     })) ?? [],
+//   //   [itemFolderPhoto?.pages]
+//   // );
+//   const descriptionItemFolderData: ItemFolderDescriptionType[] = useMemo(
+//     () => descriptionItemFolderPhoto ?? [],
+//     [descriptionItemFolderPhoto]
+//   );
 
-  // console.log(itemFolderPhoto);
-  // console.log(itemFolderData)
-  // console.log(descriptionItemFolderData)
+//   // console.log(itemFolderPhoto);
+//   // console.log(itemFolderData)
+//   // console.log(descriptionItemFolderData)
 
-  // const queryClient = useQueryClient();
+//   // const queryClient = useQueryClient();
 
-  // console.log(queryClient.getQueryCache().getAll());
+//   // console.log(queryClient.getQueryCache().getAll());
 
-  return {
-    // listFolderData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+//   return {
+//     // listFolderData,
+//     fetchNextPage,
+//     hasNextPage,
+//     isFetchingNextPage,
 
-    // ? === ITEM FOLDER ===
-    // itemFolderData,
-    isLoadingItemFolderPhoto,
-    fetchNextPageItemFolder,
-    isHasPageItemFolder,
-    isFetchingNextPageItemFolder,
+//     // ? === ITEM FOLDER ===
+//     // itemFolderData,
+//     isLoadingItemFolderPhoto,
+//     fetchNextPageItemFolder,
+//     isHasPageItemFolder,
+//     isFetchingNextPageItemFolder,
 
-    // ? === DESCRIPTION ===
-    // descriptionItemFolderData,
-    // setIuProduct,
-    // listFolderData,
-    // itemFolderData,
-    // descriptionItemFolderData,
+//     // ? === DESCRIPTION ===
+//     // descriptionItemFolderData,
+//     // setIuProduct,
+//     // listFolderData,
+//     // itemFolderData,
+//     // descriptionItemFolderData,
 
-    // * SUB - PHOTO ===
-    postPhoto,
-    putPhoto,
+//     // * SUB - PHOTO ===
+//     postPhoto,
+//     putPhoto,
 
-    // * PATH ===
-    folderNamePath,
-    idPath,
+//     // * PATH ===
+//     folderNamePath,
+//     idPath,
 
-    // * STATE ===
-    setIsIdDescription,
-  };
-};
+//     // * STATE ===
+//     setIsIdDescription,
+//   };
+// };
 
 export {
   useListFolder,
   useListItemFolder,
   useItemFolder,
-  useCreatorPhoto,
+  useItemDescription,
+  // useCreatorPhoto,
   useCreatorButton,
 };

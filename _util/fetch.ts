@@ -20,6 +20,7 @@ const ISGQuery = async ({
   config: string;
   queryClient: QueryClient;
 }) => {
+
   return await queryClient.prefetchQuery({
     queryKey,
     queryFn: async () => {

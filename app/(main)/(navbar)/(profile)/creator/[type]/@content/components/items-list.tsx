@@ -9,7 +9,7 @@ import {
   useRef,
   useEffect,
 } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { creatorContext } from "@/app/context";
 import { IoMdOpen } from "react-icons/io";
 import { MdUpdate } from "react-icons/md";
@@ -55,7 +55,6 @@ const ItemsList = ({
 }) => {
   const {
     isLoadingItemFolderPhoto,
-    setIsIdDescription,
     fetchNextPageItemFolder,
     isHasPageItemFolder,
     isFetchingNextPageItemFolder,
@@ -83,6 +82,7 @@ const ItemsList = ({
   ]);
 
   const pathname = usePathname();
+  const router = useRouter()
 
   // ? Items State
   const [isOpen, setIsOpen] = useState<ItemListState>({
@@ -119,9 +119,9 @@ const ItemsList = ({
             open: prev.iuProduct === tarIuProduct ? false : true,
             iuProduct: prev.iuProduct === tarIuProduct ? null : tarIuProduct,
           }));
-          setIsIdDescription((prev: any) =>
-            prev === tarIuProduct ? null : tarIuProduct
-          );
+          // setIsIdDescription((prev: any) =>
+          //   prev === tarIuProduct ? null : tarIuProduct
+          // );
           break;
         }
         // case "update": {
@@ -133,13 +133,15 @@ const ItemsList = ({
         //   break;
         // }
         case "openDescription": {
-          const newUrl = `${pathname}?folder-name=${folderName}&id=${tarIuProduct}`;
-          history.pushState({}, "", newUrl);
+          router.push(`${pathname}/description?folder-name=${folderName}&id=${tarIuProduct}`)
           break;
+          // const newUrl = `${pathname}/description?folder-name=${folderName}&id=${tarIuProduct}`;
+          // history.pushState({}, "", newUrl);
+          // break;
         }
       }
     },
-    [folderName, pathname, setIsIdDescription]
+    [folderName, pathname, router]
   );
 
   return (

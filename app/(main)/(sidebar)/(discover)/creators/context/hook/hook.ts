@@ -69,17 +69,18 @@ const useCreatorsDescription = (publicIdUser: string) => {
   // * Creators Description
   const { data: creatorDescription } = useQuery({
     queryKey: ["keyCreatorDescription", publicIdUser, publicId],
-    queryFn: async () => {
-      // const queryKey = ["keyCreatorDescription", publicIdUser, publicId]
-      // if (queryClient.getQueryData(queryKey)) {
-      const URL = ROUTES_CREATORS.GET({
-        typeConfig: "creatorsDescription",
-        publicId: publicId,
-      });
-      const { data } = await axios.get(URL);
-      return data;
-      // }
-    },
+    // queryFn: async () => {
+    //   // const queryKey = ["keyCreatorDescription", publicIdUser, publicId]
+    //   // if (queryClient.getQueryData(queryKey)) {
+    //   const URL = ROUTES_CREATORS.GET({
+    //     typeConfig: "creatorsDescription",
+    //     publicId: publicId,
+    //   });
+    //   const { data } = await axios.get(URL);
+    //   return data;
+    //   // }
+    // },
+    queryFn: async () => undefined,
     staleTime: 1000 * 60 * 5,
     enabled: !!publicId,
     gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
@@ -88,6 +89,8 @@ const useCreatorsDescription = (publicIdUser: string) => {
     refetchOnMount: false, // "always" => refetch jika stale saja
     retry: false,
   });
+
+  console.log(creatorDescription)
 
   // * List Creators Product
   const {

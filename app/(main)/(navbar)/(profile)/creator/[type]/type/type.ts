@@ -19,7 +19,7 @@ export type OriginaItemFolderType = {
 };
 
 // ? 3
-export type ItemFolderDescriptionType = {
+export type TItemFolderDescription = {
   tarIuProduct: number;
   description: string;
   url: string;
