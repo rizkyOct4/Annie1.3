@@ -1,5 +1,7 @@
 const page = () => {
-    return;
+  return (
+    <div>Email Page</div>
+  )
 }
 
 export default page

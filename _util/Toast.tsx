@@ -10,7 +10,7 @@ const showToast = ({ type, fallback }: any) => {
   let typeToast;
   switch (type) {
     case "success": {
-      toast(fallback?.message, {
+      toast(fallback, {
         className: "custom-toast",
         autoClose: 2000,
         closeButton: false,

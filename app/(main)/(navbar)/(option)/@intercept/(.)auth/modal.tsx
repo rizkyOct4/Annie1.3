@@ -1,17 +1,15 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useState } from "react";
-import Register from "./Register";
-import Login from "./Login";
+import Register from "./register";
+import Login from "./login";
 
-const RegisterAndLoginPage = () => {
+const ModalAuth = ({ currentPath }: { currentPath: string }) => {
   const [state, setState] = useState(false);
-  const path = usePathname().replace("/", "");
 
   return (
     <>
-      {path === "auth" && (
+      {currentPath === "auth" && (
         <div className="overlay">
           {!state ? (
             <Register setState={setState} />
@@ -24,4 +22,4 @@ const RegisterAndLoginPage = () => {
   );
 };
 
-export default RegisterAndLoginPage;
+export default ModalAuth;

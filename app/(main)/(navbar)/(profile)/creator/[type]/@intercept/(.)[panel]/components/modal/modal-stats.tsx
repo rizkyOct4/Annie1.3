@@ -22,7 +22,7 @@ const LazyMilestones = dynamic(() => import("../stats/milestone"), {
 
 const ModalStats = () => {
   return (
-    <div className="flex w-full h-screen gap-4 flex-col p-10">
+    <div className="flex w-full h-full gap-4 flex-col p-10">
       {/* Kolom kiri: Tanggal */}
       <div className="w-[100%] h-auto">
         <LazyDate />

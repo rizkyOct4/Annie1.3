@@ -1,14 +1,13 @@
 "use client";
 
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/_util/Toast";
 import { motion } from "framer-motion";
-import { zRegisterFormSchema } from "./Schema";
-import axios from "axios";
-import { formVariants } from "@/_util/Motion";
-import { AUTH } from "@/config/api/navbar/auth/api";
+import { zRegisterFormSchema } from "../../auth/schema";
+import { CONFIG_AUTH } from "../../auth/config/config-auth";
 
 type RegisterFormSchema = z.infer<typeof zRegisterFormSchema>;
 
@@ -21,7 +20,7 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
 
   const submit = handleSubmit(async (values) => {
     try {
-      const URL = AUTH("register");
+      const URL = CONFIG_AUTH("register");
       const { data } = await axios.post(URL, {
         ...values,
       });
@@ -37,7 +36,7 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
 
   return (
     <div
-      className="bg-black/80 backdrop-blur-sm text-white w-[460px] p-8 my-20 
+      className="bg-black/80 backdrop-blur-sm text-white w-[600px] h-auto p-8
                 rounded-xl border border-white/10 shadow-xl"
     >
       {/* Header */}

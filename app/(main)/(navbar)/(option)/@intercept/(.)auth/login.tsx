@@ -6,12 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/_util/Toast";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { profileContext } from "../context";
+import { profileContext } from "@/app/context";
 import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { zLoginFormSchema } from "./Schema";
-import { formVariants } from "@/_util/Motion";
-import { AUTH } from "@/config/api/navbar/auth/api";
+import { zLoginFormSchema } from "../../auth/schema";
+import { CONFIG_AUTH } from "../../auth/config/config-auth";
 
 type LoginFormSchema = z.infer<typeof zLoginFormSchema>;
 
@@ -27,7 +26,6 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
   // * CONTEXT =====
   const { setData } = useContext(profileContext);
 
-  // * form dibawah bisa di {} destructure !!! banyak method yg bisa dipakai !!!
   const { register, handleSubmit, formState } = useForm<LoginFormSchema>({
     // ? REGEXNYA DISINI TERJADI !!!!
     resolver: zodResolver(zLoginFormSchema),
@@ -36,18 +34,18 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
 
   const submit = handleSubmit(async (values) => {
     try {
-      const URL = AUTH("login");
-      const { data, message } = await axios.post(URL, {
+      const URL = CONFIG_AUTH("login");
+      const { data } = await axios.post(URL, {
         email: values.email,
         password: values.password,
       });
       console.log(data);
-      showToast({ type: "success", fallback: message });
       setData(data.data);
       if (data.cookiesRedirectMiddleware) {
         router.push(data.cookiesRedirectMiddleware);
       } else {
         router.push(redirect);
+        showToast({ type: "success", fallback: data.message });
       }
       // router.replace("/auth");
     } catch (error: any) {

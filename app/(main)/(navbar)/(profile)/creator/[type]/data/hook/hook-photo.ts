@@ -25,7 +25,7 @@ import {
   TListItemFolderPhoto,
 } from "../../type/content/type";
 
-// * LEFT ====
+// * LIST FOLDER ====
 const useListFolder = (publicId: string) => {
   const { type } = useParams<{ type: string }>();
 
@@ -78,7 +78,7 @@ const useListFolder = (publicId: string) => {
   };
 };
 
-// * RIGHT ====
+// * LIST ITEM FOLDER ====
 const useListItemFolder = (publicId: string) => {
   const { type } = useParams<{ type: string }>();
   const [stateContent, setStateContent] = useState({

@@ -34,7 +34,7 @@ export default middleware;
 
 export const config = {
   matcher: [
-    `/(admin|creator|guest)/:path*`,
+    `/(admin|creator)/:path*`,
     `/category/:path*`,
     `/creators/:path*`,
   ],

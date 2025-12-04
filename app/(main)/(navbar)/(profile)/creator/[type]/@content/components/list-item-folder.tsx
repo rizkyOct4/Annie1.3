@@ -101,7 +101,7 @@ const ListItemPhoto = ({
             data.map((f) => (
               <div
                 key={f.folderName}
-                className="w-full p-3 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="w-full p-3 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 <>
                   <div className="flex items-center gap-3">

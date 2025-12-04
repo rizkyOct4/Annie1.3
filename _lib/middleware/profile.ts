@@ -14,7 +14,6 @@ const ProfilePath = async ({
     const rolePaths: Record<string, string> = {
       admin: `/admin`,
       creator: `/creator`,
-      guest: `/guest`,
     };
 
     // ? ROLE SPESIFIC

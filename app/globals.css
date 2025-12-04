@@ -34,6 +34,8 @@ body {
   background-size: cover;
   background-position: center;
   /* background-repeat: no-repeat; */
+  font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+  font-variant-ligatures: contextual;
 }
 
 * {
@@ -44,16 +46,15 @@ body {
 
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 80px;
+  left: 80px;
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  /* backdrop-filter: blur(4px); */
-  z-index: 99 !important; 
+  z-index: 999 !important; 
 }
 
 .border-f{
