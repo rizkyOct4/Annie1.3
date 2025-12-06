@@ -28,7 +28,7 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
   const redirect = searchParams.get("redirect") ?? "/"; // * default balik ke / kalau kosong
 
   // * CONTEXT =====
-  const { setData } = useContext(profileContext);
+  // const { setData } = useContext(profileContext);
 
   const { register, handleSubmit, formState } = useForm<LoginFormSchema>({
     // ? REGEXNYA DISINI TERJADI !!!!
@@ -38,25 +38,44 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
 
   const submit = handleSubmit(async (values) => {
     try {
-      const URL = CONFIG_AUTH("login");
-      const { data } = await axios.post(URL, {
+      const res = await signIn("credentials", {
         email: values.email,
         password: values.password,
+        redirect: false,
       });
-      console.log(data);
-      setData(data.data);
-      if (data.cookiesRedirectMiddleware) {
-        router.push(data.cookiesRedirectMiddleware);
+      console.log(res);
+      if (res?.ok) {
+        router.push(redirect || "/");
       } else {
-        router.push(redirect);
-        showToast({ type: "success", fallback: data.message });
+        showToast({ type: "error", fallback: res?.error });
       }
-      // router.replace("/auth");
-    } catch (error: any) {
-      console.log(error.response.data.message);
-      showToast({ type: "error", fallback: error });
+      return res;
+    } catch (error) {
+      console.error(error);
     }
   });
+
+  // const submit = handleSubmit(async (values) => {
+  //   try {
+  //     const URL = CONFIG_AUTH("login");
+  //     const { data } = await axios.post(URL, {
+  //       email: values.email,
+  //       password: values.password,
+  //     });
+  //     console.log(data);
+  //     setData(data.data);
+  //     if (data.cookiesRedirectMiddleware) {
+  //       router.push(data.cookiesRedirectMiddleware);
+  //     } else {
+  //       router.push(redirect);
+  //       showToast({ type: "success", fallback: data.message });
+  //     }
+  //     // router.replace("/auth");
+  //   } catch (error: any) {
+  //     console.log(error.response.data.message);
+  //     showToast({ type: "error", fallback: error });
+  //   }
+  // });
 
   return (
     <div className="w-full h-auto flex-center overflow-hidden px-4">
@@ -151,6 +170,7 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
               {thirdParty.map((provider) => (
                 <motion.button
                   key={provider.value}
+                  type="submit"
                   onClick={() =>
                     signIn(provider.value, { redirectTo: redirect })
                   }

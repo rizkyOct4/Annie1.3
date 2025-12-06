@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { ReactNode } from "react";
 import { profileContext } from "./context";
 import type { ProfileContextType } from "./context";
+
+import { useSession } from "next-auth/react";
 
 interface ProfileProviderProps {
   children: ReactNode;
 }
 
 const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
-  const [data, setData] = useState<ProfileContextType | null>(null);
+  const { data: session } = useSession();
+  console.log(session?.user);
   // console.log(data);
   //   const refetchUser = async () => {
   //     try {
@@ -24,7 +27,7 @@ const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   //   };
 
   return (
-    <profileContext.Provider value={{ data, setData }}>
+    <profileContext.Provider value={session?.user}>
       {children}
     </profileContext.Provider>
   );

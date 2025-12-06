@@ -1,10 +1,34 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/_lib/config";
+import { CredentialsLogin } from "@/_lib/services/auth";
 
-// Buat handler NextAuth
 const handler = NextAuth({
+  session: {
+    strategy: "jwt",
+  },
+
   providers: [
+    Credentials({
+      name: "Credentials",
+      // ? credentials -> ini parameter dari login form kau !!! 
+      async authorize(credentials) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            return null;
+          }
+          const user = await CredentialsLogin({
+            email: credentials.email,
+            password: credentials.password,
+          });
+
+          return user ?? null;
+        } catch (err: any) {
+          throw new Error(err?.message || "Login failed");
+        }
+      },
+    }),
     Google({
       clientId: GOOGLE_CLIENT_ID!,
       clientSecret: GOOGLE_CLIENT_SECRET!,
@@ -17,19 +41,43 @@ const handler = NextAuth({
       },
     }),
   ],
+
+  // ? WHAT ABOUT THIS ?? IDK ??!!
+  callbacks: {
+    async jwt({ token, user, account, profile }) {
+      // credentials login → user berisi data dari authorize
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
+        token.createdAt = user.createdAt;
+      }
+
+      // OAuth login → user hanya berisi data dasar
+      if (account && profile) {
+        token.email = token.email ?? profile.email;
+        token.name = token.name ?? profile.name;
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+        session.user.role = token.role as string;
+        session.user.createdAt = token.createdAt as Date;
+      }
+      return session;
+    },
+  },
 });
 
-// Export GET & POST agar route App Router bekerja
 export { handler as GET, handler as POST };
 
 
-// ! AUTH -> untuk mengidentifikasi tiap users !! masih main di login/logout ?!!
-// todo BESOK TAMBAH LAGI UNTUK GITHUB
-// todo perbaiki route handler kau besok !!
-// todo buat credentialProvider !!!
-// todo ganti SEMUA AUTH KAU -> AUTH.JS !!!
-// todo data profileContext mungkin berubah !!! PERHATIKAN BAIK" !!!
-// todo MIDDLEWARE KAU JUGA TERDAMPAK !!!
-// todo CALLBACK dari thirdParty !! perhatikan URL nya !!!
-
-// ! https://console.cloud.google.com/auth/clients/297286681262-i7f0u5q8v6umd8lml6ocuf67mhbh9gpu.apps.googleusercontent.com?project=third-serenity-480313-g6&supportedpurview=project
+// todo RETURN DEFAULT DARI THIRD PARTY KAU BELUM !!! 
+// TODO BUAT CUSTOM !! 
+// TODO GET DATA KAU !! SESSION, JWT, 
