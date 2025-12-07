@@ -3,7 +3,7 @@
 import { IoHomeOutline } from "react-icons/io5";
 import { AiOutlineFullscreenExit } from "react-icons/ai";
 import { SlOptionsVertical } from "react-icons/sl";
-import { useState, useCallback, memo} from "react";
+import { useState, useCallback, memo } from "react";
 import { useRouter } from "next/navigation";
 import Options from "./option/option";
 
@@ -67,7 +67,7 @@ const Navbar = () => {
             )}
           </button>
 
-          {state && <Options setState={setState}/>}
+          {state && <Options setState={setState} />}
         </div>
       </div>
     </div>

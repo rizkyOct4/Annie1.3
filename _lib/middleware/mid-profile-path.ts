@@ -1,13 +1,15 @@
 import { NextResponse, NextRequest } from "next/server";
+import type { GetServerSidePropsContext, NextApiRequest } from "next"
+
 
 const ProfilePath = async ({
   role,
   pathname,
   req,
 }: {
-  role: string | undefined;
+  role: string;
   pathname: string;
-  req: NextRequest;
+  req: NextApiRequest;
 }) => {
   try {
     // ? ROLE USERS
@@ -24,7 +26,7 @@ const ProfilePath = async ({
     return NextResponse.next();
   } catch (err: any) {
     console.error(err)
-    return NextResponse.redirect(new URL(`/auth`, req.url));
+    return NextResponse.redirect(new URL(`/auth-option`, req.url));
   }
 };
 

@@ -1,31 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TokenHelper } from "./_lib/tokenHelper";
-import ProfilePath from "./_lib/middleware/profile";
-import { VerifyToken, PublicPath } from "./_lib/middleware/verifyToken";
+import ProfilePath from "./_lib/middleware/mid-profile-path";
+import { PublicPath } from "./_lib/middleware/mid-public-path";
+import GetToken from "./_lib/middleware/get-token";
+import type { GetServerSidePropsContext, NextApiRequest } from "next"
+
 
 const middleware = async (req: NextRequest) => {
-  const accessToken = req.cookies.get("access_token")?.value;
-  const refreshToken = req.cookies.get("refresh_token")?.value;
   const pathname = req.nextUrl.pathname;
-  const { role } = (await TokenHelper(accessToken)) || {};
-  // console.log('test')
+  const { role } = await GetToken(req);
+  console.log(`session:`, role);
 
-  // * 1. Public Path
-  const publicRes = PublicPath({ pathname, role, req });
-  if (publicRes) return publicRes;
+  // // * 1. Public Path
+  // const publicRes = PublicPath({ pathname, role, req });
+  // if (publicRes) return publicRes;
 
-  // * 2. Verify Token
-  const verifyRes = await VerifyToken({
-    accessToken,
-    refreshToken,
-    pathname,
-    req,
-  });
-  if (verifyRes) return verifyRes;
-
-  // * 3. Profile Path (role-based path check)
-  const profileRes = await ProfilePath({ role, pathname, req });
-  if (profileRes) return profileRes;
+  // // * 2. Profile Path (role-based path check)
+  // const profileRes = await ProfilePath({ role, pathname, req });
+  // if (profileRes) return profileRes;
 
   return NextResponse.next();
 };
@@ -37,12 +28,16 @@ export const config = {
     `/(admin|creator)/:path*`,
     `/category/:path*`,
     `/creators/:path*`,
+    // ? OPTION BAR ====
+    `/notification/:path*`,
   ],
 };
-
 
 //  * 085212635051 (bg dimas)
 
 // todo buat besok SAMA KAU SSG LAGI !!!
 // todo JANGAN SIBUK NAMBAH FITUR AJA KAU !! PERBAIKI MIDDLEWARE KAU SAMPAI FIX !!! BUAT SESIMPLE MUNGKIN
-// TODO withCredentials -> middleware kau besok kondisikan !! masih PR sama kau 
+// TODO withCredentials -> middleware kau besok kondisikan !! masih PR sama kau
+
+// todo getToken -> masih mentah belum di decode -> MIDDLEWARE
+// todo getSession -> data udah siap digunakan di server compoennt

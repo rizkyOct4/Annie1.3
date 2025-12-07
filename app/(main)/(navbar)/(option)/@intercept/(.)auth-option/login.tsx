@@ -11,7 +11,7 @@ import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zLoginFormSchema } from "../../auth-option/schema";
 import { CONFIG_AUTH } from "../../auth-option/config/config-auth";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 type LoginFormSchema = z.infer<typeof zLoginFormSchema>;
 
@@ -24,11 +24,7 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ? ini masih bug !! kondisikan besok sama kau !!!
-  const redirect = searchParams.get("redirect") ?? "/"; // * default balik ke / kalau kosong
-
-  // * CONTEXT =====
-  // const { setData } = useContext(profileContext);
+  const redirect = searchParams.get("redirect") ?? "/";
 
   const { register, handleSubmit, formState } = useForm<LoginFormSchema>({
     // ? REGEXNYA DISINI TERJADI !!!!
@@ -37,22 +33,20 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
   });
 
   const submit = handleSubmit(async (values) => {
-    try {
-      const res = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
-      console.log(res);
-      if (res?.ok) {
-        router.push(redirect || "/");
-      } else {
-        showToast({ type: "error", fallback: res?.error });
-      }
-      return res;
-    } catch (error) {
-      console.error(error);
+    const res = await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
+      // callbackUrl: redirect || "/",
+    });
+    if (res?.ok) {
+      showToast({ type: "success", fallback: "Login Success" });
+      router.push(redirect);
+    } else {
+      console.error(res);
+      showToast({ type: "error", fallback: res.error });
     }
+    return res;
   });
 
   // const submit = handleSubmit(async (values) => {

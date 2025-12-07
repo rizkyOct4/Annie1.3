@@ -5,10 +5,11 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      image: string;
       name: string;
       email: string;
       role?: string;
-      createdAt?: Date;
+      createdAt?: string;
     };
   }
 
@@ -16,13 +17,13 @@ declare module "next-auth" {
   interface User {
     id: string;
     role: string;
-    createdAt: Date;
+    createdAt: string;
   }
 
   // ? JWT interface → untuk token yang disimpan di cookie (server)
   interface JWT {
     id: string;
     role: string;
-    createdAt: Date;
+    createdAt: string;
   }
 }

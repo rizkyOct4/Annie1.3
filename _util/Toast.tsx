@@ -27,7 +27,7 @@ const showToast = ({ type, fallback }: any) => {
     }
     case "error": {
       errorAttemp++;
-      toast.error(fallback.response.data?.message, {
+      toast.error(fallback, {
         autoClose: 5000,
         draggable: true,
         closeButton: false, // ? toast yang bisa dipindahkan dengan mouse.

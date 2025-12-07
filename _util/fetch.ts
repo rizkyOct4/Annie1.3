@@ -5,6 +5,7 @@ import { TokenHelper } from "@/_lib/tokenHelper";
 const Fetching = async () => {
   const queryClient = new QueryClient();
   const cookieHeader = (await cookies()).toString();
+  // const token = (await cookies()).get("next-auth.session-token")?.value;
   const token = (await cookies()).get("access_token")?.value;
   const { publicId } = (await TokenHelper(token)) || {};
   return { queryClient, cookieHeader, publicId };
@@ -109,6 +110,7 @@ const SSRInfiniteQuery = async ({
       const res = await fetch(URL, {
         headers: { Cookie: cookieHeader },
         next: { revalidate: 60 * 3 },
+        
       });
       return res.json();
     },
