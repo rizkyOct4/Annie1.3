@@ -1,14 +1,15 @@
 import ListFolder from "./components/list-folder";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import Fetching, { SSRInfiniteQuery } from "@/_util/fetch";
 import { ROUTES_LIST_FOLDER } from "../config/list-folder";
+import { SSRInfiniteQueryPr } from "@/_util/model-fetch/private";
+import GetToken from "@/_lib/middleware/get-token";
 
 const page = async ({ params }: { params: Promise<{ type: string }> }) => {
   const pathUrl = (await params).type;
-  const { queryClient, publicId } = await Fetching();
+  const { queryClient, id } = await GetToken();
 
-  await SSRInfiniteQuery({
-    queryKey: ["keyListFolderPhoto", publicId, pathUrl],
+  await SSRInfiniteQueryPr({
+    queryKey: ["keyListFolderPhoto", id, pathUrl],
     config: ROUTES_LIST_FOLDER.GET,
     typeConfig: "listFolderPhoto",
     path: pathUrl,
@@ -17,7 +18,7 @@ const page = async ({ params }: { params: Promise<{ type: string }> }) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ListFolder currentPath={pathUrl}/>
+      <ListFolder currentPath={pathUrl} />
     </HydrationBoundary>
   );
 };

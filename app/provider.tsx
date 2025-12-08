@@ -72,7 +72,6 @@ const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
     }
   }, [session]);
 
-  // console.log(data);
   return (
     <profileContext.Provider value={{ data, setData }}>
       {children}

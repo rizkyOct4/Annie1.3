@@ -26,7 +26,7 @@ import {
 } from "../../type/content/type";
 
 // * LIST FOLDER ====
-const useListFolder = (publicId: string) => {
+const useListFolder = (id: string) => {
   const { type } = useParams<{ type: string }>();
 
   const {
@@ -35,20 +35,18 @@ const useListFolder = (publicId: string) => {
     hasNextPage: HNPListFolderPhoto,
     isFetchingNextPage: IFNPListFolderPhoto,
   } = useInfiniteQuery({
-    queryKey: ["keyListFolderPhoto", publicId, type],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await axios.get(
-        ROUTES_LIST_FOLDER.GET({
-          typeConfig: "listFolderPhoto",
-          path: type,
-          pageParam: pageParam,
-        }),
-        {
-          withCredentials: true,
-        }
-      );
-      return data;
-    },
+    queryKey: ["keyListFolderPhoto", id, type],
+    // queryFn: async ({ pageParam = 1 }) => {
+    //   const { data } = await axios.get(
+    //     ROUTES_LIST_FOLDER.GET({
+    //       typeConfig: "listFolderPhoto",
+    //       path: type,
+    //       pageParam: pageParam,
+    //     }),
+    //   );
+    //   return data;
+    // },
+    queryFn: async () => undefined,
     getNextPageParam: (lastPage, allPages) => {
       return lastPage?.hasMore ? allPages.length + 1 : undefined;
     },
@@ -67,7 +65,7 @@ const useListFolder = (publicId: string) => {
     [listFolderPhoto?.pages]
   );
 
-  // console.log(listFolderPhoto)
+  // console.log(listFolderData)
 
   return {
     // * LIST FOLDER PHOTO
@@ -79,7 +77,7 @@ const useListFolder = (publicId: string) => {
 };
 
 // * LIST ITEM FOLDER ====
-const useListItemFolder = (publicId: string) => {
+const useListItemFolder = (id: string) => {
   const { type } = useParams<{ type: string }>();
   const [stateContent, setStateContent] = useState({
     year: null,
@@ -90,7 +88,7 @@ const useListItemFolder = (publicId: string) => {
   const { data: listItemFolder } = useInfiniteQuery({
     queryKey: [
       "keyListItemFolder",
-      publicId,
+      id,
       stateContent.year,
       stateContent.month,
     ],
@@ -102,9 +100,7 @@ const useListItemFolder = (publicId: string) => {
         year: stateContent.year,
         month: stateContent.month,
       });
-      const { data } = await axios.get(URL, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(URL);
       return data;
     },
 
@@ -137,7 +133,7 @@ const useListItemFolder = (publicId: string) => {
   };
 };
 
-const useItemFolder = (publicId: string) => {
+const useItemFolder = (id: string) => {
   const { type } = useParams<{ type: string }>();
   const [stateFolder, setStateFolder] = useState({
     isOpen: false,
@@ -152,7 +148,7 @@ const useItemFolder = (publicId: string) => {
     hasNextPage: isHasPageItemFolder,
     isFetchingNextPage: isFetchingNextPageItemFolder,
   } = useInfiniteQuery({
-    queryKey: ["keyItemFolderPhoto", publicId, stateFolder.isFolder],
+    queryKey: ["keyItemFolderPhoto", id, stateFolder.isFolder],
     queryFn: async ({ pageParam = 1 }) => {
       const URL = ROUTES_ITEM_FOLDER.GET({
         typeConfig: "itemFolderPhoto",
@@ -160,9 +156,7 @@ const useItemFolder = (publicId: string) => {
         pageParam: pageParam,
         folderName: stateFolder.isFolder,
       });
-      const { data } = await axios.get(URL, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(URL);
       return data;
     },
 
@@ -201,28 +195,26 @@ const useItemFolder = (publicId: string) => {
   };
 };
 
-const useItemDescription = (publicId: string) => {
+const useItemDescription = (id: string) => {
   const { type, panel } = useParams<{ type: string; panel: string }>();
   const folderName = useSearchParams().get("folder-name") ?? "";
-  const id = useSearchParams().get("id") ?? "";
+  const idDesc = useSearchParams().get("id") ?? "";
 
   const { data: descriptionItemFolderPhoto } = useQuery({
-    queryKey: ["keyDescriptionItemFolder", publicId, panel, folderName, id],
+    queryKey: ["keyDescriptionItemFolder", id, panel, folderName, idDesc],
     queryFn: async () => {
       const URL = ROUTES_CREATOR_PHOTO_PANEL.GET({
         typeConfig: "panelDescriptionPhoto",
         prevPath: type,
         currentPath: panel,
         folderName: folderName,
-        id: id,
+        id: idDesc,
       });
-      const { data } = await axios.get(URL, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(URL);
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !!panel && !!id,
+    enabled: !!panel && !!idDesc,
     gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
@@ -239,12 +231,12 @@ const useItemDescription = (publicId: string) => {
 
 // ? ===============
 
-const useCreatorButton = (publicId: string) => {
+const useCreatorButton = (id: string) => {
   const [typeBtn, setTypeBtn] = useState<string>("");
 
   // * LIST POST FOLDER
   const { data: listPostFolder, isLoading: isLoadingListPost } = useQuery({
-    queryKey: ["listFolderPost", publicId, typeBtn],
+    queryKey: ["listFolderPost", id, typeBtn],
     queryFn: async () => {
       const url = ROUTES_PROFILE.GET_BTN({ key: typeBtn, typeBtn: typeBtn });
       const { data } = await axios.get(url);

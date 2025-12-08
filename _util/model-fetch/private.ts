@@ -1,18 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
 import { cookies } from "next/headers";
-import { TokenHelper } from "@/_lib/tokenHelper";
-
-const Fetching = async () => {
-  const queryClient = new QueryClient();
-  const cookieHeader = (await cookies()).toString();
-  // const token = (await cookies()).get("next-auth.session-token")?.value;
-  const token = (await cookies()).get("access_token")?.value;
-  const { publicId } = (await TokenHelper(token)) || {};
-  return { queryClient, cookieHeader, publicId };
-};
 
 // * ISG
-const ISGQuery = async ({
+const ISGQueryPr = async ({
   queryKey,
   config,
   queryClient,
@@ -22,7 +12,6 @@ const ISGQuery = async ({
   queryClient: QueryClient;
 }) => {
   const cookieHeader = (await cookies()).toString();
-
   return await queryClient.prefetchQuery({
     queryKey,
     queryFn: async () => {
@@ -42,7 +31,7 @@ const ISGQuery = async ({
 };
 
 // * SSR
-const SSRQuery = async ({
+const SSRQueryPr = async ({
   queryKey,
   config,
   queryClient,
@@ -62,7 +51,7 @@ const SSRQuery = async ({
 };
 
 // * SSR Infinite
-const SSRInfiniteQuery = async ({
+const SSRInfiniteQueryPr = async ({
   queryKey,
   config,
   typeConfig,
@@ -118,7 +107,7 @@ const SSRInfiniteQuery = async ({
 };
 
 // * SSG
-const SSGQuery = async ({
+const SSGQueryPr = async ({
   queryKey,
   config,
   queryClient,
@@ -127,13 +116,13 @@ const SSGQuery = async ({
   config: string;
   queryClient: QueryClient;
 }) => {
-  const cookieHeader = (await cookies()).toString();
+  //   const cookieHeader = (await cookies()).toString();
 
   return await queryClient.prefetchQuery({
     queryKey,
     queryFn: async () => {
       const res = await fetch(config, {
-        headers: { Cookie: cookieHeader },
+        // headers: { Cookie: cookieHeader },
         cache: "force-cache", // wajib agar hasil build statis tersimpan
       });
       if (!res.ok) {
@@ -144,12 +133,4 @@ const SSGQuery = async ({
   });
 };
 
-export { ISGQuery, SSRQuery, SSRInfiniteQuery, SSGQuery };
-
-export default Fetching;
-
-// * SEMUA FETCH YG DILINDUNGI MIDDLEWARE (SERVER COMPONENT) HARUS MENGGUNAKAN COOKIES !!
-// * const { data } = await axios.get(URL, {
-//   withCredentials: true,
-// });
-// * diatas ^^ untuk manual perlu withCredential
+export { ISGQueryPr, SSRQueryPr, SSRInfiniteQueryPr, SSGQueryPr };

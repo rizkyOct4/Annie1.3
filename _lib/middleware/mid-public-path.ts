@@ -1,6 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import type { GetServerSidePropsContext, NextApiRequest } from "next"
-
 
 const PublicPath = ({
   pathname,
@@ -9,10 +7,16 @@ const PublicPath = ({
 }: {
   pathname: string;
   role: string;
-  req: NextApiRequest;
+  req: NextRequest;
 }) => {
   // * Public Path ===========
-  const publicPaths = [`/auth-option`, `/category`, `/notification`, `/creators`, "/_next/"];
+  const publicPaths = [
+    `/auth-option`,
+    `/category`,
+    `/notification`,
+    `/creators`,
+    "/_next/",
+  ];
 
   if (
     publicPaths.some((path) => pathname.startsWith(path)) &&

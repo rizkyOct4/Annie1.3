@@ -2,12 +2,14 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/_lib/config";
-import { CredentialsLogin } from "@/_lib/services/auth";
-// import { authConfig } from "@/auth.config";
+import { Register, CredentialsLogin } from "@/_lib/services/auth";
+import { AUTH_SECRET } from "@/_lib/config";
 
 const handler = NextAuth({
   session: {
-   strategy: 'jwt',
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 1, // ? 1 hari -> login bertahan
+    updateAge: 60 * 60, // ? refreshh login
   },
   providers: [
     Credentials({
@@ -39,10 +41,11 @@ const handler = NextAuth({
       },
     }),
   ],
-  // ? WHAT ABOUT THIS ?? IDK ??!!
+  // ? jwt -> INI DATA SECRET YG AKAN DIKIRIM KE COOKIES !!!
   callbacks: {
     async jwt({ token, user, account, profile }) {
-      // credentials login → user berisi data dari authorize
+      // ! user -> credential, profile -> OAuth
+      // ? credentials login → user berisi data dari authorize
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -53,15 +56,31 @@ const handler = NextAuth({
 
       // ? OAuth login → user hanya berisi data dasar
       if (account && profile) {
+        const fullname = profile?.name || token.name || "";
+        const splitName = fullname?.trim().split(" ");
+        const firstName = splitName[0];
+        const lastName = splitName.slice(1).join(" ");
+
+        const email = token.email ?? profile.email;
+        const profilePicture = profile.image ?? "";
+
+        await Register({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          fullname: fullname,
+          picture: profilePicture,
+        });
+
         token.email = token.email ?? profile.email;
         token.name = token.name ?? profile.name;
         token.profilePicture = profile.image ?? "";
       }
 
-    //   console.log(token)
-
+      console.log(token)
       return token;
     },
+    // ? INI YG AKAN DIGUNAKNA DI CLIENT !!
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
@@ -74,7 +93,7 @@ const handler = NextAuth({
     },
   },
 
-  // ! TARGET COOKIES KAU !!!
+  // ! TARGET COOKIES KAU !!! -> Ini yang memastikan user login tetap hidup, dan memastikan token tidak dicuri lewat JavaScript.
   cookies: {
     sessionToken: {
       name: `next-auth.session-token`,
@@ -85,9 +104,9 @@ const handler = NextAuth({
       },
     },
   },
-//   secret: process.env.AUTH_SECRET, 
+  secret: AUTH_SECRET,
 });
 
-export { handler as GET, handler as POST};
+export { handler as GET, handler as POST };
 
 // ? TOKEN DARI AUTH.js ??? user -> users sendiri ???

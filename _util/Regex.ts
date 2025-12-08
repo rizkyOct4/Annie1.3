@@ -9,6 +9,9 @@ export function FormRegex() {
 export function InvalidCharRegex() {
   return /[^a-zA-Z0-9\s.,!?'"()-]/; // ? karakter yang tidak valid
 }
+export function InvalidCharRegexEmail() {
+  return /[^a-zA-Z0-9.@]/g; // ? karakter yang tidak valid
+}
 export function CapitalizeRegex() {
   const capitalStartRegex = /^[A-Z][a-zA-Z0-9_]*$/;
   return capitalStartRegex; // ? huruf pertama kapital, diikuti huruf kecil, angka, atau underscore
@@ -17,6 +20,10 @@ export function CapitalizeRegex() {
 // ? .match() => method milik string, bukan objek RegExp.
 export function ForbiddenRegex() {
   const forbiddenCharsRegex = /[*/,.<>;:'"|=+()[\]{}?!&^%$#@]/g; // ? g => global(mengambil keseluruhan string)
+  return forbiddenCharsRegex;
+}
+export function ForbiddenRegexEmail() {
+  const forbiddenCharsRegex = /[*/,<>;:'"|=+()[\]{}?!&^%$#]/g; // ? g => global(mengambil keseluruhan string)
   return forbiddenCharsRegex;
 }
 // ? Bagian	Arti

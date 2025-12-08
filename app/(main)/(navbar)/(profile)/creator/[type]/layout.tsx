@@ -1,4 +1,4 @@
-import CreatorContext from "./data/context";
+import CreatorContext from "./context/context";
 
 const layout = ({
   intercept,

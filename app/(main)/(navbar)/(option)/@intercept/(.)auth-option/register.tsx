@@ -156,14 +156,11 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
               id="role"
               className="rounded-md border border-white/20 bg-white/10 p-2 text-white 
                      outline-none focus:ring-2 focus:ring-blue-500 transition"
-              defaultValue="guest"
+              defaultValue="creator"
               {...register("role")}
             >
               <option value="creator" className="bg-black text-white">
                 Creator
-              </option>
-              <option value="admin" className="bg-black text-white">
-                Admin
               </option>
             </select>
           </div>
@@ -174,30 +171,11 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
           {/* Register */}
           <motion.button
             type="submit"
-            className="w-[70%] p-2 bg-white text-black font-medium 
+            className="w-full p-2 bg-white text-black font-medium 
                    rounded-md shadow hover:bg-gray-200 transition"
           >
             Register
           </motion.button>
-
-          {/* OAuth Buttons */}
-          <div className="flex w-[30%] gap-2">
-            <motion.button
-              type="button"
-              className="flex-1 p-2 rounded-md border border-white/20 
-                     text-white/90 hover:text-white hover:bg-white/10 transition"
-            >
-              G
-            </motion.button>
-
-            <motion.button
-              type="button"
-              className="flex-1 p-2 rounded-md border border-white/20 
-                     text-white/90 hover:text-white hover:bg-white/10 transition"
-            >
-              Git
-            </motion.button>
-          </div>
         </div>
       </form>
     </div>

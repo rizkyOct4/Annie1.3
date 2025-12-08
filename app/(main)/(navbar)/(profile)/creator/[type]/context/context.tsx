@@ -12,15 +12,15 @@ interface CreatorContextProps {
 
 const CreatorContext: React.FC<CreatorContextProps> = ({ children }) => {
   const { data: getData } = useContext(profileContext);
-  const publicId = getData?.publicId;
+  const id = getData?.id;
 
-  const listFolder = useListFolder(publicId)
-  const listItemFolder = useListItemFolder(publicId)
-  const itemFolder = useItemFolder(publicId)
-  const itemFolderDescription = useItemDescription(publicId)
+  const listFolder = useListFolder(id)
+  const listItemFolder = useListItemFolder(id)
+  const itemFolder = useItemFolder(id)
+  const itemFolderDescription = useItemDescription(id)
   // const photo = useCreatorPhoto(publicId);
   // const video = useCreatorVideo(publicId);
-  const z = useCreatorButton(publicId);
+  const z = useCreatorButton(id);
 
   const value = {
     ...listFolder,
@@ -30,7 +30,6 @@ const CreatorContext: React.FC<CreatorContextProps> = ({ children }) => {
     // ...photo,
     // ...video,
     ...z,
-    publicId,
   };
 
   return (

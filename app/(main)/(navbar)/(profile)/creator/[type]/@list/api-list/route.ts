@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TokenHelper } from "@/_lib/tokenHelper";
 import { ListFolderPhoto } from "@/_lib/services/navbar/profile/list-folder-service";
+import GetToken from "@/_lib/middleware/get-token";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ type: string }> }
 ) {
   try {
-    const token = req.cookies.get("access_token")?.value;
-    const { publicId } = (await TokenHelper(token)) || {};
+    const { id } = await GetToken();
     const pathUrl = (await params).type;
 
     const section = Number(req.nextUrl.searchParams.get("section"));
@@ -17,7 +16,7 @@ export async function GET(
 
     if (pathUrl) {
       const result = await ListFolderPhoto({
-        publicId,
+        publicId: id,
         pathUrl,
         limit,
         offset,

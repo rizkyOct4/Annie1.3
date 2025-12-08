@@ -48,29 +48,7 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
     }
     return res;
   });
-
-  // const submit = handleSubmit(async (values) => {
-  //   try {
-  //     const URL = CONFIG_AUTH("login");
-  //     const { data } = await axios.post(URL, {
-  //       email: values.email,
-  //       password: values.password,
-  //     });
-  //     console.log(data);
-  //     setData(data.data);
-  //     if (data.cookiesRedirectMiddleware) {
-  //       router.push(data.cookiesRedirectMiddleware);
-  //     } else {
-  //       router.push(redirect);
-  //       showToast({ type: "success", fallback: data.message });
-  //     }
-  //     // router.replace("/auth");
-  //   } catch (error: any) {
-  //     console.log(error.response.data.message);
-  //     showToast({ type: "error", fallback: error });
-  //   }
-  // });
-
+  
   return (
     <div className="w-full h-auto flex-center overflow-hidden px-4">
       <div

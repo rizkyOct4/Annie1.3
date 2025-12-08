@@ -6,7 +6,7 @@ export const ListFolderPhoto = async ({
   limit,
   offset,
 }: {
-  publicId: string | undefined;
+  publicId: string;
   pathUrl: string;
   limit: number;
   offset: number;

@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import ProfilePath from "./_lib/middleware/mid-profile-path";
 import { PublicPath } from "./_lib/middleware/mid-public-path";
+import ProfilePath from "./_lib/middleware/mid-profile-path";
 import GetToken from "./_lib/middleware/get-token";
-import type { GetServerSidePropsContext, NextApiRequest } from "next"
-
 
 const middleware = async (req: NextRequest) => {
   const pathname = req.nextUrl.pathname;
-  const { role } = await GetToken(req);
-  console.log(`session:`, role);
+  const { role } = await GetToken();
 
-  // // * 1. Public Path
-  // const publicRes = PublicPath({ pathname, role, req });
-  // if (publicRes) return publicRes;
+  // * 1. Public Path
+  const publicRes = PublicPath({ pathname, role, req });
+  if (publicRes) return publicRes;
 
-  // // * 2. Profile Path (role-based path check)
-  // const profileRes = await ProfilePath({ role, pathname, req });
-  // if (profileRes) return profileRes;
+  // * 2. Profile Path (role-based path check)
+  const profileRes = await ProfilePath({ role, pathname, req });
+  if (profileRes) return profileRes;
 
   return NextResponse.next();
 };
@@ -41,3 +38,18 @@ export const config = {
 
 // todo getToken -> masih mentah belum di decode -> MIDDLEWARE
 // todo getSession -> data udah siap digunakan di server compoennt
+
+
+// todo SECURITY UNTUK HTTPS REQUEST, BUAT DI MIDDLEWATE + ROUTE HANDLER !!!
+// todo SECURITY KAU !! BUAT URL PATH KAU GENERAL AJA, JANGAN KASIH ID SPESIFIK USER !!
+// todo buat SPESIFIKASI DATA mengerucut ke route handler kau !!
+// todo liat semua fetching url kau !! jangan kasih id SECRET !!! PERBAIKI BESOK !! 
+// ! ) di SERVER (Route Handler):
+// ! Server tidak percaya apapun dari client, tetapi mengambil:
+// ! const { id } = await GetToken();
+// ! 2) Horizontal Privilege Escalation (BOLA)
+// ! Tidak bisa, karena data diambil based on token, bukan param
+
+
+
+// ! RATE LIMIT -> REDIS !!! CARI SAMA KAU !! BUT SOON !! 
