@@ -12,7 +12,7 @@ interface UserProfile {
   id: string;
   username: string;
   email: string;
-  profilePicture: string;
+  image: string;
   role: string | undefined;
   preferences: {
     theme: "light" | "dark";
@@ -38,6 +38,7 @@ interface UserProfile {
 
 const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const { data: session } = useSession();
+
   const [data, setData] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
         id: session.user.id,
         username: session.user.name,
         email: session.user.email,
-        profilePicture: session.user?.image || "",
+        image: session.user.image,
         role: session.user.role,
         preferences: {
           theme: "light",
@@ -66,11 +67,13 @@ const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
         },
         followersCount: 0,
         followingCount: 0,
-        createdAt: session?.user?.createdAt!,
+        createdAt: session.user?.createdAt!,
         updatedAt: null,
       });
     }
   }, [session]);
+
+  console.log(data)
 
   return (
     <profileContext.Provider value={{ data, setData }}>

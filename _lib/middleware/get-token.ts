@@ -1,16 +1,27 @@
-import { getToken } from "next-auth/jwt";
-import { AUTH_SECRET } from "../config";
-import { cookies } from "next/headers"; // Mengimpor cookies dari next/headers
+// import { getToken } from "next-auth/jwt";
+// import { AUTH_SECRET } from "../config";
+// import { cookies } from "next/headers"; // Mengimpor cookies dari next/headers
 import { QueryClient } from "@tanstack/react-query";
+// import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 
 const GetToken = async () => {
   const queryClient = new QueryClient();
 
-  const token = (await cookies()).get("next-auth.session-token")?.value;
-  const session = await getToken({
-    req: { cookies: { "next-auth.session-token": token } },
-    secret: AUTH_SECRET,
-  }); // ! Ambil token JWT dari cookies
+  const token = await auth();
+  const session = token.user;
+  console.log(`token session`, session)
+
+  // const token = (await cookies()).get("next-auth.session-token")?.value;
+  // const session = await getToken({
+  //   req: { cookies: { "next-auth.session-token": token } },
+  //   secret: AUTH_SECRET,
+  // }); // ! Ambil token JWT dari cookies
+  // console.log(`session`, session);
+
+  // // if (!session) return null;
+
+  // console.log("JWT session:", session);
 
   return {
     id: session?.id as string,

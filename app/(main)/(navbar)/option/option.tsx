@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { memo, useContext, useCallback, useState } from "react";
 import { showToast } from "@/_util/Toast";
 import { signOut } from "next-auth/react";
+// import { signOut } from "@/auth";
 
 const Options = ({
   setState,
@@ -84,11 +85,11 @@ const Options = ({
           break;
         case "confirmLogout":
           try {
-            await signOut({ redirect: false });
+            await signOut({ redirect: false, callbackUrl: "/homepage" });
             setData(null);
             setState(false);
             showToast({ type: "success", fallback: "Logout Success" });
-            router.push("/homepage" )
+            // router.push("/homepage" )
           } catch (error) {
             console.error(error);
           }

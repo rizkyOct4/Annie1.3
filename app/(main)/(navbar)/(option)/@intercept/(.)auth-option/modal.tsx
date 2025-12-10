@@ -9,7 +9,7 @@ const ModalAuth = ({ currentPath }: { currentPath: string }) => {
 
   return (
     <>
-      {currentPath === "auth" && (
+      {currentPath === "auth-option" && (
         <div className="overlay">
           {!state ? (
             <Register setState={setState} />

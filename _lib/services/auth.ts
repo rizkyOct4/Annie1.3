@@ -25,28 +25,49 @@ export const Register = async ({
 }) => {
   try {
     const randomId = RandomId();
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(password, salt);
 
-      return prisma.$transaction(async (tx) => {
-        await tx.$queryRaw`
-                  INSERT INTO users (iu, first_name, last_name, email, password, role) VALUES
-                  (${randomId}, ${firstName}, ${lastName}, ${email}, ${passwordHash}, ${role}::user_role)
-                  `;
-      });
-    } else {
-      return prisma.$transaction(async (tx) => {
-        await tx.$queryRaw`
-                  INSERT INTO users (iu, first_name, last_name, email, role) VALUES
-                  (${randomId}, ${firstName}, ${lastName}, ${email}, 'creator'::user_role)
-                  `;
-        await tx.$queryRaw`
-                  INSERT INTO users_description (tar_iu, username, picture) VALUES
-                  (${randomId}, ${fullname}, ${picture})
-        `;
-      });
+    const queryCheck = await prisma.$queryRaw<{ email: string }[]>`
+      SELECT email from users
+      WHERE email = ${email}
+      LIMIT 1
+    `;
+    if (queryCheck.length < 1) {
+      // * Credential
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        prisma.$transaction(async (tx) => {
+          await tx.$queryRaw`
+            INSERT INTO users (iu, first_name, last_name, email, password, role)
+            VALUES (${randomId}, ${firstName}, ${lastName}, ${email}, ${passwordHash}, ${role}::user_role)`;
+        });
+      } else {
+        // * OAuth
+        prisma.$transaction(async (tx) => {
+          await tx.$queryRaw`
+            INSERT INTO users (iu, first_name, last_name, email, role) VALUES
+            (${randomId}, ${firstName}, ${lastName}, ${email}, 'creator'::user_role)`;
+          await tx.$queryRaw`
+            INSERT INTO users_description (tar_iu, username, picture) VALUES
+            (${randomId}, ${fullname}, ${picture})`;
+        });
+      }
     }
+
+    const result: any[] = await prisma.$queryRaw`
+      SELECT u.public_id, u.role, u.created_at, ud.picture
+      FROM users u
+      LEFT JOIN users_description ud ON (ud.tar_iu = u.iu)
+      WHERE u.email = ${email}`;
+    const rawData = {
+      id: result[0].public_id,
+      role: result[0].role,
+      createdAt: result[0].created_at,
+      picture: result[0].picture,
+    };
+
+    return camelcaseKeys(rawData);
   } catch (err: any) {
     throw new Error(err.message || "Insert failed");
   }

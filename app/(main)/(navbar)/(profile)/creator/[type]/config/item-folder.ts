@@ -19,10 +19,10 @@ export const ROUTES_ITEM_FOLDER = {
     const limit = 8;
     switch (typeConfig) {
       case "listItemFolderPhoto": {
-        return `${BASE_URL}/creator/${path}/api-content?key=${typeConfig}&section=${pageParam}&limit=${limit}&year=${year}&month=${month}`;
+        return `/creator/${path}/api-content?key=${typeConfig}&section=${pageParam}&limit=${limit}&year=${year}&month=${month}`;
       }
       case "itemFolderPhoto": {
-        return `${BASE_URL}/creator/${path}/api-content?key=${typeConfig}&section=${pageParam}&limit=${limit}&folder-name=${encodeURIComponent(
+        return `/creator/${path}/api-content?key=${typeConfig}&section=${pageParam}&limit=${limit}&folder-name=${encodeURIComponent(
           folderName
         )}`;
       }
