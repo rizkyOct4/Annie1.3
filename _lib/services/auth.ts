@@ -1,9 +1,6 @@
 import { prisma } from "@/_lib/db";
 import { RandomId } from "@/_util/GenerateData";
 import bcrypt from "bcrypt";
-// import { UserCheckT } from "./type";
-// import { JWT_SECRET, JWT_REFRESH_TOKEN } from "@/_lib/config";
-// import { SignJWT } from "jose";
 import camelcaseKeys from "camelcase-keys";
 
 export const Register = async ({
@@ -17,7 +14,7 @@ export const Register = async ({
 }: {
   firstName: string;
   lastName: string;
-  email: string | undefined;
+  email: string;
   password?: string | undefined;
   role?: string | undefined;
   fullname?: string | undefined;

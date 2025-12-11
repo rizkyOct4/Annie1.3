@@ -23,8 +23,12 @@ export function ForbiddenRegex() {
   return forbiddenCharsRegex;
 }
 export function ForbiddenRegexEmail() {
-  const forbiddenCharsRegex = /[*/,<>;:'"|=+()[\]{}?!&^%$#]/g; // ? g => global(mengambil keseluruhan string)
+  const forbiddenCharsRegex = /[*/,<>;:'"|=+()[\]{}?!&^%$#-]/g; // ? g => global(mengambil keseluruhan string)
   return forbiddenCharsRegex;
+}
+
+export function EmailRegex() {
+  return /^[A-Za-z0-9._%+-@]+$/
 }
 // ? Bagian	Arti
 // ? /.../	Penulisan literal Regex di JavaScript / TypeScript

@@ -11,7 +11,7 @@ const PublicPath = ({
 }) => {
   // * Public Path ===========
   const publicPaths = [
-    `/auth-option`,
+    `/auth`,
     `/category`,
     `/notification`,
     `/creators`,
@@ -25,8 +25,8 @@ const PublicPath = ({
     return NextResponse.next();
   }
 
-  if ((role === "guest" || !role) && req.method !== "GET") {
-    return NextResponse.redirect(new URL(`/auth-option`, req.url));
+  if (!role && req.method !== "GET") {
+    return NextResponse.redirect(new URL(`/auth`, req.url));
   }
 };
 

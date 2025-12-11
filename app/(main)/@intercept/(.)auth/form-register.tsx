@@ -5,9 +5,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/_util/Toast";
-import { motion } from "framer-motion";
-import { zRegisterFormSchema } from "../../auth-option/schema";
-import { CONFIG_AUTH } from "../../auth-option/config/config-auth";
+import { zRegisterFormSchema } from "./schema-form";
+import { CONFIG_AUTH } from "../../auth/config/config-auth";
 
 type RegisterFormSchema = z.infer<typeof zRegisterFormSchema>;
 
@@ -49,6 +48,7 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
         </div>
 
         <button
+          type="button"
           className="text-blue-400 hover:text-blue-300 transition font-medium"
           onClick={() => setState(true)}
         >
@@ -61,9 +61,16 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
         <div className="flex flex-col gap-6">
           {/* First Name */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="firstName" className="text-sm text-gray-300">
-              First Name
-            </label>
+            <span className="flex items-center gap-2">
+              <label htmlFor="firstName" className="text-sm text-gray-300">
+                First Name
+              </label>
+              {formState.errors.firstName && (
+                <p className="text-red-500 text-xs">
+                  {formState.errors.firstName.message}
+                </p>
+              )}
+            </span>
             <input
               id="firstName"
               type="text"
@@ -74,40 +81,44 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
               required
               {...register("firstName")}
             />
-            {formState.errors.firstName && (
-              <p className="text-red-500 text-xs">
-                {formState.errors.firstName.message}
-              </p>
-            )}
           </div>
 
           {/* Last Name */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="lastName" className="text-sm text-gray-300">
-              Last Name
-            </label>
+            <span className="flex items-center gap-2">
+              <label htmlFor="lastName" className="text-sm text-gray-300">
+                Last Name
+              </label>
+              {formState.errors.lastName && (
+                <p className="text-red-500 text-xs">
+                  {formState.errors.lastName.message}
+                </p>
+              )}
+            </span>
             <input
               id="lastName"
               type="text"
               placeholder="Doe"
               className="rounded-md border border-white/20 bg-white/10 
-                     focus:bg-white/20 p-2 text-white outline-none 
-                     focus:ring-2 focus:ring-blue-500 transition"
+                    focus:bg-white/20 p-2 text-white outline-none 
+                      focus:ring-2 focus:ring-blue-500 transition"
               required
               {...register("lastName")}
             />
-            {formState.errors.lastName && (
-              <p className="text-red-500 text-xs">
-                {formState.errors.lastName.message}
-              </p>
-            )}
           </div>
 
           {/* Email */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-sm text-gray-300">
-              Email
-            </label>
+            <span className="flex items-center gap-2">
+              <label htmlFor="email" className="text-sm text-gray-300">
+                Email
+              </label>
+              {formState.errors.email && (
+                <p className="text-red-500 text-xs">
+                  {formState.errors.email.message}
+                </p>
+              )}
+            </span>
             <input
               id="email"
               type="email"
@@ -118,18 +129,20 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
               required
               {...register("email")}
             />
-            {formState.errors.email && (
-              <p className="text-red-500 text-xs">
-                {formState.errors.email.message}
-              </p>
-            )}
           </div>
 
           {/* Password */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="text-sm text-gray-300">
-              Password
-            </label>
+            <span className="flex items-center gap-2">
+              <label htmlFor="password" className="text-sm text-gray-300">
+                Password
+              </label>
+              {formState.errors.password && (
+                <p className="text-red-500 text-xs">
+                  {formState.errors.password.message}
+                </p>
+              )}
+            </span>
             <input
               id="password"
               type="password"
@@ -140,11 +153,6 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
               required
               {...register("password")}
             />
-            {formState.errors.password && (
-              <p className="text-red-500 text-xs">
-                {formState.errors.password.message}
-              </p>
-            )}
           </div>
 
           {/* Role */}
@@ -156,8 +164,7 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
               id="role"
               className="rounded-md border border-white/20 bg-white/10 p-2 text-white 
                      outline-none focus:ring-2 focus:ring-blue-500 transition"
-              defaultValue="creator"
-              {...register("role")}
+              defaultValue="guest"
             >
               <option value="creator" className="bg-black text-white">
                 Creator
@@ -169,13 +176,12 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
         {/* Buttons */}
         <div className="flex w-full gap-3 mt-6">
           {/* Register */}
-          <motion.button
-            type="submit"
+          <button
             className="w-full p-2 bg-white text-black font-medium 
                    rounded-md shadow hover:bg-gray-200 transition"
           >
             Register
-          </motion.button>
+          </button>
         </div>
       </form>
     </div>

@@ -14,7 +14,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { memo, useContext, useCallback, useState } from "react";
 import { showToast } from "@/_util/Toast";
 import { signOut } from "next-auth/react";
-// import { signOut } from "@/auth";
 
 const Options = ({
   setState,
@@ -61,7 +60,7 @@ const Options = ({
       ) : (
         <FaSignOutAlt className="w-4 h-4" />
       ),
-      link: !id ? `/auth-option?redirect=${encodeURIComponent(pathname)}` : "/",
+      link: !id ? `/auth?redirect=${encodeURIComponent(pathname)}` : "/",
       actionType: !id ? "login" : "logout",
     },
   ];
@@ -85,11 +84,10 @@ const Options = ({
           break;
         case "confirmLogout":
           try {
-            await signOut({ redirect: false, callbackUrl: "/homepage" });
+            await signOut({ redirect: false });
             setData(null);
             setState(false);
             showToast({ type: "success", fallback: "Logout Success" });
-            // router.push("/homepage" )
           } catch (error) {
             console.error(error);
           }
@@ -138,6 +136,7 @@ const Options = ({
             {isLogout && (
               <div className="flex gap-1 px-1">
                 <button
+                  type="button"
                   onClick={(e) => handleAction(e, "confirmLogout", "")}
                   className="px-2 p-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
                 >

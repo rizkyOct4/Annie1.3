@@ -1,38 +1,56 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-
-import { FiUsers, FiCompass, FiActivity, FiBookOpen } from "react-icons/fi";
+import { useState, memo } from "react";
+import {
+  FiUsers,
+  FiCompass,
+  FiActivity,
+  FiBookOpen,
+  FiPlayCircle,
+  FiCheckCircle,
+  FiCode,
+  FiClock,
+  FiShield,
+  FiFlag,
+} from "react-icons/fi";
 import { VscCommentDiscussion } from "react-icons/vsc";
-import { BiLogoDailymotion } from "react-icons/bi";
+import { BiLogoDailymotion, BiCategory } from "react-icons/bi";
 import { SiGooglemeet } from "react-icons/si";
+import { TbUserStar } from "react-icons/tb";
+import { useRouter } from "next/navigation";
 
-export default function Sidebar({ children }: { children: React.ReactNode }) {
+const Sidebar = ({
+  children,
+  intercept,
+}: {
+  children: React.ReactNode;
+  intercept: React.ReactNode;
+}) => {
   const [activePanel, setActivePanel] = useState<string | null>(null);
+  const router = useRouter();
 
-  // === MENU LIST (diambil dari CommunitySide) ===
-  const communityMenus = [
-    { icon: <VscCommentDiscussion />, label: "Discussion", to: "/discussion" },
-    { icon: <BiLogoDailymotion />, label: "Challenges", to: "/challenges" },
-    { icon: <SiGooglemeet />, label: "Meetup", to: "/meetup" },
-  ];
-
-  // Sidebar utama
   const sidebarItems = [
     {
       key: "community",
       icon: <FiUsers className="text-2xl" />,
       title: "Community",
-      menus: communityMenus,
+      menus: [
+        {
+          icon: <VscCommentDiscussion />,
+          label: "Discussion",
+          to: "/discussion",
+        },
+        { icon: <BiLogoDailymotion />, label: "Challenges", to: "/challenges" },
+        { icon: <SiGooglemeet />, label: "Meetup", to: "/meetup" },
+      ],
     },
     {
       key: "discover",
       icon: <FiCompass className="text-2xl" />,
       title: "Discover",
       menus: [
-        { icon: "📌", label: "Discover 1", to: "#" },
-        { icon: "⭐", label: "Discover 2", to: "#" },
+        { icon: <TbUserStar />, label: "Creators", to: "/creators" },
+        { icon: <BiCategory />, label: "Category", to: "/category" },
       ],
     },
     {
@@ -49,15 +67,26 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       icon: <FiBookOpen className="text-2xl" />,
       title: "Docs",
       menus: [
-        { icon: "📄", label: "Guides", to: "#" },
-        { icon: "⚙️", label: "API", to: "#" },
+        {
+          icon: <FiPlayCircle />,
+          label: "Getting Started",
+          to: "/getting-started",
+        },
+        {
+          icon: <FiCheckCircle />,
+          label: "Posting Guidelines",
+          to: "/guidelines",
+        },
+        { icon: <FiCode />, label: "API & Webhooks", to: "/api" },
+        { icon: <FiClock />, label: "Changelog", to: "/changelog" },
+        { icon: <FiShield />, label: "Legal", to: "/legal" },
+        { icon: <FiFlag />, label: "Report", to: "/report" },
       ],
     },
   ];
 
   return (
     <div className="w-full fixed top-[80px] h-screen z-100 flex">
-      {/* === SMALL SIDEBAR LEFT === */}
       <aside
         className="
           w-[80px] bg-black/80 backdrop-blur-sm 
@@ -91,16 +120,15 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
             {activePanel === item.key && (
               <div className="w-[80px] flex flex-col items-center mt-2 gap-2">
                 {item.menus.map((m, i) => (
-                  <Link
+                  <button
                     key={i}
+                    type="button"
                     title={m.label}
-                    href={m.to}
-                    className="w-[40px] h-[40px] flex items-center justify-center rounded-md 
-                    bg-white/10 border border-white/10 text-white
-                    hover:bg-white/20 transition"
+                    onClick={() => router.push(m.to)}
+                    className="w-[40px] h-[40px] flex items-center justify-center rounded-md bg-white/10 border border-white/10 text-white hover:bg-white/20 transition relative"
                   >
                     <span className="text-xl">{m.icon}</span>
-                  </Link>
+                  </button>
                 ))}
               </div>
             )}
@@ -108,7 +136,12 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         ))}
       </aside>
       {/* === MAIN CONTENT === */}
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 px-6 h-screen overflow-y-auto">
+        {intercept}
+        {children}
+      </main>
     </div>
   );
-}
+};
+
+export default memo(Sidebar);

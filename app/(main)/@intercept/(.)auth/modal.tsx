@@ -1,15 +1,16 @@
 "use client";
 
+import Register from "./form-register";
+import Login from "./form-login";
 import { useState } from "react";
-import Register from "./register";
-import Login from "./login";
+import { useSearchParams } from "next/navigation";
 
-const ModalAuth = ({ currentPath }: { currentPath: string }) => {
+const ModalAuth = () => {
   const [state, setState] = useState(false);
-
+  const redirect = useSearchParams().get("redirect") ?? "";
   return (
     <>
-      {currentPath === "auth-option" && (
+      {redirect && (
         <div className="overlay">
           {!state ? (
             <Register setState={setState} />

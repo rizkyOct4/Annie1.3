@@ -9,22 +9,14 @@ const ProfilePath = async ({
   pathname: string;
   req: NextRequest;
 }) => {
-  try {
-    // ? ROLE USERS
-    const rolePaths: Record<string, string> = {
-      admin: `/admin`,
-      creator: `/creator`,
-    };
-
-    // ? ROLE SPESIFIC
-    if (!pathname.startsWith(rolePaths[role])) {
-      return NextResponse.redirect(new URL(`/not-found`, req.url));
-    }
-
-    return NextResponse.next();
-  } catch (err: any) {
-    console.error(err);
-    return NextResponse.redirect(new URL(`/auth-option`, req.url));
+  // ? ROLE USERS
+  const rolePaths: Record<string, string> = {
+    admin: `/admin`,
+    creator: `/creator`,
+  };
+  // ? ROLE SPESIFIC
+  if (!pathname.startsWith(rolePaths[role])) {
+    return NextResponse.redirect(new URL(`/auth`, req.url));
   }
 };
 

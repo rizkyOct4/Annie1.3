@@ -4,15 +4,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { showToast } from "@/_util/Toast";
-import { motion } from "framer-motion";
-import axios from "axios";
-import { profileContext } from "@/app/context";
-import { useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { zLoginFormSchema } from "../../auth-option/schema";
-import { CONFIG_AUTH } from "../../auth-option/config/config-auth";
+import { zLoginFormSchema } from "./schema-form";
 import { signIn } from "next-auth/react";
-// import {signIn}
 
 type LoginFormSchema = z.infer<typeof zLoginFormSchema>;
 
@@ -23,10 +17,9 @@ const thirdParty = [
 
 const Login = ({ setState }: { setState: (state: boolean) => void }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const redirect = useSearchParams().get("redirect") ?? "";
 
-  const redirect = searchParams.get("redirect") ?? "/";
-
+  // * CONTEXT =====
   const { register, handleSubmit, formState } = useForm<LoginFormSchema>({
     // ? REGEXNYA DISINI TERJADI !!!!
     resolver: zodResolver(zLoginFormSchema),
@@ -38,18 +31,19 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
       email: values.email,
       password: values.password,
       redirect: false,
-      // callbackUrl: redirect || "/",
     });
-    if (res?.ok) {
-      showToast({ type: "success", fallback: "Login Success" });
-      router.push(redirect);
-    } else {
-      console.error(res);
+
+    if (res?.error) {
+      console.log(res);
       showToast({ type: "error", fallback: res.error });
+    } else {
+      showToast({ type: "success", fallback: "Login successful!" });
+      router.push(redirect);
     }
-    return res;
   });
+
   
+
   return (
     <div className="w-full h-auto flex-center overflow-hidden px-4">
       <div
@@ -66,6 +60,7 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
           </div>
 
           <button
+            type="button"
             className="text-blue-400 hover:text-blue-300 transition font-medium"
             onClick={() => setState(false)}
           >
@@ -78,24 +73,27 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
           <div className="flex flex-col gap-6">
             {/* Email */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="text-sm text-gray-300">
-                Email
-              </label>
+              <span className="flex items-center gap-2">
+                <label htmlFor="email" className="text-sm text-gray-300">
+                  Email
+                </label>
+                {formState.errors.email && (
+                  <p className="text-red-500 text-xs">
+                    {formState.errors.email.message}
+                  </p>
+                )}
+              </span>
+
               <input
                 id="email"
                 className="rounded-md border border-white/20 bg-white/10 
-                       focus:bg-white/20 p-2 text-white outline-none 
-                       focus:ring-2 focus:ring-blue-500 transition"
+                      focus:bg-white/20 p-2 text-white outline-none 
+                      "
                 type="email"
                 placeholder="m@example.com"
-                // required
+                required
                 {...register("email")}
               />
-              {formState.errors.email && (
-                <p className="text-red-500 text-xs">
-                  {formState.errors.email.message}
-                </p>
-              )}
             </div>
 
             {/* Password */}
@@ -114,43 +112,41 @@ const Login = ({ setState }: { setState: (state: boolean) => void }) => {
 
               <input
                 id="password"
+                type="password"
+                required
+                {...register("password")}
                 className="rounded-md border border-white/20 bg-white/10 
                        p-2 text-white focus:bg-white/20 outline-none 
-                       focus:ring-2 focus:ring-blue-500 transition"
-                type="password"
-                // required
-                {...register("password")}
+                      "
               />
-              {formState.errors.password && (
-                <p className="text-red-500 text-xs">
-                  {formState.errors.password.message}
-                </p>
-              )}
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex w-full gap-3 mt-6">
-            <motion.button
-              type="submit"
+            <button
               className="w-[70%] p-2 bg-white text-black font-medium 
-                     rounded-md shadow hover:bg-gray-200 transition"
+                          rounded-md shadow hover:bg-gray-200 transition"
             >
               Login
-            </motion.button>
+            </button>
 
             <div className="w-[30%] flex gap-2">
-              {thirdParty.map((provider) => (
-                <motion.button
-                  key={provider.value}
-                  type="submit"
-                  onClick={() =>
-                    signIn(provider.value, { redirectTo: redirect })
+              {thirdParty.map((i, idx) => (
+                <button
+                  type="button"
+                  key={idx}
+                  onClick={async () =>
+                    await signIn(i.value, {
+                      redirectTo: redirect,
+                    })
                   }
-                  className="flex-1 p-2 text-white/90 hover:text-white rounded-md border border-white/20 hover:bg-white/10 transition"
+                  className="flex-1 p-2 text-white/90 hover:text-white 
+                         rounded-md border border-white/20 
+                         hover:bg-white/10 transition"
                 >
-                  {provider.name}
-                </motion.button>
+                  {i.name}
+                </button>
               ))}
             </div>
           </div>

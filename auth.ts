@@ -1,8 +1,13 @@
 import NextAuth from "next-auth";
-// import { Auth } from "@auth/core"
 import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
 import Credentials from "next-auth/providers/credentials";
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/_lib/config";
+import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+} from "@/_lib/config";
 import { Register, CredentialsLogin } from "@/_lib/services/auth";
 import { AUTH_SECRET } from "@/_lib/config";
 
@@ -31,13 +36,24 @@ export const {
             password: credentials.password,
           });
         } catch (err: any) {
-          throw new Error(err?.message || "Login failed");
+          throw new Error(err?.message);
         }
       },
     }),
     Google({
       clientId: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
+    GitHub({
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
       authorization: {
         params: {
           prompt: "consent",
@@ -63,12 +79,12 @@ export const {
 
       // ? OAuth login → user hanya berisi data dasar
       if (account && profile) {
-        const fullname = profile?.name || token.name || "";
+        const fullname = profile?.name ?? "";
         const splitName = fullname?.trim().split(" ");
         const firstName = splitName[0];
         const lastName = splitName.slice(1).join(" ");
 
-        const email = token.email ?? profile.email;
+        const email = profile.email ?? "";
         const profilePicture = profile.image ?? "";
 
         const fetch = await Register({
@@ -80,14 +96,14 @@ export const {
         });
 
         token.id = fetch.id;
-        token.email = token.email ?? profile.email;
-        token.name = token.name ?? profile.name;
+        token.email = profile.email;
+        token.name = profile.name;
         token.role = fetch?.role;
         token.image = fetch.picture || profile.image;
         token.createdAt = fetch?.createdAt ?? "";
       }
 
-      console.log(token);
+      // console.log(`token sesion`, token);
       return token;
     },
     // ? INI YG AKAN DIGUNAKNA DI CLIENT !!
@@ -97,10 +113,9 @@ export const {
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.role = token.role as string;
-        session.user.image = token.image as string;
+        session.user.image = token.picture as string;
         session.user.createdAt = token.createdAt as string;
       }
-      // console.log(session)
       return session;
     },
   },
@@ -119,11 +134,14 @@ export const {
   secret: AUTH_SECRET,
 });
 
-
 // ? TOKEN DARI AUTH.js ??? user -> users sendiri ???
-
+// * token -> decode masukkan ke cookies !!! profile / account baru dari OAuth
 
 // todo ambil token.image -> masukkan ke session (OAuth)
 // todo authConfig kau BESOK KONDISIKAN !!
 // TODO PENGAMBILAN COOKIES VALUE KAU !!!
-// TODO BERSIHKAN SEMUA AUTHENTICATION KAU !!! PASTIKAN FIX BARU LANJUT MIDDLEWARE !!!! 
+// TODO BERSIHKAN SEMUA AUTHENTICATION KAU !!! PASTIKAN FIX BARU LANJUT MIDDLEWARE !!!!
+
+
+// todo kembalikan error dari server ke CLIENT besok !!
+// todo JUST LITTLE BIT MORE !! 
