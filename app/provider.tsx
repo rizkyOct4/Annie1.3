@@ -13,7 +13,7 @@ interface UserProfile {
   username: string;
   email: string;
   image: string;
-  role: string | undefined;
+  role: string;
   preferences: {
     theme: "light" | "dark";
     language: string;
@@ -32,7 +32,7 @@ interface UserProfile {
   };
   followersCount: number;
   followingCount: number;
-  createdAt: Date;
+  createdAt: string;
   updatedAt: Date | null;
 }
 
@@ -67,7 +67,7 @@ const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
         },
         followersCount: 0,
         followingCount: 0,
-        createdAt: session.user?.createdAt!,
+        createdAt: session.user.createdAt,
         updatedAt: null,
       });
     }

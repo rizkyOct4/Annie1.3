@@ -80,10 +80,21 @@ export const CredentialsLogin = async ({
   const userCheck: any[] =
     await prisma.$queryRaw`SELECT iu, email, password, first_name, last_name, role, public_id, created_at FROM users WHERE email = ${email}`;
 
-  if (userCheck.length === 0) throw new Error("Invalid email or password");
+  if (userCheck.length === 0) {
+    return {
+      success: false,
+      message: "Invalid email or password",
+    };
+  }
 
   const passwordMatch = await bcrypt.compare(password, userCheck[0].password);
-  if (!passwordMatch) throw new Error("Invalid password");
+
+  if (!passwordMatch) {
+    return {
+      success: false,
+      message: "Invalid password",
+    };
+  }
 
   const rawData = {
     id: userCheck[0].public_id,
@@ -93,7 +104,10 @@ export const CredentialsLogin = async ({
     createdAt: userCheck[0].created_at,
   };
 
-  return camelcaseKeys(rawData);
+  return {
+    success: true,
+    user: camelcaseKeys(rawData),
+  };
 };
 
 // ! AUTH -> untuk mengidentifikasi tiap users !! masih main di login/logout ?!!

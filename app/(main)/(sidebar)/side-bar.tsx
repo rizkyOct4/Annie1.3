@@ -136,7 +136,7 @@ const Sidebar = ({
         ))}
       </aside>
       {/* === MAIN CONTENT === */}
-      <main className="flex-1 px-6 h-screen overflow-y-auto">
+      <main className="flex-1 px-6 pb-10 h-screen overflow-y-auto">
         {intercept}
         {children}
       </main>

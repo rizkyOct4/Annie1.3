@@ -25,16 +25,29 @@ export const {
   providers: [
     Credentials({
       name: "Credentials",
+      credentials: {
+        email: {
+          type: "email",
+          label: "Email",
+          placeholder: "m@example.com",
+        },
+        password: {
+          type: "password",
+          label: "Password",
+          placeholder: "*****",
+        },
+      },
       // ? credentials -> ini parameter dari login form kau !!!
       async authorize(credentials) {
         try {
           if (!credentials?.email || !credentials?.password) {
             return null;
           }
-          return await CredentialsLogin({
+          const res = await CredentialsLogin({
             email: credentials.email,
             password: credentials.password,
           });
+          return res.user;
         } catch (err: any) {
           throw new Error(err?.message);
         }
@@ -142,6 +155,5 @@ export const {
 // TODO PENGAMBILAN COOKIES VALUE KAU !!!
 // TODO BERSIHKAN SEMUA AUTHENTICATION KAU !!! PASTIKAN FIX BARU LANJUT MIDDLEWARE !!!!
 
-
 // todo kembalikan error dari server ke CLIENT besok !!
-// todo JUST LITTLE BIT MORE !! 
+// todo JUST LITTLE BIT MORE !!

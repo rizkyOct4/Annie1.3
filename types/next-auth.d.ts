@@ -7,7 +7,7 @@ declare module "next-auth" {
       email: string;
       name: string;
       role: string;
-      created_at: Date;
+      created_at: string;
     };
   }
 
@@ -16,6 +16,6 @@ declare module "next-auth" {
     email: string;
     name: string;
     role: string;
-    created_at: Date;
+    created_at: string;
   }
 }
