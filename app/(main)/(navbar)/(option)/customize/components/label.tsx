@@ -1,0 +1,210 @@
+"use client";
+
+import { RiProfileLine, RiImageLine } from "react-icons/ri";
+import {
+  FaInstagram,
+  FaTwitter,
+  FaFacebook,
+  FaLinkedin,
+  FaGithub,
+  FaYoutube,
+  FaGlobe,
+} from "react-icons/fa";
+import { JSX } from "react";
+
+export const Image = ({
+  setValue,
+  register,
+}: {
+  setValue: any;
+  register: any;
+}) => {
+  return (
+    <div className="w-full flex items-center justify-start gap-4">
+      <RiImageLine size={28} />
+      <label className="p-2 rounded-md border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <input
+          type="file"
+          accept="image/*"
+          {...register("picture")}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setValue("currentImage", file.name, {
+                  shouldValidate: true,
+                });
+                setValue("pathCurrentImage", reader.result as string, {
+                  shouldValidate: true,
+                });
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
+        />
+      </label>
+    </div>
+  );
+};
+
+export const Bio = ({
+  fieldKey,
+  value,
+  register,
+}: {
+  fieldKey: string;
+  value: string | number | string[];
+  register: any;
+}) => {
+  return (
+    <div className="w-full flex items-center justify-between gap-4">
+      <RiProfileLine size={28} />
+      <div className="w-full">
+        <label className="block font-semibold mb-2">{fieldKey}</label>
+        <textarea
+          rows={5}
+          defaultValue={value}
+          {...register("biodata")}
+          className="
+                  w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
+                  text-gray-200 placeholder-gray-500
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                "></textarea>
+      </div>
+    </div>
+  );
+};
+
+export const SocialLink = ({
+  value,
+  register,
+  setValue,
+  watch,
+}: {
+  value: [{ platform: string; link: string; icon: JSX.Element }];
+  register: any;
+  setValue: any;
+  watch: any;
+}) => {
+  const socialPlatforms = [
+    {
+      platform: "instagram",
+      link: "",
+      icon: <FaInstagram className="text-pink-500" />,
+    },
+    {
+      platform: "github",
+      link: "",
+      icon: <FaGithub className="text-gray-300" />,
+    },
+    {
+      platform: "linkedin",
+      link: "",
+      icon: <FaLinkedin className="text-blue-500" />,
+    },
+    {
+      platform: "twitter",
+      link: "",
+      icon: <FaTwitter className="text-sky-400" />,
+    },
+    {
+      platform: "facebook",
+      link: "",
+      icon: <FaFacebook className="text-blue-600" />,
+    },
+    {
+      platform: "youtube",
+      link: "",
+      icon: <FaYoutube className="text-red-500" />,
+    },
+    {
+      platform: "website",
+      link: "",
+      icon: <FaGlobe className="text-green-400" />,
+    },
+  ];
+
+  const filter = Array.isArray(value) ? value.map((v) => v.platform) : [];
+
+  const updated = socialPlatforms.map((i) =>
+    filter.includes(i.platform)
+      ? {
+          ...i,
+          link: value.find((v) => v.platform === i.platform)?.link ?? i.link,
+        }
+      : i
+  );
+
+  return (
+    <>
+      {updated.map((i) => (
+        <div
+          key={i.platform}
+          className="
+      flex items-center gap-4
+      p-3
+      bg-black/30 hover:bg-black/40
+      transition-colors
+    ">
+          {/* Icon */}
+          <span className="text-xl flex-shrink-0">{i.icon}</span>
+
+          {/* Platform & Link */}
+          <div className="flex flex-col w-full">
+            <input
+              type="text"
+              defaultValue={i.link}
+              {...register("socialLink")}
+              onChange={(e) => {
+                const listData = watch("socialLink");
+
+                setValue("socialLink", [...listData, e.currentTarget.value], {
+                  shouldValidate: true,
+                });
+              }}
+              className="
+                  w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
+                  text-gray-200 placeholder-gray-500
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                "
+            />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
+
+export const OtherLabel = ({
+  fieldKey,
+  value,
+  register,
+}: {
+  fieldKey: string;
+  value: string | number | string[];
+  register: any;
+}) => {
+  return (
+    <div key={fieldKey} className="w-full">
+      <label className="block font-semibold mb-2">
+        {fieldKey}
+        <input
+          type="text"
+          defaultValue={value}
+          {...register(fieldKey)}
+          className="
+                  w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
+                  text-gray-200 placeholder-gray-500
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                "
+        />
+      </label>
+    </div>
+  );
+};
+
+
+// todo KONDISIKAN BESOK SAMA KAU INI LAGI !! MASIH ERROR !
+// TODO KASIH TRIGGER !! BUAT PLATFORMNYA APA + VALUE !!
+// TODO PROPERTYNYA LANGSUNG GANTI DI ZOD SCHEMA

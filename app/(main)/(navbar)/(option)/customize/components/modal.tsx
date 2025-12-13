@@ -1,98 +1,71 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
-import Image from "next/image";
+import { useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  RiUserLine,
-  RiProfileLine,
-  RiPhoneLine,
-  RiMapPinLine,
-  RiImageLine,
-  RiRefreshLine,
-} from "react-icons/ri";
+import { Image, Bio, SocialLink, OtherLabel } from "./label";
+import { customizeContext } from "@/app/context";
 
 const ProfileSchema = z.object({
   username: z.string(),
   biodata: z.string().optional(),
-  gender: z.string().optional(),
-  phoneNumber: z
-    .string()
-    .regex(/^\d+$/, "Phone number must be numeric")
-    .optional(),
   location: z.string().optional(),
-  currentImage: z.string(),
-  pathCurrentImage: z.string().optional(),
-  socialLink: z.array().optional(),
-  createdAt: z.string(),
-  updateAt: z.string().optional(),
+  socialLink: z.array(z.string()).optional(),
+  gender: z.string().optional(),
+  phoneNumber: z.string().max(8, "Max 8").optional(),
+  picture: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof ProfileSchema>;
 
-const ProfileCustomize = ({ data }: { data: any }) => {
+const ProfileCustomize = () => {
+  const { customizeData } = useContext(customizeContext);
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
     reset,
-    formState: { errors },
+    formState,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
-      username: data.username,
-      biodata: data.biodata,
-      gender: data.gender,
-      phoneNumber: data.phoneNumber?.toString(),
-      location: data.location,
-      currentImage: "",
-      pathCurrentImage: data?.pathCurrentImage || "",
-      socialLink: data.socialLink,
-      createdAt: data.createdAt,
-      updateAt: data.updateAt || "",
+      username: "",
+      biodata: "",
+      gender: "",
+      phoneNumber: "",
+      location: "",
+      picture: "",
+      socialLink: [],
     },
   });
 
-  // const [isEdit, setIsEdit] = useState({
-  //   open: false,
-  //   value: "",
-  // });
-
-  const onSubmit = (values: ProfileFormData) => {
-    console.log("Submit values:", values);
-    // di sini bisa panggil API untuk update user
-  };
+  const submit = handleSubmit(async (values: ProfileFormData) => {
+    console.log(values);
+  });
 
   useEffect(() => {
-    if (data) {
-      reset(data);
+    if (customizeData) {
+      reset({
+        username: customizeData[0]?.username ?? "",
+        biodata: customizeData[0]?.biodata ?? "",
+        gender: customizeData[0]?.gender ?? "",
+        phoneNumber: customizeData[0]?.phoneNumber ?? 0,
+        picture: customizeData[0]?.picture ?? "",
+        socialLink: customizeData[0]?.socialLink ?? [],
+        location: customizeData[0]?.location ?? "",
+      });
     }
-  }, [data, reset]);
+  }, [customizeData, reset]);
 
-  // const handleAction = useCallback((actionType: string) => {
-  //   switch (actionType) {
-  //     case "username":
-  //     case "biodata":
-  //     case "phoneNumber": {
-  //       // console.log(actionType);
-  //       setIsEdit((prev) => ({
-  //         open: prev.value === actionType ? false : true,
-  //         value: prev.value === actionType ? "" : actionType,
-  //       }));
-  //       break;
-  //     }
-  //   }
-  // }, []);
-
-  const updateData = Object.entries(watch()).map(([key, value]) => ({
+  // ? change data from array into object !!
+  const data = Object.entries(watch()).map(([key, value]) => ({
     key,
     value,
   }));
 
-  // console.log(updateData);
 
   return (
     <div className="w-full bg-black/80 text-gray-200 min-h-screen">
@@ -101,125 +74,40 @@ const ProfileCustomize = ({ data }: { data: any }) => {
           Profile Settings
         </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={submit}>
           <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col md:flex-row gap-8">
-            {/* <div className="w-full md:w-1/3 flex flex-col items-center">
-              <div className="w-full border border-white/10 rounded-lg overflow-hidden flex flex-col">
-                <div className="w-full h-[340px] relative bg-gray-800">
-                  {watch("pathCurrentImage") ? (
-                    <Image
-                      src={watch("pathCurrentImage") || ""}
-                      alt="Profile Picture"
-                      fill
-                      style={{ objectFit: "cover" }}
-                      className="rounded-t-lg"
-                      priority
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      No Image
-                    </div>
-                  )}
-                </div>
-
-                <label className="w-full p-3 text-sm text-black cursor-pointer bg-gray-50 hover:bg-gray-100 flex flex-col items-center justify-center">
-                  Change Photo
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setValue("currentImage", file.name, {
-                            shouldValidate: true,
-                          });
-                          setValue(
-                            "pathCurrentImage",
-                            reader.result as string,
-                            { shouldValidate: true }
-                          );
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div> */}
-
             <div className="w-full flex flex-col gap-4">
-              {Array.isArray(updateData) && updateData.length > 0
-                ? updateData.map(
-                    ({ key, value }: { key: string; value: any }) => (
-                      <div
-                        key={key}
-                        className="flex items-center gap-4 border-b border-white/10 pb-2 h-[80px]">
-                        <div className="flex items-center justify-between">
-                          <div className="w-6 h-6 text-gray-400 flex items-center justify-center">
-                            {key === "username" && <RiUserLine />}
-                            {key === "biodata" && <RiProfileLine />}
-                            {key === "phoneNumber" && <RiPhoneLine />}
-                            {key === "location" && <RiMapPinLine />}
-                            {(key === "currentImage" ||
-                              key === "pathCurrentImage") && <RiImageLine />}
-                          </div>
-                        </div>
-
-                        {/* Label & value */}
-                        <div className="flex flex-col w-full">
-                          {key === "socialLink" && Array.isArray(value) ? (
-                            value.map(
-                              (
-                                v: {
-                                  platform: string;
-                                  link: string;
-                                  icon: any;
-                                },
-                                idx
-                              ) => (
-                                <div
-                                  key={idx}
-                                  className="text-gray-300 text-sm">
-                                  <span className="font-medium">
-                                    {v.platform}
-                                  </span>
-                                  <span>{v.icon}</span>
-                                  <a
-                                    href={v.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline hover:text-blue-500">
-                                    {v.link}
-                                  </a>
-                                </div>
-                              )
-                            )
-                          ) : (
-                            <>
-                              <div className="w-full">
-                                <label className="block font-semibold mb-2">
-                                  {key}
-                                  <input
-                                    type="text"
-                                    defaultValue={value}
-                                    className="
-                  w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
-                  text-gray-200 placeholder-gray-500
-                  focus:outline-none focus:ring-2 focus:ring-blue-500
-                "
-                                  />
-                                </label>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  )
-                : null}
+              <>
+                {data.map(({ key, value }) => (
+                  <div
+                    key={key}
+                    className="flex items-center gap-4 border-b border-white/10 pb-2 h-auto">
+                    <div className="flex flex-col w-full h-auto">
+                      {key === "socialLink" && (
+                        <SocialLink value={value} register={register} setValue={setValue} watch={watch} />
+                      )}
+                      {[
+                        "username",
+                        "phoneNumber",
+                        "gender",
+                        "location",
+                      ].includes(key) && (
+                        <OtherLabel
+                          fieldKey={key}
+                          value={value}
+                          register={register}
+                        />
+                      )}
+                      {key === "picture" && (
+                        <Image setValue={setValue} register={register} />
+                      )}
+                      {key === "biodata" && (
+                        <Bio fieldKey={key} value={value} register={register}/>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </>
 
               {/* Submit button di bawah */}
               <div className="mt-6">
@@ -238,7 +126,3 @@ const ProfileCustomize = ({ data }: { data: any }) => {
 };
 
 export default ProfileCustomize;
-
-
-// todo BESOK KONDISIKAN INI LAGI !! BUAT MACAM REPORT PAGE !! PASTIKAN WARNA JANGAN BEDA JAUH !!! 
-// TODO DATA DUMMY KAU JUGA !! 

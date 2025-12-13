@@ -3,13 +3,14 @@
 import { createContext } from "react";
 
 // * ================ PROFILE ================
-const profileContext = createContext<any>(null);
+export const profileContext = createContext<any>(null);
 
 // * NAVBAR
-const creatorContext = createContext<any>(null)
+export const creatorContext = createContext<any>(null)
+export const customizeContext = createContext<any>(null)
+
 
 // * SIDEBAR
-const categoryContext = createContext<any>(null);
-const creatorsContext = createContext<any>(null);
+export const categoryContext = createContext<any>(null);
+export const creatorsContext = createContext<any>(null);
 
-export { profileContext, creatorContext, categoryContext, creatorsContext };

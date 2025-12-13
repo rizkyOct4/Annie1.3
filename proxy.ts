@@ -27,6 +27,7 @@ export const config = {
     `/creators/:path*`,
     // ? OPTION BAR ====
     `/notification/:path*`,
+    `/customize/:path*`,
   ],
 };
 

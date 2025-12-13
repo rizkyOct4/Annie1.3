@@ -14,6 +14,7 @@ const PublicPath = ({
     `/auth`,
     `/category`,
     `/notification`,
+    // `/customize`,
     `/creators`,
     "/_next/",
   ];
@@ -22,6 +23,11 @@ const PublicPath = ({
     publicPaths.some((path) => pathname.startsWith(path)) &&
     req.method === "GET"
   ) {
+    return NextResponse.next();
+  }
+
+  // ? when have role then let in.
+  if (role) {
     return NextResponse.next();
   }
 
