@@ -22,9 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased`}>
         <ToastContainer />
-        <QueryProvider>
-          <ProfileProvider>{children}</ProfileProvider>
-        </QueryProvider>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

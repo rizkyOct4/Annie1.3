@@ -7,6 +7,7 @@ import GetToken from "@/_lib/middleware/get-token";
 const page = async ({ params }: { params: Promise<{ type: string }> }) => {
   const pathUrl = (await params).type;
   const { queryClient, id } = await GetToken();
+  console.log(id)
 
   await SSRInfiniteQueryPr({
     queryKey: ["keyListFolderPhoto", id, pathUrl],

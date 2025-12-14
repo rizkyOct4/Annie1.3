@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 
 export default function LegalPage() {
   return (
-    <div className="w-full bg-black/80 text-gray-200">
+    <div className="w-full text-gray-200">
       {/* --- PAGE CONTAINER --- */}
       <div className="max-w-4xl mx-auto px-6 py-14">
 

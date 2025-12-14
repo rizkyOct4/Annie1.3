@@ -28,8 +28,7 @@ const Navbar = () => {
   return (
     <div
       className="fixed top-0 left-0 right-0 w-full h-[80px] z-101 bg-black/80
-                flex justify-between items-center px-8 border-b-white border-b-2"
-    >
+                flex justify-between items-center px-8 border-b-white border-b-2 backdrop-blur-sm">
       {/* Brand */}
       <div className="text-white font-semibold text-lg tracking-wide">
         Next Prototype
@@ -45,8 +44,7 @@ const Navbar = () => {
               onClick={() => router.push(i.link)}
               className="flex items-center gap-2 
                       px-4 py-2 rounded-md bg-white text-black 
-                    hover:bg-gray-200 transition hover:cursor-pointer"
-            >
+                    hover:bg-gray-200 transition hover:cursor-pointer">
               <span className="text-lg">{i.icon}</span>
               {i.name}
             </button>
@@ -58,8 +56,7 @@ const Navbar = () => {
             className="text-white flex justify-center items-center p-2 
                   rounded-md border border-white/20 bg-white/10 
                 hover:bg-white/20 transition hover:cursor-pointer"
-            onClick={() => handleAction("option")}
-          >
+            onClick={() => handleAction("option")}>
             {state ? (
               <AiOutlineFullscreenExit className="text-xl" />
             ) : (

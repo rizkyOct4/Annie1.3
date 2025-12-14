@@ -9,7 +9,7 @@ export const dynamic = "force-static";
 
 export default function ReportPage() {
   return (
-    <div className="w-full bg-black/80 text-gray-200">
+    <div className="w-full text-gray-200">
       <div className="max-w-3xl mx-auto px-6 py-14">
         <h1 className="text-4xl font-bold mb-10 tracking-tight">
           Report a Problem

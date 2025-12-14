@@ -86,20 +86,19 @@ const Sidebar = ({
   ];
 
   return (
-    <div className="w-full fixed top-[80px] h-screen z-100 flex">
+    <div className="w-full fixed top-[80px] h-screen z-100 flex ">
       <aside
         className="
           w-[80px] bg-black/80 backdrop-blur-sm 
           border-white/10
           flex flex-col items-center pt-6
-          overflow-y-auto 
-        "
-      >
+          overflow-y-auto
+          border-r-white border-r-2
+        ">
         {sidebarItems.map((item) => (
           <div
             key={item.key}
-            className="w-full flex flex-col items-center mb-4"
-          >
+            className="w-full flex flex-col items-center mb-4">
             {/* === ICON BUTTON === */}
             <button
               title={item.title}
@@ -112,8 +111,7 @@ const Sidebar = ({
                 mb-1
                 rounded-md bg-white/10 border border-white/10 text-white
                 hover:bg-white/20 hover:cursor-pointer transition group
-              "
-            >
+              ">
               {item.icon}
             </button>
 
@@ -125,8 +123,7 @@ const Sidebar = ({
                     type="button"
                     title={m.label}
                     onClick={() => router.push(m.to)}
-                    className="w-[40px] h-[40px] flex items-center justify-center rounded-md bg-white/10 border border-white/10 text-white hover:bg-white/20 transition relative"
-                  >
+                    className="w-[40px] h-[40px] flex items-center justify-center rounded-md bg-white/10 border border-white/10 text-white hover:bg-white/20 transition relative">
                     <span className="text-xl">{m.icon}</span>
                   </button>
                 ))}
@@ -136,7 +133,7 @@ const Sidebar = ({
         ))}
       </aside>
       {/* === MAIN CONTENT === */}
-      <main className="flex-1 px-6 pb-10 h-screen overflow-y-auto">
+      <main className="flex-1 pb-10 min-h-screen overflow-y-auto bg-black/80">
         {intercept}
         {children}
       </main>

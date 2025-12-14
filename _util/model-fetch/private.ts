@@ -1,11 +1,11 @@
-import { QueryClient } from "@tanstack/react-query";
+// import { QueryClient } from "@tanstack/react-query";
 import { cookies } from "next/headers";
 
-const NewQueryPath = async () => {
-  const queryClient = new QueryClient();
-  const cookieHeader = (await cookies()).toString();
-  return { queryClient, cookieHeader };
-};
+// const NewQueryPath = async () => {
+//   const queryClient = new QueryClient();
+//   const cookieHeader = (await cookies()).toString();
+//   return { queryClient, cookieHeader };
+// };
 
 // * ISG
 const ISGQueryPr = async ({
@@ -15,7 +15,7 @@ const ISGQueryPr = async ({
 }: {
   queryKey: any[];
   config: string;
-  queryClient: QueryClient;
+  queryClient: any;
 }) => {
   const cookieHeader = (await cookies()).toString();
   return await queryClient.prefetchQuery({
@@ -44,7 +44,7 @@ const SSRQueryPr = async ({
 }: {
   queryKey: any[];
   config: string;
-  queryClient: QueryClient;
+  queryClient: any;
 }) => {
   const cookieHeader = (await cookies()).toString();
 
@@ -54,6 +54,8 @@ const SSRQueryPr = async ({
       const URL = config;
       const res = await fetch(URL, {
         headers: { Cookie: cookieHeader },
+        // next: { revalidate: 60 * 5 },
+        // cache: "force-cache",
       });
       return res.json();
     },

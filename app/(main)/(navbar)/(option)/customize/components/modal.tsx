@@ -11,13 +11,22 @@ const ProfileSchema = z.object({
   username: z.string(),
   biodata: z.string().optional(),
   location: z.string().optional(),
-  socialLink: z.array(z.string()).optional(),
+  socialLink: z
+    .array(
+      z.object({
+        platform: z.string().optional(),
+        link: z.string().optional(),
+      })
+    )
+    .transform((links) => links.filter((s) => s.link.trim() !== ""))
+    .optional(),
   gender: z.string().optional(),
-  phoneNumber: z.string().max(8, "Max 8").optional(),
-  picture: z.string().optional(),
+  phoneNumber: z.string().max(12, "Max 12").optional(),
+  currentPicture: z.string().optional(),
+  picture: z.any().optional(),
 });
 
-type ProfileFormData = z.infer<typeof ProfileSchema>;
+export type ProfileFormData = z.infer<typeof ProfileSchema>;
 
 const ProfileCustomize = () => {
   const { customizeData } = useContext(customizeContext);
@@ -28,7 +37,7 @@ const ProfileCustomize = () => {
     setValue,
     watch,
     reset,
-    formState,
+    formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
@@ -37,10 +46,13 @@ const ProfileCustomize = () => {
       gender: "",
       phoneNumber: "",
       location: "",
+      currentPicture: "",
       picture: "",
-      socialLink: [],
+      socialLink: [{ platform: "", link: "" }],
     },
   });
+
+  // useEffect(() => console.log(errors), [errors]);
 
   const submit = handleSubmit(async (values: ProfileFormData) => {
     console.log(values);
@@ -52,7 +64,7 @@ const ProfileCustomize = () => {
         username: customizeData[0]?.username ?? "",
         biodata: customizeData[0]?.biodata ?? "",
         gender: customizeData[0]?.gender ?? "",
-        phoneNumber: customizeData[0]?.phoneNumber ?? 0,
+        phoneNumber: customizeData[0]?.phoneNumber ?? "",
         picture: customizeData[0]?.picture ?? "",
         socialLink: customizeData[0]?.socialLink ?? [],
         location: customizeData[0]?.location ?? "",
@@ -66,9 +78,8 @@ const ProfileCustomize = () => {
     value,
   }));
 
-
   return (
-    <div className="w-full bg-black/80 text-gray-200 min-h-screen">
+    <div className="w-full min-h-screen">
       <div className="max-w-4xl mx-auto px-6 py-14">
         <h1 className="text-4xl font-bold mb-10 tracking-tight">
           Profile Settings
@@ -77,39 +88,36 @@ const ProfileCustomize = () => {
         <form onSubmit={submit}>
           <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col md:flex-row gap-8">
             <div className="w-full flex flex-col gap-4">
-              <>
-                {data.map(({ key, value }) => (
-                  <div
-                    key={key}
-                    className="flex items-center gap-4 border-b border-white/10 pb-2 h-auto">
-                    <div className="flex flex-col w-full h-auto">
-                      {key === "socialLink" && (
-                        <SocialLink value={value} register={register} setValue={setValue} watch={watch} />
-                      )}
-                      {[
-                        "username",
-                        "phoneNumber",
-                        "gender",
-                        "location",
-                      ].includes(key) && (
-                        <OtherLabel
-                          fieldKey={key}
-                          value={value}
-                          register={register}
-                        />
-                      )}
-                      {key === "picture" && (
-                        <Image setValue={setValue} register={register} />
-                      )}
-                      {key === "biodata" && (
-                        <Bio fieldKey={key} value={value} register={register}/>
-                      )}
-                    </div>
+              {data.map(({ key, value }) => (
+                <div
+                  key={key}
+                  className="flex items-center gap-4 border-b border-white/10 pb-2 h-auto">
+                  <div className="flex flex-col w-full h-auto">
+                    {key === "socialLink" && (
+                      <SocialLink
+                        value={value}
+                        register={register}
+                        setValue={setValue}
+                      />
+                    )}
+                    {["username", "phoneNumber", "gender", "location"].includes(
+                      key
+                    ) && (
+                      <OtherLabel
+                        fieldKey={key}
+                        value={value}
+                        register={register}
+                      />
+                    )}
+                    {key === "picture" && (
+                      <Image setValue={setValue} register={register} />
+                    )}
+                    {key === "biodata" && (
+                      <Bio fieldKey={key} value={value} register={register} />
+                    )}
                   </div>
-                ))}
-              </>
-
-              {/* Submit button di bawah */}
+                </div>
+              ))}
               <div className="mt-6">
                 <button
                   type="submit"

@@ -10,7 +10,6 @@ import {
   FaYoutube,
   FaGlobe,
 } from "react-icons/fa";
-import { JSX } from "react";
 
 export const Image = ({
   setValue,
@@ -22,26 +21,27 @@ export const Image = ({
   return (
     <div className="w-full flex items-center justify-start gap-4">
       <RiImageLine size={28} />
-      <label className="p-2 rounded-md border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <label>
         <input
           type="file"
           accept="image/*"
-          {...register("picture")}
+          // {...register("picture")}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
               const reader = new FileReader();
               reader.onloadend = () => {
-                setValue("currentImage", file.name, {
+                setValue("currentPicture", file.name, {
                   shouldValidate: true,
                 });
-                setValue("pathCurrentImage", reader.result as string, {
+                setValue("picture", reader.result as string, {
                   shouldValidate: true,
                 });
               };
               reader.readAsDataURL(file);
             }
           }}
+          className="mt-1 p-2 rounded-md border border-white/20 bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </label>
     </div>
@@ -54,7 +54,9 @@ export const Bio = ({
   register,
 }: {
   fieldKey: string;
-  value: string | number | string[];
+  value:
+    | string
+    | { platform?: string | undefined; link?: string | undefined }[];
   register: any;
 }) => {
   return (
@@ -80,12 +82,10 @@ export const SocialLink = ({
   value,
   register,
   setValue,
-  watch,
 }: {
-  value: [{ platform: string; link: string; icon: JSX.Element }];
+  value: [{ platform?: string | undefined; link?: string | undefined }];
   register: any;
   setValue: any;
-  watch: any;
 }) => {
   const socialPlatforms = [
     {
@@ -125,44 +125,29 @@ export const SocialLink = ({
     },
   ];
 
-  const filter = Array.isArray(value) ? value.map((v) => v.platform) : [];
+  const updated = socialPlatforms.map((i) => {
+    const match = value?.find((v) => (v.platform === i.platform ? v.link : ""));
 
-  const updated = socialPlatforms.map((i) =>
-    filter.includes(i.platform)
-      ? {
-          ...i,
-          link: value.find((v) => v.platform === i.platform)?.link ?? i.link,
-        }
-      : i
-  );
+    return match ? { ...i, link: match } : i;
+  });
 
   return (
     <>
-      {updated.map((i) => (
+      {updated.map((s, idx) => (
         <div
-          key={i.platform}
-          className="
-      flex items-center gap-4
-      p-3
-      bg-black/30 hover:bg-black/40
-      transition-colors
-    ">
-          {/* Icon */}
-          <span className="text-xl flex-shrink-0">{i.icon}</span>
+          key={s.platform}
+          className="flex items-center gap-4 p-3 bg-black/30 hover:bg-black/40 transition-colors">
+          <span className="text-xl flex-shrink-0">{s.icon}</span>
 
-          {/* Platform & Link */}
           <div className="flex flex-col w-full">
             <input
               type="text"
-              defaultValue={i.link}
-              {...register("socialLink")}
-              onChange={(e) => {
-                const listData = watch("socialLink");
-
-                setValue("socialLink", [...listData, e.currentTarget.value], {
-                  shouldValidate: true,
-                });
-              }}
+              defaultValue={s.link}
+              {...register(`socialLink.${idx}.link`, {
+                onChange: () => {
+                  setValue(`socialLink.${idx}.platform`, s.platform);
+                },
+              })}
               className="
                   w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
                   text-gray-200 placeholder-gray-500
@@ -182,7 +167,9 @@ export const OtherLabel = ({
   register,
 }: {
   fieldKey: string;
-  value: string | number | string[];
+  value:
+    | string
+    | { platform?: string | undefined; link?: string | undefined }[];
   register: any;
 }) => {
   return (
@@ -203,8 +190,3 @@ export const OtherLabel = ({
     </div>
   );
 };
-
-
-// todo KONDISIKAN BESOK SAMA KAU INI LAGI !! MASIH ERROR !
-// TODO KASIH TRIGGER !! BUAT PLATFORMNYA APA + VALUE !!
-// TODO PROPERTYNYA LANGSUNG GANTI DI ZOD SCHEMA

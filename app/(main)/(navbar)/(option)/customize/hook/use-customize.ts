@@ -22,18 +22,19 @@ export const useCustomize = ({
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !!publicId && !!currentPath,
-    gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
+    enabled: !!currentPath && !!publicId,
+    gcTime: 1000 * 60 * 60,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false,
+    refetchOnReconnect: false,
     retry: false,
   });
 
   //   console.log(customizeData);
   const customizeData = useMemo(() => fetchData ?? [], [fetchData]);
 
-//   console.log(`customize data:`, customizeData);
+  //   console.log(`customize data:`, customizeData);
 
   return { customizeData };
 };
