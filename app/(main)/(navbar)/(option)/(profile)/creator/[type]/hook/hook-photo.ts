@@ -15,11 +15,11 @@ import type {
 } from "../../type/type";
 import axios from "axios";
 import { useParams, useSearchParams } from "next/navigation";
-import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/config";
+import { ROUTES_PROFILE } from "../config";
 import { usePost, usePut } from "./sub-crud";
-import { ROUTES_LIST_FOLDER } from "../../config/list-folder";
-import { ROUTES_ITEM_FOLDER } from "../../config/item-folder";
-import { ROUTES_CREATOR_PHOTO_PANEL } from "../../config/config-panel";
+import { ROUTES_LIST_FOLDER } from "../config/list-folder";
+import { ROUTES_ITEM_FOLDER } from "../config/item-folder";
+import { ROUTES_CREATOR_PHOTO_PANEL } from "../config/config-panel";
 import {
   TItemFolderPhoto,
   TListItemFolderPhoto,
@@ -36,17 +36,16 @@ const useListFolder = (id: string) => {
     isFetchingNextPage: IFNPListFolderPhoto,
   } = useInfiniteQuery({
     queryKey: ["keyListFolderPhoto", id, type],
-    // queryFn: async ({ pageParam = 1 }) => {
-    //   const { data } = await axios.get(
-    //     ROUTES_LIST_FOLDER.GET({
-    //       typeConfig: "listFolderPhoto",
-    //       path: type,
-    //       pageParam: pageParam,
-    //     }),
-    //   );
-    //   return data;
-    // },
-    queryFn: async () => undefined,
+    queryFn: async ({ pageParam = 1 }) => {
+      const { data } = await axios.get(
+        ROUTES_LIST_FOLDER.GET({
+          typeConfig: "listFolderPhoto",
+          path: type,
+          pageParam: pageParam,
+        })
+      );
+      return data;
+    },
     getNextPageParam: (lastPage, allPages) => {
       return lastPage?.hasMore ? allPages.length + 1 : undefined;
     },
@@ -86,12 +85,7 @@ const useListItemFolder = (id: string) => {
 
   // * List Item Folder
   const { data: listItemFolder } = useInfiniteQuery({
-    queryKey: [
-      "keyListItemFolder",
-      id,
-      stateContent.year,
-      stateContent.month,
-    ],
+    queryKey: ["keyListItemFolder", id, stateContent.year, stateContent.month],
     queryFn: async ({ pageParam = 1 }) => {
       const URL = ROUTES_ITEM_FOLDER.GET({
         typeConfig: "listItemFolderPhoto",

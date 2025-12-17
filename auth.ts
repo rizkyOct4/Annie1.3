@@ -8,7 +8,7 @@ import {
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
 } from "@/_lib/config";
-import { Register, CredentialsLogin } from "@/_lib/services/auth";
+import { OAuthRegister, CredentialsLogin } from "@/_lib/services/services-auth";
 import { AUTH_SECRET } from "@/_lib/config";
 
 export const {
@@ -98,9 +98,9 @@ export const {
         const lastName = splitName.slice(1).join(" ");
 
         const email = profile.email ?? "";
-        const profilePicture = profile.image ?? "";
+        const profilePicture = profile.picture;
 
-        const fetch = await Register({
+        const fetch = await OAuthRegister({
           firstName: firstName,
           lastName: lastName,
           email: email,
@@ -108,12 +108,12 @@ export const {
           picture: profilePicture,
         });
 
-        token.id = fetch.id;
+        token.id = fetch[0].id;
         token.email = profile.email;
         token.name = profile.name;
-        token.role = fetch?.role;
-        token.image = fetch.picture || profile.image;
-        token.createdAt = fetch?.createdAt ?? "";
+        token.role = fetch[0].role;
+        token.picture = fetch[0].picture || profile.picture;
+        token.createdAt = fetch[0].createdAt ?? "";
       }
 
       // console.log(`token sesion`, token);

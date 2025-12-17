@@ -13,7 +13,7 @@ const CustomizeContext: React.FC<CustomizeContextProps> = ({ children }) => {
   const id = getData?.id;
   const currentPath = "customize"
 
-  const a = useCustomize({ publicId: id, currentPath: currentPath });
+  const a = useCustomize({ id, currentPath });
   const value = {
     ...a,
   };

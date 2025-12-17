@@ -28,7 +28,7 @@ const PostingBtn = ({
           break;
         }
         case "toggle": {
-          setIsRender((prev) => ({
+          setIsRender((prev: { open: boolean; type: string }) => ({
             open: prev.open ? false : true,
             type: prev.type ? prev.type : "",
           }));
@@ -46,13 +46,11 @@ const PostingBtn = ({
           isRender.open
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-4 pointer-events-none"
-        }`}
-      >
+        }`}>
         <button
           onClick={() => handleAction("Ov", "video")}
           className="flex items-center gap-2 px-4 py-2 bg-black/80 text-white text-sm font-medium rounded-lg 
-             border border-gray-300 transition cursor-pointer"
-        >
+             border border-gray-300 transition cursor-pointer">
           <Video size={18} />
           Video
         </button>
@@ -60,8 +58,7 @@ const PostingBtn = ({
         <button
           onClick={() => handleAction("Op", "photo")}
           className="flex items-center gap-2 px-4 py-2 bg-black/80 text-white text-sm font-medium rounded-lg 
-             border border-gray-300 transition cursor-pointer"
-        >
+             border border-gray-300 transition cursor-pointer">
           <ImageIcon size={18} />
           Photo
         </button>
@@ -70,11 +67,10 @@ const PostingBtn = ({
       {/* MAIN FAB BUTTON */}
       <button
         onClick={() => handleAction("toggle", "")}
-        className={`w-[55px] h-[55px] rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 shadow-md
+        className={`w-13.75 h-13.75 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 shadow-md
       ${
         isRender.open ? "bg-red-600 rotate-45" : "bg-black/80 hover:bg-gray-800"
-      }`}
-      >
+      }`}>
         <Plus size={26} className="text-white" />
       </button>
     </div>

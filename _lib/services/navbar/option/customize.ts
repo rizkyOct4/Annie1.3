@@ -1,24 +1,16 @@
 import { prisma } from "@/_lib/db";
 import camelcaseKeys from "camelcase-keys";
 import type { TGetCustomize } from "./type-customize";
-import { cache } from "react";
 import sharp from "sharp";
 import cloudinary from "@/_lib/cloudinary";
-// ! ISG (STATIC)
-// ! Kesimpulan: cache() opsional, bisa digunakan kalau ada banyak Server Component yang memanggil fungsi data yang sama saat build.
+import { cacheLife, cacheTag } from "next/cache";
 
-// Dynamic (SSR)
-// 🔹 Ciri halaman
+export const GetCustomize = async ({ id }: { id: string }) => {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("customize-profile", id);
 
-// Dibangun di setiap request
-
-// Bisa menampilkan konten per user
-
-// Data bisa fresh, real-time
-
-export const GetCustomize = cache(
-  async ({ publicId }: { publicId: string }) => {
-    const query = await prisma.$queryRaw<TGetCustomize[]>`
+  const query = await prisma.$queryRaw<TGetCustomize[]>`
         SELECT
           ud.username,
           ud.biodata,
@@ -28,26 +20,27 @@ export const GetCustomize = cache(
           ud.picture,
           ud.social_link
         FROM users u
-        LEFT JOIN users_description ud ON (ud.tar_iu = u.iu)
-        WHERE u.public_id = ${publicId}::uuid
+        LEFT JOIN users_description ud ON (ud.ref_id = u.id)
+        WHERE u.id = ${id}::uuid
     `;
-    return camelcaseKeys(query);
-  }
-);
+  return camelcaseKeys(query);
+};
 
 // ? POST CLOUD
 export const PostCloudinary = async ({
   pictureWebp,
-  pictureBase,
-  publicId,
+  picture,
+  id,
+  username,
 }: {
   pictureWebp: string;
-  pictureBase: string;
-  publicId: string;
+  picture: string;
+  id: string;
+  username: string;
 }) => {
   // ? Check Cloudinary
   // --- 1. Decode base64 jadi buffer ---
-  const [header, base64Data] = pictureBase.split(",", 2);
+  const [header, base64Data] = picture.split(",", 2);
   const imageBuffer = Buffer.from(base64Data, "base64");
 
   // --- 2. Resize + convert ke WEBP pakai sharp ---
@@ -61,7 +54,7 @@ export const PostCloudinary = async ({
     cloudinary.uploader
       .upload_stream(
         {
-          folder: `users picture/${publicId}/`,
+          folder: `users profile/${username}/`,
           user_picture: pictureWebp, // hapus ekstensi lama
           resource_type: "image",
           format: "webp",
@@ -77,7 +70,7 @@ export const PostCloudinary = async ({
 };
 
 export const PostCustomize = async ({
-  publicId,
+  id,
   biodata,
   gender,
   location,
@@ -86,41 +79,35 @@ export const PostCustomize = async ({
   socialLink,
   urlCloud,
 }: {
-  publicId: string;
+  id: string;
   biodata?: string;
   gender?: string;
   location?: string;
-  phoneNumber?: number;
+  phoneNumber?: string;
   username?: string;
   socialLink?: Array<{ platform: string; link: string }[]>;
   urlCloud?: string;
 }) => {
   return prisma.$transaction(async (tx) => {
-    const iu = await prisma.$queryRaw`
-        SELECT iu FROM users WHERE public_id = ${publicId}::uuid
-      `;
     // ! DELETE
-    await tx.$queryRaw`
-          DELETE FROM users_description WHERE tar_iu = ${iu}
+    await tx.$executeRaw`
+          DELETE FROM users_description WHERE ref_id = ${id}::uuid
         `;
-
     // * INSERT
-    await tx.$queryRaw`
-          INSERT INTO users_desciption (tar_iu, username, biodata, gender, phone_number, location, picture, social_link)
-          VALUES (${iu}, ${username},${biodata},${gender}::user_gender,${phoneNumber},${location},${urlCloud},${socialLink})
+    await tx.$executeRaw`
+          INSERT INTO users_description (ref_id, username, biodata, gender, phone_number, location, picture, social_link, updated_at)
+          VALUES (${id}::uuid, ${username},${biodata},${gender}::user_gender,${phoneNumber},${location},${urlCloud},${JSON.stringify(
+      socialLink
+    )}::jsonb,  ${new Date()})
           `;
   });
 };
 
-export const PostReturn = async ({ publicId }: { publicId: string }) => {
-  const iu = await prisma.$queryRaw`
-        SELECT iu FROM users WHERE public_id = ${publicId}::uuid
-      `;
-
+export const PostReturn = async ({ id }: { id: string }) => {
   const result = await prisma.$queryRaw<TGetCustomize[]>`
     SELECT username, biodata, gender, phone_number, location, picture, social_link
     FROM users_description
-    WHERE tar_iu = ${iu}
+    WHERE ref_id = ${id}::uuid
   `;
 
   return camelcaseKeys(result);

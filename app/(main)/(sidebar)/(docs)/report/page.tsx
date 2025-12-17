@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
+// import { Widget } from "./widget";
 
 export const metadata: Metadata = {
   title: "Report",
   description: "Report",
 };
 
-export const dynamic = "force-static";
+// export const dynamic = "force-static";
 
-export default function ReportPage() {
+const ReportPage = async () => {
+  "use cache";
+
   return (
     <div className="w-full text-gray-200">
       <div className="max-w-3xl mx-auto px-6 py-14">
         <h1 className="text-4xl font-bold mb-10 tracking-tight">
           Report a Problem
         </h1>
+        {/* <Widget /> */}
 
         <div className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-8">
           <p className="text-gray-300 leading-relaxed">
@@ -31,8 +35,7 @@ export default function ReportPage() {
                 className="
                   w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
                   text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500
-                "
-              >
+                ">
                 <option className="text-gray-900">Content Violation</option>
                 <option className="text-gray-900">User Misconduct</option>
                 <option className="text-gray-900">Copyright Issue</option>
@@ -69,8 +72,7 @@ export default function ReportPage() {
                   w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 
                   text-gray-200 placeholder-gray-500
                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                "
-              ></textarea>
+                "></textarea>
             </div>
 
             {/* SUBMIT BUTTON */}
@@ -81,8 +83,7 @@ export default function ReportPage() {
                 bg-blue-600 text-white 
                 hover:bg-blue-700 transition 
                 border border-white/10
-              "
-            >
+              ">
               Submit Report
             </button>
           </form>
@@ -112,4 +113,6 @@ export default function ReportPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ReportPage;

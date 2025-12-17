@@ -1,4 +1,3 @@
-import { BASE_URL } from "@/_lib/config";
 
 export const ROUTES_LIST_FOLDER = {
   GET: ({
@@ -13,7 +12,7 @@ export const ROUTES_LIST_FOLDER = {
     const limit = 4;
     switch (typeConfig) {
       case "listFolderPhoto": {
-        return `${BASE_URL}/creator/${path}/api-list?section=${pageParam}&limit=${limit}`;
+        return `/creator/${path}/api-list?section=${pageParam}&limit=${limit}`;
       }
       default:
         return "";

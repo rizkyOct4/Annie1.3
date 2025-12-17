@@ -22,11 +22,16 @@ export function InvalidCharRegex() {
 export function InvalidCharRegexEmail() {
   return /[^a-zA-Z0-9.@]/g; // ? karakter yang tidak valid
 }
-export function CapitalizeRegex() {
-  const capitalStartRegex = /^[A-Z][a-zA-Z0-9_]*$/;
-  return capitalStartRegex; // ? huruf pertama kapital, diikuti huruf kecil, angka, atau underscore
-}
+// export function CapitalizeRegex() {
+//   const capitalStartRegex = /^[A-Z][a-zA-Z0-9_]*$/;
+//   return capitalStartRegex; // ? huruf pertama kapital, diikuti huruf kecil, angka, atau underscore
+// }
 
+export function CapitalizeRegex() {
+  // Kosong atau huruf pertama kapital diikuti huruf kecil, angka, atau underscore
+  const capitalStartRegex = /^$|^[A-Z][a-zA-Z0-9_]*$/;
+  return capitalStartRegex;
+}
 // ? .match() => method milik string, bukan objek RegExp.
 export function ForbiddenRegex() {
   const forbiddenCharsRegex = /[*/,.<>;:'"|=+()[\]{}?!&^%$#@]/g; // ? g => global(mengambil keseluruhan string)

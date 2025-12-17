@@ -7,11 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Image, Bio, SocialLink, OtherLabel } from "./label";
 import { customizeContext } from "@/app/context";
 import { ProfileSchema } from "../z-schema";
+import { showToast } from "@/_util/Toast";
 
 export type ProfileFormData = z.infer<typeof ProfileSchema>;
 
 const ProfileCustomize = () => {
-  const { customizeData } = useContext(customizeContext);
+  const { customizeData, postCustomize } = useContext(customizeContext);
 
   const {
     register,
@@ -31,17 +32,21 @@ const ProfileCustomize = () => {
       picture: customizeData[0]?.picture,
       socialLink: customizeData[0]?.socialLink ?? [{ platform: "", link: "" }],
       location: customizeData[0]?.location,
-      // socialLink:,
     },
   });
 
   // useEffect(() => console.log(errors), [errors]);
 
   const submit = handleSubmit(async (values: ProfileFormData) => {
-    console.log({
-      ...values,
-      phoneNumber: Number(values.phoneNumber),
-    });
+    // const PostValue = {
+    //   ...values,
+    //   phoneNumber: Number(values.phoneNumber),
+    // };
+    showToast({ type: "loading", fallback: true });
+    await postCustomize(values);
+    showToast({ type: "success", fallback: "Success..." });
+    // console.log(values);
+    showToast({ type: "loading", fallback: false });
   });
 
   useEffect(() => {

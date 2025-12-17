@@ -84,7 +84,7 @@ const Options = ({
           break;
         case "confirmLogout":
           try {
-            await signOut({ redirect: false });
+            await signOut({ redirectTo: "/homepage" });
             setData(null);
             setState(false);
             showToast({ type: "success", fallback: "Logout Success" });

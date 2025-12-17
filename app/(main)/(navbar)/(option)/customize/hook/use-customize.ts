@@ -13,14 +13,14 @@ import { TCustomizeData } from "../schema/schema-customize";
 import { useCustomizePost } from "./sub-customize";
 
 export const useCustomize = ({
-  publicId,
+  id,
   currentPath,
 }: {
-  publicId: string;
+  id: string;
   currentPath: string;
 }) => {
-  const { data: fetchData } = useQuery({
-    queryKey: ["keyCustomize", publicId],
+  const { data: fetchData, refetch } = useQuery({
+    queryKey: ["keyCustomize", id],
     queryFn: async () => {
       const URL = CONFIG_CUSTOMIZE.GET({
         typeConfig: "CSRgetCustomize",
@@ -29,7 +29,7 @@ export const useCustomize = ({
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !!currentPath && !!publicId,
+    enabled: !!currentPath && !!id,
     gcTime: 1000 * 60 * 60,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
@@ -39,7 +39,7 @@ export const useCustomize = ({
   });
 
   const { postCustomize } = useCustomizePost({
-    queryKey: ["keyCustomize", publicId],
+    queryKey: ["keyCustomize", id],
   });
 
   // ? RESULT DATA

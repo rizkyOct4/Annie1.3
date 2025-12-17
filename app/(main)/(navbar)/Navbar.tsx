@@ -27,7 +27,7 @@ const Navbar = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 w-full h-[80px] z-101 bg-black/80
+      className="fixed top-0 left-0 right-0 w-full h-20 z-101 bg-black/80
                 flex justify-between items-center px-8 border-b-white border-b-2 backdrop-blur-sm">
       {/* Brand */}
       <div className="text-white font-semibold text-lg tracking-wide">

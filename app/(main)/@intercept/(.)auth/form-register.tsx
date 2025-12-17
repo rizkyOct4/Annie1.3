@@ -20,12 +20,11 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
   const submit = handleSubmit(async (values) => {
     try {
       const URL = CONFIG_AUTH("register");
-      const { data } = await axios.post(URL, {
-        ...values,
-      });
+      const { data } = await axios.post(URL, values);
       showToast({ type: "success", fallback: data.message });
       console.log(data.message);
       setState(true);
+      // console.log(values);
       // reset();
     } catch (error) {
       console.error(error);
@@ -36,8 +35,7 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
   return (
     <div
       className="bg-black/80 backdrop-blur-sm text-white w-[600px] h-auto p-8
-                rounded-xl border border-white/10 shadow-xl"
-    >
+              rounded-xl border border-white/10 shadow-xl">
       {/* Header */}
       <div className="flex justify-between items-start mb-6 w-full">
         <div className="w-[70%]">
@@ -50,8 +48,7 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
         <button
           type="button"
           className="text-blue-400 hover:text-blue-300 transition font-medium"
-          onClick={() => setState(true)}
-        >
+          onClick={() => setState(true)}>
           Already have account
         </button>
       </div>
@@ -59,52 +56,55 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
       {/* Form */}
       <form onSubmit={submit}>
         <div className="flex flex-col gap-6">
-          {/* First Name */}
-          <div className="flex flex-col gap-2">
-            <span className="flex items-center gap-2">
-              <label htmlFor="firstName" className="text-sm text-gray-300">
-                First Name
-              </label>
-              {formState.errors.firstName && (
-                <p className="text-red-500 text-xs">
-                  {formState.errors.firstName.message}
-                </p>
-              )}
-            </span>
-            <input
-              id="firstName"
-              type="text"
-              placeholder="John"
-              className="rounded-md border border-white/20 bg-white/10 
-                     focus:bg-white/20 p-2 text-white outline-none 
-                     focus:ring-2 focus:ring-blue-500 transition"
-              required
-              {...register("firstName")}
-            />
-          </div>
+          {/* First Name & Last Name */}
+          <div className="flex gap-4">
+            {/* First Name */}
+            <div className="flex-1 flex flex-col gap-2">
+              <span className="flex items-center gap-2">
+                <label htmlFor="firstName" className="text-sm text-gray-300">
+                  First Name
+                </label>
+                {formState.errors.firstName && (
+                  <p className="text-red-500 text-xs">
+                    {formState.errors.firstName.message}
+                  </p>
+                )}
+              </span>
+              <input
+                id="firstName"
+                type="text"
+                placeholder="John"
+                className="rounded-md border border-white/20 bg-white/10 
+                       focus:bg-white/20 p-2 text-white outline-none 
+                       focus:ring-2 focus:ring-blue-500 transition"
+                required
+                {...register("firstName")}
+              />
+            </div>
 
-          {/* Last Name */}
-          <div className="flex flex-col gap-2">
-            <span className="flex items-center gap-2">
-              <label htmlFor="lastName" className="text-sm text-gray-300">
-                Last Name
-              </label>
-              {formState.errors.lastName && (
-                <p className="text-red-500 text-xs">
-                  {formState.errors.lastName.message}
-                </p>
-              )}
-            </span>
-            <input
-              id="lastName"
-              type="text"
-              placeholder="Doe"
-              className="rounded-md border border-white/20 bg-white/10 
-                    focus:bg-white/20 p-2 text-white outline-none 
+            {/* Last Name */}
+            <div className="flex-1 flex flex-col gap-2">
+              <span className="flex items-center gap-2">
+                <label htmlFor="lastName" className="text-sm text-gray-300">
+                  Last Name
+                </label>
+                {formState.errors.lastName && (
+                  <p className="text-red-500 text-xs">
+                    {formState.errors.lastName.message}
+                  </p>
+                )}
+              </span>
+              <input
+                id="lastName"
+                type="text"
+                placeholder="Doe"
+                className="rounded-md border border-white/20 bg-white/10 
+                      focus:bg-white/20 p-2 text-white outline-none 
                       focus:ring-2 focus:ring-blue-500 transition"
-              required
-              {...register("lastName")}
-            />
+                required
+                {...register("lastName")}
+              />
+            </div>
           </div>
 
           {/* Email */}
@@ -155,31 +155,51 @@ const Register = ({ setState }: { setState: (state: boolean) => void }) => {
             />
           </div>
 
-          {/* Role */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="role" className="text-sm text-gray-300">
-              Role
-            </label>
-            <select
-              id="role"
-              className="rounded-md border border-white/20 bg-white/10 p-2 text-white 
-                     outline-none focus:ring-2 focus:ring-blue-500 transition"
-              defaultValue="guest"
-            >
-              <option value="creator" className="bg-black text-white">
-                Creator
-              </option>
-            </select>
+          {/* Role & Gender */}
+          <div className="flex gap-4">
+            {/* Role */}
+            <div className="flex-1 flex flex-col gap-2">
+              <label htmlFor="role" className="text-sm text-gray-300">
+                Role
+              </label>
+              <select
+                id="role"
+                className="rounded-md border border-white/20 bg-white/10 p-2 text-white 
+                       outline-none focus:ring-2 focus:ring-blue-500 transition"
+                defaultValue="creator"
+                {...register("role")}>
+                <option value="creator" className="bg-black text-white">
+                  Creator
+                </option>
+              </select>
+            </div>
+
+            {/* Gender */}
+            <div className="flex-1 flex flex-col gap-2">
+              <label htmlFor="gender" className="text-sm text-gray-300">
+                Gender
+              </label>
+              <select
+                id="gender"
+                className="rounded-md border border-white/20 bg-white/10 p-2 text-white 
+                outline-none focus:ring-2 focus:ring-blue-500 transition"
+                {...register("gender")}>
+                <option value="male" className="bg-black text-white">
+                  Male
+                </option>
+                <option value="female" className="bg-black text-white">
+                  Female
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Buttons */}
         <div className="flex w-full gap-3 mt-6">
-          {/* Register */}
           <button
             className="w-full p-2 bg-white text-black font-medium 
-                   rounded-md shadow hover:bg-gray-200 transition"
-          >
+                   rounded-md shadow hover:bg-gray-200 transition">
             Register
           </button>
         </div>

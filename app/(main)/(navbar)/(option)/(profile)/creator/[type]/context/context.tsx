@@ -2,7 +2,7 @@
 
 import { creatorContext } from "@/app/context";
 import { profileContext } from "@/app/context";
-import { useListFolder, useListItemFolder, useItemDescription, useItemFolder, useCreatorButton } from "./hook/hook-photo";
+import { useListFolder, useListItemFolder, useItemDescription, useItemFolder, useCreatorButton } from "../hook/hook-photo";
 import { ReactNode, useContext } from "react";
 // import { useCreatorVideo } from "./hook/hook-video";
 

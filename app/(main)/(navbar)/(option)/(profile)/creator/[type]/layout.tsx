@@ -13,7 +13,7 @@ const layout = ({
 }) => {
   return (
     <CreatorContext>
-      <main className="w-full">
+      <main className="w-full p-4">
         {intercept}
         <section>{dashboard}</section>
         <section className="flex w-full h-auto">

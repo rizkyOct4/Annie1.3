@@ -18,7 +18,7 @@ const page = async () => {
 
   await queryClient.prefetchQuery({
     queryKey: ["keyCustomize", id],
-    queryFn: () => GetCustomize({ publicId: id }),
+    queryFn: () => GetCustomize({ id }),
   });
 
   return (
@@ -35,3 +35,5 @@ export default page;
 // ! SSR -> NO CACHE SERVER, JUST KEEP FETCHING EVERY USERS IN OUT !!
 // ! DEHYDRATE -> LITERALLY JUST SENDING DATA INTO CLIENT(BROWSER) !! THATS IT
 // ! PARENT PAGE KAU ! COBA BESOK FETCH TEMBAK LANGSUNG KE DB !!
+
+// todo "use cache" -> defaultnya -> semua jadi dinamic route !!

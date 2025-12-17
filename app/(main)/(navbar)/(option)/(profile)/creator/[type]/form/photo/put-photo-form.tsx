@@ -221,7 +221,7 @@ const PutPhotoForm = ({
               {/* Categories */}
               <label className="flex flex-col text-sm text-black gap-2">
                 Category
-                <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                <div className="flex flex-wrap gap-2 max-h-50 overflow-y-auto">
                   {categories.map((i) => {
                     const selected = getValues("category").includes(i.name);
                     return (

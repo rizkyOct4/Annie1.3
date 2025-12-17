@@ -6,11 +6,12 @@ import {
   PostCustomize,
   PostReturn,
 } from "@/_lib/services/navbar/option/customize";
+import { revalidateTag } from "next/cache";
 
 export async function GET(req: NextRequest) {
   try {
     const { id } = await GetToken();
-    const result = await GetCustomize({ publicId: id });
+    const result = await GetCustomize({ id });
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });
@@ -35,13 +36,14 @@ export async function POST(req: NextRequest) {
     const pictureWebp = currentPicture.replace(".jpg", ".webp");
 
     const urlCloud = await PostCloudinary({
-      pictureWebp: pictureWebp,
-      pictureBase: picture,
-      publicId: id,
+      pictureWebp,
+      picture,
+      id,
+      username
     });
 
     await PostCustomize({
-      publicId: id,
+      id,
       biodata,
       gender,
       location,
@@ -51,8 +53,9 @@ export async function POST(req: NextRequest) {
       urlCloud,
     });
 
-    const returnDb = await PostReturn({ publicId: id });
+    const returnDb = await PostReturn({ id });
 
+    revalidateTag("customize-profile", "max");
     return NextResponse.json({ success: true, returnDb });
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });

@@ -8,13 +8,12 @@ datasource db {
 }
 
 model users {
-  iu                                                                                     Int                               @id
+  id                                                                                     String?                           @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   first_name                                                                             String                            @db.VarChar(50)
   last_name                                                                              String                            @db.VarChar(50)
   email                                                                                  String                            @unique @db.VarChar(255)
   password                                                                               String?                           @db.VarChar(255)
-  role                                                                                   user_role?                        @default(guest)
-  public_id                                                                              String?                           @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role                                                                                   user_role?                        @default(creator)
   created_at                                                                             DateTime?                         @default(now()) @db.Timestamp(6)
   users_description                                                                      users_description?
   users_product                                                                          users_product[]
@@ -30,119 +29,119 @@ model users {
 }
 
 model users_description {
-  tar_iu         Int          @unique
+  ref_id         String       @unique @db.Uuid
   username       String       @db.VarChar(50)
   biodata        String?      
-  gender         user_gender? @default(alien)
-  phone_number   Int?         
+  gender         user_gender? @default(anonymous)
+  phone_number   String?         
   location       String?      
   picture        String?      
   social_link    Json?        @default("[]")
-  update_at      DateTime?    @default(now()) @db.Timestamp(6)
-  users          users        @relation(fields: [tar_iu], references: [iu], onDelete: Cascade)
+  updated_at     DateTime?    
+  users          users        @relation(fields: [ref_id], references: [id], onDelete: Cascade)
 }
 
 model users_followers {
-  tar_iu_sender     Int           
-  tar_iu_receiver   Int           
-  iu_follower       Int           @id
+  ref_id_sender     String        @db.Uuid   
+  ref_id_receiver   String        @db.Uuid
+  id_follower       Int           @id
   created_at        DateTime?     @default(now()) @db.Timestamp(6)
-  users_sender      users         @relation("users_sender", fields: [tar_iu_sender], references: [iu], onDelete: Cascade)
-  users_receiver    users         @relation("users_receiver", fields: [tar_iu_receiver], references: [iu], onDelete: Cascade)
+  users_sender      users         @relation("users_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)
+  users_receiver    users         @relation("users_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)
 
-  @@unique([tar_iu_sender, tar_iu_receiver])
+  @@unique([ref_id_sender, ref_id_receiver])
 }
 
 model users_product {
-  tar_iu                       Int
-  iu_product                   Int                            @id
+  ref_id                       String                         @unique @db.Uuid
+  id_product                   Int                            @unique
   type                         type_product?
   folder_name                  String                         @db.VarChar(255)
   status                       Boolean?                       @default(true)
   created_at                   DateTime?                      @default(now()) @db.Timestamp(6)
-  users                        users                          @relation(fields: [tar_iu], references: [iu], onDelete: Cascade)
+  users                        users                          @relation(fields: [ref_id], references: [id], onDelete: Cascade)
   users_product_image          users_product_image?
   users_product_video          users_product_video?
   users_product_image_bookmark users_product_image_bookmark[]
   users_product_image_vote     users_product_image_vote[]
 
-  @@index([tar_iu], name: "idx_tar_iu")
+  @@index([ref_id], name: "idx_ref_id")
   @@index([created_at], name: "idx_created_at")
   @@index([type], name: "idx_type")
   @@index([folder_name], name: "idx_folder_name")
-  @@index([tar_iu, created_at], name: "idx_tar_iu_created_at")
+  @@index([ref_id, created_at], name: "idx_ref_id_created_at")
 }
 
 model users_product_image {
-  tar_iu_product Int           @unique
+  ref_id_product Int           @unique
   description    String        @db.VarChar(255)
   image_name     String        @db.VarChar(255)
   url            String        @db.VarChar(255)
-  hashtag        String[]      @db.VarChar(255)
-  category       String[]      @db.VarChar(255)
-  users_product  users_product @relation(fields: [tar_iu_product], references: [iu_product], onDelete: Cascade)
+  hashtag        String[]      @default([])
+  category       String[]      @default([])
+  users_product  users_product @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
 }
 
 model users_product_image_bookmark {
-  tar_iu_user    Int
-  tar_iu_product Int
-  iu_bookmark    Int           @id
+  ref_id_user    String        @db.Uuid
+  ref_id_product Int          
+  id_bookmark    Int           @unique
   status         Boolean?      @default(false)
-  users_product  users_product @relation(fields: [tar_iu_product], references: [iu_product], onDelete: Cascade)
-  users          users         @relation(fields: [tar_iu_user], references: [iu], onDelete: Cascade)
+  users          users         @relation(fields: [ref_id_user], references: [id], onDelete: Cascade)
+  users_product  users_product @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
 }
 
 model users_product_image_comment {
-  tar_iu_sender                                            Int
-  tar_iu_receiver                                          Int
-  iu_comment                                               Int                               @id
+  ref_id_sender                                            String                             @db.Uuid
+  ref_id_receiver                                          String                              @db.Uuid
+  id_image_comment                                         Int                               @id
   text                                                     String
   created_at                                               DateTime?                         @default(now()) @db.Timestamp(6)
-  users_users_product_image_comment_tar_iu_receiverTousers users                             @relation("users_product_image_comment_tar_iu_receiverTousers", fields: [tar_iu_receiver], references: [iu], onDelete: Cascade)
-  users_users_product_image_comment_tar_iu_senderTousers   users                             @relation("users_product_image_comment_tar_iu_senderTousers", fields: [tar_iu_sender], references: [iu], onDelete: Cascade)
+  users_users_product_image_comment_tar_iu_receiverTousers users                             @relation("users_product_image_comment_tar_iu_receiverTousers", fields: [ref_id_receiver], references: [id], onDelete: Cascade)
+  users_users_product_image_comment_tar_iu_senderTousers   users                             @relation("users_product_image_comment_tar_iu_senderTousers", fields: [ref_id_sender], references: [id], onDelete: Cascade)
   users_product_image_sub_comment                          users_product_image_sub_comment[]
 }
 
 model users_product_image_sub_comment {
-  tar_iu_comment                                               Int
-  tar_iu_sender                                                Int
-  tar_iu_receiver                                              Int
-  iu_sub_comment                                               Int                         @id
+  ref_id_comment                                               Int
+  ref_id_sender                                                String     @db.Uuid
+  ref_id_receiver                                              String     @db.Uuid
+  id_sub_image_comment                                         Int                         @id
   text                                                         String
   created_at                                                   DateTime?                   @default(now()) @db.Timestamp(6)
-  users_product_image_comment                                  users_product_image_comment @relation(fields: [tar_iu_comment], references: [iu_comment], onDelete: Cascade)
-  users_users_product_image_sub_comment_tar_iu_receiverTousers users                       @relation("users_product_image_sub_comment_tar_iu_receiverTousers", fields: [tar_iu_receiver], references: [iu], onDelete: Cascade)
-  users_users_product_image_sub_comment_tar_iu_senderTousers   users                       @relation("users_product_image_sub_comment_tar_iu_senderTousers", fields: [tar_iu_sender], references: [iu], onDelete: Cascade)
+  users_product_image_comment                                  users_product_image_comment @relation(fields: [ref_id_comment], references: [id_image_comment], onDelete: Cascade)
+  users_users_product_image_sub_comment_tar_iu_receiverTousers users                       @relation("users_product_image_sub_comment_tar_iu_receiverTousers", fields: [ref_id_receiver], references: [id], onDelete: Cascade)
+  users_users_product_image_sub_comment_tar_iu_senderTousers   users                       @relation("users_product_image_sub_comment_tar_iu_senderTousers", fields: [ref_id_sender], references: [id], onDelete: Cascade)
 }
 
 model users_product_image_vote {
-  tar_iu_sender                                         Int
-  tar_iu_receiver                                       Int
-  tar_iu_product                                        Int
-  iu_vote                                               Int           @id
+  ref_id_sender                                         String      @db.Uuid
+  ref_id_receiver                                       String      @db.Uuid
+  ref_id_product                                        Int
+  id_vote                                               Int           @id
   like                                                  Int           @default(0)
   dislike                                               Int           @default(0)
   status                                                Boolean?      @default(false)
   created_at                                            DateTime?     @default(now()) @db.Timestamp(6)
-  users_product                                         users_product @relation(fields: [tar_iu_product], references: [iu_product], onDelete: Cascade)
-  users_users_product_image_vote_tar_iu_receiverTousers users         @relation("users_product_image_vote_tar_iu_receiverTousers", fields: [tar_iu_receiver], references: [iu], onDelete: Cascade)
-  users_users_product_image_vote_tar_iu_senderTousers   users         @relation("users_product_image_vote_tar_iu_senderTousers", fields: [tar_iu_sender], references: [iu], onDelete: Cascade)
+  users_product                                         users_product @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
+  users_users_product_image_vote_tar_iu_receiverTousers users         @relation("users_product_image_vote_tar_iu_receiverTousers", fields: [ref_id_receiver], references: [id], onDelete: Cascade)
+  users_users_product_image_vote_tar_iu_senderTousers   users         @relation("users_product_image_vote_tar_iu_senderTousers", fields: [ref_id_sender], references: [id], onDelete: Cascade)
 }
 
 
 model users_product_video {
-  tar_iu_product  Int             @unique
+  ref_id_product  Int             @unique
   description     String          @db.VarChar(255)
   video_name      String          @db.VarChar(255)
   url             String          @db.VarChar(255)
   thumbnail_url   String          @db.VarChar(255)
   duration        Int            
-  hashtag         String[]        @db.VarChar(255)
-  category        String[]        @db.VarChar(255)
+  hashtag         String[]        @default([])
+  category        String[]        @default([])
 
-  users_product   users_product   @relation(fields: [tar_iu_product], references: [iu_product], onDelete: Cascade)
+  users_product   users_product   @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
 
-  @@unique([tar_iu_product, video_name])
+  @@unique([ref_id_product, video_name])
 }
 
 enum type_product {
@@ -153,11 +152,10 @@ enum type_product {
 enum user_gender {
   male
   female
-  alien
+  anonymous
 }
 
 enum user_role {
   admin
   creator
-  guest
 }

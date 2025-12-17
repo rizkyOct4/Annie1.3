@@ -1,16 +1,21 @@
 import { prisma } from "@/_lib/db";
+import { cacheLife, cacheTag } from "next/cache";
 
 export const ListFolderPhoto = async ({
-  publicId,
+  id,
   pathUrl,
   limit,
   offset,
 }: {
-  publicId: string;
+  id: string;
   pathUrl: string;
   limit: number;
   offset: number;
 }) => {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("customize-profile", id);
+  
   const data = await prisma.$queryRaw`
         SELECT
             y.year::int,
@@ -34,8 +39,8 @@ export const ListFolderPhoto = async ({
                 up.folder_name,
                 COUNT(up.folder_name)::int AS item_count
             FROM users_product up
-            JOIN users u ON (up.tar_iu = u.iu)
-            WHERE u.public_id = ${publicId}::uuid AND up.type = ${pathUrl}::type_product
+            JOIN users u ON (up.ref_id = u.id)
+            WHERE u.id = ${id}::uuid AND up.type = ${pathUrl}::type_product
             GROUP BY year, month, folder_name
         ) AS up ON up.year = y.year AND up.month = m.month
         GROUP BY y.year, m.month
@@ -46,8 +51,8 @@ export const ListFolderPhoto = async ({
         SELECT
             EXTRACT(YEAR FROM up.created_at)::int AS year
         FROM users_product up
-        JOIN users u ON (u.iu = up.tar_iu)
-        WHERE u.public_id = ${publicId}::uuid AND up.type = ${pathUrl}::type_product
+        JOIN users u ON (u.id = up.ref_id)
+        WHERE u.id = ${id}::uuid AND up.type = ${pathUrl}::type_product
         GROUP BY EXTRACT(YEAR FROM up.created_at)
     `;
 
