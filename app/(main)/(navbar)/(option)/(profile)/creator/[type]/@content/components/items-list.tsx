@@ -18,7 +18,7 @@ import { MdDescription } from "react-icons/md";
 import { SLoading } from "@/_util/Spinner-loading";
 import { IsRenderComponent } from "./folder-list";
 import { useInView } from "react-intersection-observer";
-import { TItemFolderPhoto } from "../../type/content/type";
+import { TItemFolderPhoto } from "../../types/content/type";
 import OptionBtn from "./options/option-btn";
 import { MdCheck, MdClose } from "react-icons/md";
 
@@ -100,15 +100,15 @@ const ItemsList = ({
   });
 
   const handleAction = useCallback(
-    (actionType: string, tarIuProduct: number, value?: string) => {
+    (actionType: string, idProduct: number, value?: string) => {
       switch (actionType) {
         // ? Item Nav Action
         case "navAction": {
           setIsOpenNav((prev: any) => ({
             ...prev,
-            iuProduct: prev.iuProduct.includes(tarIuProduct)
-              ? prev.iuProduct.filter((f: number) => f !== tarIuProduct)
-              : [...prev.iuProduct, tarIuProduct],
+            iuProduct: prev.iuProduct.includes(idProduct)
+              ? prev.iuProduct.filter((f: number) => f !== idProduct)
+              : [...prev.iuProduct, idProduct],
           }));
           break;
         }
@@ -116,26 +116,26 @@ const ItemsList = ({
         case "toggle": {
           setIsOpen((prev) => ({
             ...prev,
-            open: prev.iuProduct === tarIuProduct ? false : true,
-            iuProduct: prev.iuProduct === tarIuProduct ? null : tarIuProduct,
+            open: prev.iuProduct === idProduct ? false : true,
+            iuProduct: prev.iuProduct === idProduct ? null : idProduct,
           }));
           // setIsIdDescription((prev: any) =>
-          //   prev === tarIuProduct ? null : tarIuProduct
+          //   prev === idProduct ? null : idProduct
           // );
           break;
         }
         // case "update": {
         //   setStateFolder({
         //     isOpen: true,
-        //     iuProduct: tarIuProduct,
+        //     iuProduct: idProduct,
         //     value: value,
         //   });
         //   break;
         // }
         case "openDescription": {
-          router.push(`${pathname}/description?folder-name=${folderName}&id=${tarIuProduct}`)
+          router.push(`${pathname}/description?folder-name=${folderName}&id=${idProduct}`)
           break;
-          // const newUrl = `${pathname}/description?folder-name=${folderName}&id=${tarIuProduct}`;
+          // const newUrl = `${pathname}/description?folder-name=${folderName}&id=${idProduct}`;
           // history.pushState({}, "", newUrl);
           // break;
         }
@@ -155,13 +155,13 @@ const ItemsList = ({
       >
         {Array.isArray(data) &&
           data.length > 0 &&
-          data.map((i: { tarIuProduct: number; url: string }, idx) => {
+          data.map((i: { idProduct: number; url: string }, idx) => {
             const isLast = idx === data.length - 1;
             return (
               <div
                 key={idx}
                 ref={isLast ? lastItemRef : null}
-                className="relative flex flex-col w-[22%] h-[260px] rounded-2xl overflow-hidden border border-gray-100 "
+                className="relative flex flex-col w-[22%] h-65 rounded-2xl overflow-hidden border border-gray-100 "
               >
                 {/* Image wrapper */}
                 <div className="relative w-full md:h-64 lg:h-72">
@@ -173,15 +173,15 @@ const ItemsList = ({
                   />
                   {isOpenNav.type !== "" && (
                     <button
-                      onClick={() => handleAction("navAction", i.tarIuProduct)}
+                      onClick={() => handleAction("navAction", i.idProduct)}
                       className={`absolute top-3 left-3 flex items-center justify-center w-9 h-9 rounded-xl transition-colors
                         ${
-                          isOpenNav?.iuProduct.includes(i.tarIuProduct)
+                          isOpenNav?.iuProduct.includes(i.idProduct)
                             ? "bg-black/80 text-white"
                             : "bg-white/80 text-gray-700"
                         }`}
                     >
-                      {isOpenNav?.iuProduct.includes(i.tarIuProduct) ? (
+                      {isOpenNav?.iuProduct.includes(i.idProduct) ? (
                         <MdCheck size={20} />
                       ) : (
                         <MdClose size={20} />
@@ -194,9 +194,9 @@ const ItemsList = ({
                     {/* Toggle button */}
                     <button
                       className="w-9 h-9 rounded-xl bg-white/80 border border-gray-200 text-gray-700 flex-center"
-                      onClick={() => handleAction("toggle", i.tarIuProduct, "")}
+                      onClick={() => handleAction("toggle", i.idProduct, "")}
                     >
-                      {isOpen.iuProduct === i.tarIuProduct && isOpen.open ? (
+                      {isOpen.iuProduct === i.idProduct && isOpen.open ? (
                         <IoMdOpen />
                       ) : (
                         <BiExit />
@@ -205,13 +205,13 @@ const ItemsList = ({
 
                     {/* Action buttons */}
                     {isOpen.open &&
-                      isOpen.iuProduct === i.tarIuProduct &&
+                      isOpen.iuProduct === i.idProduct &&
                       btnList.map((btn, idx) => (
                         <button
                           key={idx}
                           className="text-sm font-medium text-gray-600 w-9 h-9 rounded-xl bg-white/80 border border-gray-200 flex-center hover:bg-white hover:text-black"
                           onClick={() =>
-                            handleAction(btn.name, i.tarIuProduct, btn.name)
+                            handleAction(btn.name, i.idProduct, btn.name)
                           }
                           title={btn.title}
                         >
@@ -228,4 +228,6 @@ const ItemsList = ({
   );
 };
 
-export default memo(ItemsList);
+export default ItemsList
+
+// todo KONDISIKAN LAGI INI DIKIT !!! 

@@ -1,5 +1,5 @@
+"use cache";
 import type { Metadata } from "next";
-// import { Widget } from "./widget";
 
 export const metadata: Metadata = {
   title: "Report",
@@ -9,8 +9,6 @@ export const metadata: Metadata = {
 // export const dynamic = "force-static";
 
 const ReportPage = async () => {
-  "use cache";
-
   return (
     <div className="w-full text-gray-200">
       <div className="max-w-3xl mx-auto px-6 py-14">

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useCallback, useContext, memo, useState } from "react";
 import { creatorContext } from "@/app/context";
-import { ToggleStateType } from "../../type/interface";
+import { ToggleStateType } from "../../types/interface";
 import { z } from "zod";
 import { ForbiddenRegex } from "@/_util/Regex";
 import { zPostFormSchema } from "../../schema/schema-form";
@@ -31,20 +31,12 @@ const categories = [
   { name: "Behind The Scenes", icon: "🔧" },
 ];
 
-const ListPostFolderDataDummy = [
-  { id: 1, name: "Travel Photos" },
-  { id: 2, name: "Food & Drinks" },
-  { id: 3, name: "Nature" },
-  { id: 4, name: "Work Projects" },
-  { id: 5, name: "Personal" },
-];
-
 const PostPhotoForm = ({
   setIsRender,
 }: {
   setIsRender: React.Dispatch<React.SetStateAction<ToggleStateType>>;
 }) => {
-  const { ListPostFolderData, isLoadingListPost, publicId, postPhoto } =
+  const { ListPostFolderData, isLoadingListPost, postPhoto } =
     useContext(creatorContext);
 
   const {
@@ -81,9 +73,9 @@ const PostPhotoForm = ({
         folderName: values.folderName,
         createdAt: LocalISOTime(),
       };
-      // await postPhoto(payload);
-      // setIsRender({ open: false, type: "" });
-      console.log(payload);
+      await postPhoto(payload);
+      setIsRender({ open: false, type: "" });
+      // console.log(payload);
     } catch (error) {
       console.error(error);
     }
@@ -191,17 +183,18 @@ const PostPhotoForm = ({
 
                 {showDummyFolder && (
                   <div className="absolute z-20 mt-1 max-h-40 w-full overflow-y-auto rounded-md border border-white/20 bg-black/90 shadow-lg">
-                    {ListPostFolderDataDummy.map((folder) => (
-                      <div
-                        key={folder.id}
-                        className="cursor-pointer px-3 py-2 hover:bg-white/10"
-                        onClick={() => {
-                          console.log("Selected:", folder);
-                          setShowDummyFolder(false);
-                        }}>
-                        {folder.name}
-                      </div>
-                    ))}
+                    {Array.isArray(ListPostFolderData) &&
+                      ListPostFolderData.map((i) => (
+                        <div
+                          key={i.folderName}
+                          className="cursor-pointer px-3 py-2 hover:bg-white/10"
+                          onClick={() => {
+                            console.log("Selected:", i.folderName);
+                            setShowDummyFolder(false);
+                          }}>
+                          {i.folderName}
+                        </div>
+                      ))}
                   </div>
                 )}
               </div>
@@ -220,7 +213,7 @@ const PostPhotoForm = ({
                 <input
                   type="text"
                   placeholder="Type and press Enter..."
-                  className="rounded-md border border-white/20 bg-white/10 p-2 text-white placeholder-white/50 focus:ring-2 focus:ring-blue-500"
+                  className="rounded-md border bg-white/10 p-2 text-white placeholder-white/50 focus:ring-2 focus:ring-blue-500"
                   onKeyDown={(e) => {
                     const input = e.currentTarget.value
                       .trim()
@@ -317,8 +310,6 @@ const PostPhotoForm = ({
 };
 
 export default PostPhotoForm;
-
-
 
 // todo kondisikan besok POST INI !!!
 // todo cari liat gimana cacheTag, RevalidateTag, parentPAth -> direct DB !!

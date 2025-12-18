@@ -25,7 +25,13 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
   ];
 
   const handleAction = useCallback(
-    (actionType: string, year: number | null, month?: number) => {
+    (
+      e: React.SyntheticEvent,
+      actionType: string,
+      year: number | null,
+      month?: number
+    ) => {
+      e.preventDefault();
       switch (actionType) {
         case "open": {
           setOpenYear(openYear === year ? null : year);
@@ -51,13 +57,11 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
         listFolderData.map((item) => (
           <div
             key={item.year}
-            className="mb-2 border border-gray-200 rounded-lg"
-          >
+            className="mb-2 rounded-lg bg-white/10 overflow-hidden border border-white/10">
             {/* YEAR BUTTON */}
             <button
-              onClick={() => handleAction("open", item.year)}
-              className=" flex items-center justify-between w-full text-left px-4 py-2 bg-gray-100 text-black font-medium rounded-t-lg hover:bg-gray-200 transition"
-            >
+              onClick={(e) => handleAction(e, "open", item.year)}
+              className="flex items-center justify-between w-full text-left px-4 py-2 text-white font-medium hover:bg-white/20 transition">
               {item.year}
               <ChevronDown
                 size={16}
@@ -68,15 +72,12 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
             </button>
 
             {openYear === item.year && (
-              <div className="flex flex-col px-6 py-2 bg-gray-50">
+              <div className="flex flex-col px-6 py-2 bg-white/20">
                 {listMonth.map((i, idx) => (
-                  <div key={idx} className="py-1 text-sm text-gray-700 ">
+                  <div key={idx} className="py-1 text-sm text-black ">
                     <button
-                      onClick={() =>
-                        handleAction("year", openYear, i.num)
-                      }
-                      className="w-full flex justify-between hover:text-black cursor-pointer transition"
-                    >
+                      onClick={(e) => handleAction(e, "year", openYear, i.num)}
+                      className="w-full flex justify-between hover:text-white cursor-pointer transition">
                       <h4>{i.name}</h4>
                       <h4>{item.month === i.num && item.folders.length}</h4>
                     </button>

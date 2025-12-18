@@ -7,7 +7,7 @@ import { SLoading } from "@/_util/Spinner-loading";
 import ActivePath from "./active-path";
 import SearchFolder from "./search-folder";
 import PostingBtn from "./posting-btn";
-import { IDashboard } from "../../type/dashboard/interface";
+import { IDashboard } from "../../types/dashboard/interface";
 
 const LazyPostPhotoForm = dynamic(
   () => import("../../form/photo/post-photo-form"),

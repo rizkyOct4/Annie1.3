@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ListFolderPhoto } from "@/_lib/services/navbar/profile/services-list-folder";
+import { ListFolderPhoto } from "@/_lib/services/navbar/option/profile/services-list-folder";
 import GetToken from "@/_lib/middleware/get-token";
 
 export async function GET(

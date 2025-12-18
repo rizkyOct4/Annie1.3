@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  ListItemFolderPhoto,
-  ItemFolderPhoto,
-} from "@/_lib/services/navbar/profile/item-folder-service";
+// import {
+//   ListItemFolderPhoto,
+//   ItemFolderPhoto,
+// } from "@/_lib/services/navbar/profile/item-folder-service";
+import { ListItemFolderPhoto, ItemFolderPhoto } from "@/_lib/services/navbar/option/profile/services-content";
 import GetToken from "@/_lib/middleware/get-token";
 
 export async function GET(
@@ -10,7 +11,7 @@ export async function GET(
   { params }: { params: Promise<{ type: string }> }
 ) {
   try {
-    const { id: publicId } = await GetToken();
+    const { id } = await GetToken();
     const typeParams = (await params).type;
     const key = req.nextUrl.searchParams.get("key");
 
@@ -23,7 +24,7 @@ export async function GET(
         const year = Number(req.nextUrl.searchParams.get("year"));
         const month = Number(req.nextUrl.searchParams.get("month"));
         const itemFolder = await ListItemFolderPhoto({
-          publicId,
+          id,
           path: typeParams,
           year,
           month,

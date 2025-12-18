@@ -2,7 +2,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import ModalPanel from "./modal";
 import { ISGQuery } from "@/_util/fetch";
 import Fetching from "@/_util/fetch";
-import { ROUTES_CREATOR_PHOTO_PANEL } from "../../config/config-panel";
+import { ROUTES_CREATOR_PHOTO_PANEL } from "../../config/routes-panel";
 
 const page = async ({
   params,

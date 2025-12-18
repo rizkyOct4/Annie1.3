@@ -15,9 +15,14 @@ const thirdParty = [
   { name: "Git", value: "github" },
 ];
 
-const Login = ({ setState }: { setState: (state: boolean) => void }) => {
+const Login = ({
+  setState,
+  redirect,
+}: {
+  setState: (state: boolean) => void;
+  redirect: string;
+}) => {
   const router = useRouter();
-  const redirect = useSearchParams().get("redirect") ?? "";
 
   // * CONTEXT =====
   const { register, handleSubmit, formState } = useForm<LoginFormSchema>({

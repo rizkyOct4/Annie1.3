@@ -1,7 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import type { Metadata } from "next";
 import "./globals.css";
-import ProfileProvider from "./provider";
 import QueryProvider from "./QueryProvider";
 
 // ? metadata ini untuk title browser, sifatnya macam z-index, layout defaultnya, ada yg static dan ada yg dinamis

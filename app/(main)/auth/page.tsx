@@ -1,7 +1,7 @@
-// import ModalAuth from "../@intercept/(.)auth/modal";
+import ModalAuth from "../@intercept/(.)auth/modal";
 
 const page = () => {
-  return
+  return <ModalAuth />;
 };
 
 export default page;

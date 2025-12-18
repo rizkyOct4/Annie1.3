@@ -1,18 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PostCloudinary, PostDb, GetPostDb } from "@/_lib/navbar/profile/route";
-import { PutCloudinary, PutImage } from "@/_lib/navbar/profile/crud/route";
+import { PutCloudinary, PutImage } from "@/_lib/services/navbar/option/profile/action/services-btn";
 import { ItemFolderDescription } from "@/_lib/navbar/profile/route";
+import GetToken from "@/_lib/middleware/get-token";
+import {
+  PostImageProductCloudinary,
+  PostDb,
+  GetPostDb,
+} from "@/_lib/services/navbar/option/profile/services-post-image";
+import { revalidateTag } from "next/cache";
 
 export async function POST(req: NextRequest) {
   try {
+    const { id, name } = await GetToken();
+
     const method = req.nextUrl.searchParams.get("method");
     const typePost = req.nextUrl.searchParams.get("type");
 
-    const body = await req.json();
     if (method === "post" && typePost === "photo") {
       const {
-        iuProduct,
-        publicId,
+        idProduct,
         description,
         imageName,
         imagePath,
@@ -21,18 +27,18 @@ export async function POST(req: NextRequest) {
         type,
         folderName,
         createdAt,
-      } = body;
+      } = await req.json();
       const webpName = imageName.replace(/\.[^/.]+$/, "") + ".webp";
 
-      const cloudUrl = await PostCloudinary({
+      const cloudUrl = await PostImageProductCloudinary({
         webpName,
         imagePath,
-        publicId,
+        username: name,
       });
 
       await PostDb({
-        iuProduct,
-        publicId,
+        idProduct,
+        id,
         description,
         webpName,
         hashtag,
@@ -44,12 +50,16 @@ export async function POST(req: NextRequest) {
       });
 
       const result = await GetPostDb({
-        iuProduct,
+        idProduct,
       });
+
+      revalidateTag(`folders-photo-${id}`, "max");
+      revalidateTag(`item-folder-photo-${folderName}`, "max");
+      revalidateTag(`list-folder-btn-${id}`, "max");
 
       return NextResponse.json({
         message: "New Post Success",
-        data: result,
+        result,
       });
     }
   } catch (err: any) {
@@ -97,7 +107,7 @@ export async function PUT(req: NextRequest) {
         createdAt,
       });
 
-      const result = await ItemFolderDescription(iuProduct)
+      const result = await ItemFolderDescription(iuProduct);
 
       return NextResponse.json({
         message: "Update Success",

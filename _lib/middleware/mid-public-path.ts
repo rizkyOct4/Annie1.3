@@ -24,12 +24,8 @@ const PublicPath = ({
     req.method === "GET"
   ) {
     return NextResponse.next();
-  }
-
-  if (!role && req.method !== "GET") {
+  } else if (!role && req.method !== "GET") {
     return NextResponse.redirect(new URL(`/auth`, req.url));
-  } else {
-    return NextResponse.next();
   }
 };
 

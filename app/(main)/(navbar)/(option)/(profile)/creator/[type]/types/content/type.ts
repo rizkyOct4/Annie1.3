@@ -4,6 +4,6 @@ export type TListItemFolderPhoto = {
 };
 
 export type TItemFolderPhoto = {
-  tarIuProduct: number;
+  idProduct: number;
   url: string;
 };

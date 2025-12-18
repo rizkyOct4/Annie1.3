@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/_lib/config";
+// import { BASE_URL } from "@/_lib/config";
 
 export const ROUTES_ITEM_FOLDER = {
   GET: ({
@@ -12,8 +12,8 @@ export const ROUTES_ITEM_FOLDER = {
     typeConfig: string;
     path: string;
     pageParam: number;
-    year?: number | null;
-    month?: number | null;
+    year?: string;
+    month?: string;
     folderName?: any;
   }) => {
     const limit = 8;

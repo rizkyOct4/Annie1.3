@@ -14,7 +14,7 @@ const PostingBtn = ({
   isRender: IDashboard;
   setIsRender: React.Dispatch<React.SetStateAction<IDashboard>>;
 }) => {
-  const { publicId, setTypeBtn } = useContext(creatorContext);
+  const { setTypeBtn } = useContext(creatorContext);
 
   const handleAction = useCallback(
     (actionType: string, value: "video" | "photo" | "") => {
@@ -25,6 +25,7 @@ const PostingBtn = ({
             open: true,
             type: value,
           });
+          setTypeBtn(value);
           break;
         }
         case "toggle": {
@@ -36,7 +37,7 @@ const PostingBtn = ({
         }
       }
     },
-    [setIsRender]
+    [setIsRender, setTypeBtn]
   );
   return (
     <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-50">

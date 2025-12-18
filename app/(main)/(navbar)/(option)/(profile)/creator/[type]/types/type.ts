@@ -2,17 +2,17 @@ export type ListFolderType = {
   folderName: string;
   totalProduct: number;
 };
-export type OriginalListFolderType = {
+export type TOriginalListFolder = {
   data: ListFolderType[];
   hasMore: boolean;
 };
 
 // ? 2
 export type ItemFolderType = {
-  tarIuProduct: number;
+  idProduct: number;
   url: string;
 };
-export type OriginaItemFolderType = {
+export type TOriginalItemFolder = {
   folderName: string;
   data: ItemFolderType[];
   hasMore: boolean;

@@ -10,7 +10,7 @@ import { zPutFormSchema } from "./schema";
 import { z } from "zod";
 import { ForbiddenRegex } from "@/_util/Regex";
 import { IsRenderComponent } from "../../../folder-list";
-import type { PutImageSchema } from "../../type/type";
+import type { PutImageSchema } from "../../types/type";
 
 type PutFormSchema = z.infer<typeof zPutFormSchema>;
 

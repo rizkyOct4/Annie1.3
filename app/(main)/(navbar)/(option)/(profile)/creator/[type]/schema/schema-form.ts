@@ -48,19 +48,19 @@ export const zPutFormSchema = z.object({
   prevImage: z.string(),
   description: z
     .string()
-    .max(30, "Max 30 characters")
+    .max(30, "* Max 30 characters")
     .refine((val) => !val.match(ForbiddenRegex()), {
-      message: `invalid character`,
+      message: `* Invalid character`,
     }),
   hashtag: z
     .array(
       z
         .string()
-        .max(20, "Max 20 Characters")
+        .max(20, "* Max 20 Characters")
         .refine((val) => !val.match(ForbiddenRegex()), {
-          message: `invalid character`,
+          message: `* Invalid character`,
         })
     )
-    .max(3, "Max 3 hashtags"),
-  category: z.array(z.string()).max(3, "Max 3 category"),
+    .max(3, "* Max 3 hashtags"),
+  category: z.array(z.string()).max(3, "* Max 3 category"),
 });

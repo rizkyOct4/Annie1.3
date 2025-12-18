@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { zPostVideoFormSchema } from "./schema";
 import { RandomId, LocalISOTime } from "@/_util/GenerateData";
 import { ForbiddenRegex } from "@/_util/Regex";
-import { IDashboard } from "../../type/dashboard/interface";
+import { IDashboard } from "../../types/dashboard/interface";
 
 type PostVideoFormSchema = z.infer<typeof zPostVideoFormSchema>;
 

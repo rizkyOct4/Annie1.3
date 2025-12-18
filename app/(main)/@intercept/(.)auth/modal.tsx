@@ -7,7 +7,8 @@ import { useSearchParams } from "next/navigation";
 
 const ModalAuth = () => {
   const [state, setState] = useState(false);
-  const redirect = useSearchParams().get("redirect") ?? "";
+  const redirect = useSearchParams().get("redirect") ?? "/homepage";
+
   return (
     <>
       {redirect && (
@@ -15,7 +16,7 @@ const ModalAuth = () => {
           {!state ? (
             <Register setState={setState} />
           ) : (
-            <Login setState={setState} />
+            <Login setState={setState} redirect={redirect} />
           )}
         </div>
       )}

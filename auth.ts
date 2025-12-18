@@ -11,6 +11,11 @@ import {
 import { OAuthRegister, CredentialsLogin } from "@/_lib/services/services-auth";
 import { AUTH_SECRET } from "@/_lib/config";
 
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -38,7 +43,7 @@ export const {
         },
       },
       // ? credentials -> ini parameter dari login form kau !!!
-      async authorize(credentials) {
+      async authorize(credentials?: LoginCredentials | undefined) {
         try {
           if (!credentials?.email || !credentials?.password) {
             return null;

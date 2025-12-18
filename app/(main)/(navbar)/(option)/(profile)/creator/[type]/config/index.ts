@@ -2,37 +2,37 @@ import { BASE_URL } from "@/_lib/config";
 
 // ! Gunakan encodeURIComponent() agar nama folder dengan spasi atau karakter spesial tidak error (Ex: “My Folder”).
 export const ROUTES_PROFILE = {
-  GET: ({
-    typeConfig,
-    type,
-    folderName,
-    pageParam,
-    id,
-  }: {
-    typeConfig: "type" | "folderName" | "id";
-    type?: string;
-    folderName?: any;
-    pageParam?: number;
-    id?: string | null;
-  }) => {
-    const limit = 10;
-    const folderNameLimit = 4;
+  // GET: ({
+  //   typeConfig,
+  //   type,
+  //   folderName,
+  //   pageParam,
+  //   id,
+  // }: {
+  //   typeConfig: "type" | "folderName" | "id";
+  //   type?: string;
+  //   folderName?: any;
+  //   pageParam?: number;
+  //   id?: string | null;
+  // }) => {
+  //   const limit = 10;
+  //   const folderNameLimit = 4;
 
-    switch (typeConfig) {
-      case "type":
-        return `${BASE_URL}/creator/${type}/api?section=${pageParam}&limit=${limit}`;
-      case "folderName":
-        return `${BASE_URL}/creator/${type}/api?folder-name=${encodeURIComponent(
-          folderName
-        )}&section=${pageParam}&limit=${folderNameLimit}`;
-      case "id":
-        return `${BASE_URL}/creator/${type}/api?folder-name=${encodeURIComponent(
-          folderName
-        )}&id=${id}`;
-      default:
-        return ""; // ! fallback aman (tidak undefined)
-    }
-  },
+  //   switch (typeConfig) {
+  //     case "type":
+  //       return `${BASE_URL}/creator/${type}/api?section=${pageParam}&limit=${limit}`;
+  //     case "folderName":
+  //       return `${BASE_URL}/creator/${type}/api?folder-name=${encodeURIComponent(
+  //         folderName
+  //       )}&section=${pageParam}&limit=${folderNameLimit}`;
+  //     case "id":
+  //       return `${BASE_URL}/creator/${type}/api?folder-name=${encodeURIComponent(
+  //         folderName
+  //       )}&id=${id}`;
+  //     default:
+  //       return ""; // ! fallback aman (tidak undefined)
+  //   }
+  // },
   GET_BTN: ({
     key,
     path,
@@ -47,14 +47,14 @@ export const ROUTES_PROFILE = {
     switch (key) {
       case "photo":
       case "video": {
-        return `${BASE_URL}/creator/${key}/api/get-button?type-btn=${typeBtn}`;
+        return `/creator/${key}/api-general?type-btn=${typeBtn}`;
       }
       default:
         return "";
     }
   },
   // * ======
-  CRUD_IMAGE: ({
+  ACTION_PHOTO: ({
     method,
     type,
     path,
@@ -66,7 +66,7 @@ export const ROUTES_PROFILE = {
     switch (method) {
       case "post":
       case "put": {
-        return `${BASE_URL}/creator/${path}/api/crud-image?method=${method}&type=${type}`;
+        return `/creator/${path}/api-content/action?method=${method}&type=${type}`;
       }
       default:
         return "";

@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 
 // import PutPhotoForm from "./form/photo/put-photo-form";
 import ItemsList from "./items-list";
-import { TListItemFolderPhoto } from "../../type/content/type";
+import { TListItemFolderPhoto } from "../../types/content/type";
 
 export interface FolderListToggle {
   open: boolean;
@@ -30,12 +30,12 @@ export interface IsRenderComponent {
 const listBtn = [
   {
     name: `Stats`,
-    icon: <ChartSpline size={18} className="text-gray-600" />,
+    icon: <ChartSpline size={18} />,
     value: "stats",
   },
   {
     name: "",
-    icon: <ChevronDown size={18} className="text-gray-600" />,
+    icon: <ChevronDown size={18} />,
     value: "toggle",
   },
 ];
@@ -101,19 +101,17 @@ const ListItemPhoto = ({
             data.map((f) => (
               <div
                 key={f.folderName}
-                className="w-full p-3 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-50 transition-colors"
-              >
+                className="w-full p-3 rounded-lg border border-white/10 bg-white/10 hover:bg-white/20 transition-colors">
                 <>
                   <div className="flex items-center gap-3">
                     {/* Icon */}
-                    <div className="w-9 h-9 flex items-center justify-center rounded-md bg-gray-100 border border-gray-200">
+                    <div className="w-9 h-9 flex-center rounded-md border border-white/30">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        className="w-5 h-5 text-indigo-600"
-                      >
+                        className="w-5 h-5 text-white">
                         <path
                           strokeWidth="1.5"
                           strokeLinecap="round"
@@ -125,51 +123,38 @@ const ListItemPhoto = ({
 
                     {/* Text */}
                     <div className="flex-1 min-w-0 flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-800 truncate">
+                      <span className="text-sm font-medium text-white truncate">
                         {f.folderName}
                       </span>
 
-                      <span className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-[4px] rounded border border-gray-200">
+                      <span className="text-sm font-medium text-white px-2 py-1 rounded border border-white/30">
                         {f.amountItem}
                       </span>
                     </div>
 
                     {/* Toggle Button */}
-                    {/* <button
-                      onClick={() => handleAction("toggle", f.folderName)}
-                      className="text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                      <ChevronDown
-                        size={18}
-                        className={`transition-transform ${
-                          stateFolder.isOpen &&
-                          stateFolder.isFolder === f.folderName
-                            ? "rotate-180"
-                            : "rotate-0"
-                        }`}
-                      />
-                    </button> */}
-                    <div className="flex bg-gray-100 rounded-md border border-gray-200 overflow-hidden">
+                    <div className="flex rounded-md border bg-white/20 border-white/30 overflow-hidden">
                       {listBtn.map((btn) => (
                         <button
                           key={btn.value}
                           onClick={() =>
                             handleAction(btn.value, f.folderName || "")
                           }
-                          className={`border-x-2 border-gray-200 flex items-center px-4 py-2 transition-transform
-            ${
-              btn.value === "toggle" &&
-              stateFolder.isOpen &&
-              stateFolder.isFolder === f.folderName
-                ? "rotate-180"
-                : "rotate-0"
-            }`}
-                          title={btn.name}
-                        >
-                          {btn.icon}
-                          <span className="text-sm font-medium text-gray-600">
-                            {btn.name}
-                          </span>
+                          className={`
+                            flex items-center px-4 py-2 text-white text-sm font-medium
+                            transition-all duration-200 ease-in-out
+                            ${
+                              btn.value === "toggle" &&
+                              stateFolder.isOpen &&
+                              stateFolder.isFolder === f.folderName
+                                ? "rotate-180"
+                                : "rotate-0"
+                            }
+                            hover:bg-white/10 focus:bg-white/10 focus:outline-none
+                          `}
+                          title={btn.name}>
+                          <span className="flex-center">{btn.icon}</span>
+                          {btn.name}
                         </button>
                       ))}
                     </div>

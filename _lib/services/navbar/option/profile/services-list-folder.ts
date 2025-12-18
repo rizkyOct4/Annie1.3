@@ -14,8 +14,8 @@ export const ListFolderPhoto = async ({
 }) => {
   "use cache";
   cacheLife("minutes");
-  cacheTag("customize-profile", id);
-  
+  cacheTag("list-folders", id);
+
   const data = await prisma.$queryRaw`
         SELECT
             y.year::int,
@@ -58,6 +58,8 @@ export const ListFolderPhoto = async ({
 
   const hasMore =
     Number(queryCheck[0].year) + limit < Number(queryCheck[0].year);
+
+  if (!data) return [];
 
   return { data, hasMore };
 

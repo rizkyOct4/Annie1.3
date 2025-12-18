@@ -1,43 +1,39 @@
 "use client";
 
-import { ROUTES_PROFILE } from "@/app/(main)/(navbar)/(profile)/creator/[type]/config";
+import { ROUTES_PROFILE } from "../../config";
 import {
   useQueryClient,
   useMutation,
   InfiniteData,
 } from "@tanstack/react-query";
 import axios from "axios";
-import type { PhotoPostType } from "../@photo/components/Post";
 import type {
-  OriginalListFolderType,
-  OriginaItemFolderType,
-} from "../../type/type";
+  TOriginalListFolder,
+  TOriginalItemFolder,
+} from "../../types/type";
 import { showToast } from "@/_util/Toast";
-import { ItemFolderDescriptionType } from "../../type/type";
+import type { TImagePost } from "../../schema/schema-form";
 
 const usePost = ({
   keyListFolder,
   keyItemFolder,
   type,
 }: {
-  keyListFolder: any[];
-  keyItemFolder: any[];
+  keyListFolder: Array<string>;
+  keyItemFolder: Array<string>;
   type: string;
 }) => {
   const queryClient = useQueryClient();
 
-  const URL = ROUTES_PROFILE.CRUD_IMAGE({
+  const URL = ROUTES_PROFILE.ACTION_PHOTO({
     method: "post",
     type: "photo",
     path: type,
   });
 
   const { mutateAsync: postPhoto } = useMutation({
-    mutationFn: async (data) =>
-      await axios.post(URL, data, {
-        withCredentials: true, // kalau perlu cookie/session
-      }),
-    onMutate: async (mutate: PhotoPostType) => {
+    mutationFn: async (data) => await axios.post(URL, data),
+    onMutate: async (mutate: TImagePost) => {
       showToast({ type: "loading", fallback: true });
 
       await queryClient.cancelQueries({
@@ -46,7 +42,7 @@ const usePost = ({
 
       const prevListFolderData = queryClient.getQueryData(keyListFolder);
 
-      queryClient.setQueryData<InfiniteData<OriginalListFolderType>>(
+      queryClient.setQueryData<InfiniteData<TOriginalListFolder>>(
         keyListFolder,
         (oldData) => {
           if (!oldData) return oldData;
@@ -61,10 +57,11 @@ const usePost = ({
               if (isExist) {
                 return {
                   ...page,
-                  data: page.data.map((i: { folderName: string; totalProduct: number }) =>
-                    i.folderName === mutate.folderName
-                      ? { ...i, totalProduct: i.totalProduct + 1 }
-                      : i
+                  data: page.data.map(
+                    (i: { folderName: string; totalProduct: number }) =>
+                      i.folderName === mutate.folderName
+                        ? { ...i, totalProduct: i.totalProduct + 1 }
+                        : i
                   ),
                 };
               } else {
@@ -84,9 +81,9 @@ const usePost = ({
       return { prevListFolderData };
     },
     onSuccess: (response) => {
-      const { data } = response.data;
+      const { data } = response;
       showToast({ type: "loading", fallback: false });
-      queryClient.setQueryData<InfiniteData<OriginaItemFolderType>>(
+      queryClient.setQueryData<InfiniteData<TOriginalItemFolder>>(
         keyItemFolder,
         (oldData) => {
           if (!oldData) return oldData;
@@ -97,7 +94,7 @@ const usePost = ({
               ...page,
               data: [
                 ...page.data,
-                { tarIuProduct: data[0].tarIuProduct, url: data[0].url },
+                { idProduct: data[0].idProduct, url: data[0].url },
               ],
             })),
           };
@@ -128,7 +125,7 @@ const usePut = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const URL = ROUTES_PROFILE.CRUD_IMAGE({
+  const URL = ROUTES_PROFILE.ACTION_PHOTO({
     method: "put",
     type: "photo",
     path: type,

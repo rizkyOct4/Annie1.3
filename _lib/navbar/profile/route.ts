@@ -57,11 +57,6 @@ export const ItemFolder = async (
   limit: number,
   offset: number
 ) => {
-  // const result = {
-  //   folderName: folderName,
-  //   data: [] as any[],
-  //   hasMore: false
-  // }
 
   const query = await prisma.$queryRaw<
     ItemFolderType[]
@@ -87,12 +82,10 @@ export const ItemFolder = async (
     url: i.url,
   }));
 
-  return {data, hasMore};
+  return { data, hasMore };
 };
 // ? ITEM DESCRIPTION
-export const ItemFolderDescription = async (
-  id: number
-) => {
+export const ItemFolderDescription = async (id: number) => {
   const query = await prisma.$queryRaw<
     ItemFolderDescriptionType[]
   >`SELECT upi.tar_iu_product, upi.description,upi.url, upi.hashtag, upi.category, COALESCE(SUM(upiv.like), 0)::int AS total_like, COALESCE(SUM(upiv.dislike), 0)::int AS total_dislike, up.created_at
@@ -127,11 +120,11 @@ export const ItemFolderDescription = async (
 export const PostCloudinary = async ({
   webpName,
   imagePath,
-  publicId,
+  username,
 }: {
   webpName: string;
   imagePath: string;
-  publicId: string;
+  username: string;
 }) => {
   // ? Check Cloudinary
   // --- 1. Decode base64 jadi buffer ---
@@ -149,8 +142,8 @@ export const PostCloudinary = async ({
     cloudinary.uploader
       .upload_stream(
         {
-          folder: `usersProduct/${publicId}/`,
-          public_id: webpName, // hapus ekstensi lama
+          folder: `users profile/${username}/`,
+          image: webpName, // hapus ekstensi lama
           resource_type: "image",
           format: "webp",
         },

@@ -1,26 +1,27 @@
 import { prisma } from "@/_lib/db";
 import sharp from "sharp";
 import cloudinary from "@/_lib/cloudinary";
-import type { GetUpdateImageType } from "../type";
+import type { GetUpdateImageType } from "../../../../../navbar/profile/type";
+import camelcaseKeys from "camelcase-keys";
+import { cacheLife, cacheTag } from "next/cache";
 
 // * GET LIST POST FOLDER =======
-export const GetListPostFolder = async (
-  publicId: string | undefined,
-  type: string | null
-) => {
-  const get = await prisma.$queryRaw<
+export const GetListPostFolder = async (id: string, type: string) => {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`list-folder-btn-${id}`);
+
+  const query = await prisma.$queryRaw<
     { folder_name: string }[]
   >`SELECT up.folder_name 
   FROM users_product up
-  JOIN users u ON (u.iu = up.tar_iu)
-  WHERE u.public_id = ${publicId}::uuid AND up.type = ${type}::type_product 
+  JOIN users u ON (u.id = up.ref_id)
+  WHERE u.id = ${id}::uuid AND up.type = ${type}::type_product 
   GROUP BY up.folder_name`;
 
-  if (get.length === 0) return [];
+  if (query.length === 0) return [];
 
-  return get.map((i) => ({
-    folderName: i.folder_name,
-  }));
+  return camelcaseKeys(query);
 };
 
 // * GET UPDATE IMAGE =======
