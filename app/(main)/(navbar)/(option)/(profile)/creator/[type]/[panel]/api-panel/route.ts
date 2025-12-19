@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { TokenHelper } from "@/_lib/tokenHelper";
-import { ItemFolderDescription } from "@/_lib/services/navbar/profile/panel-service";
+// import { TokenHelper } from "@/_lib/tokenHelper";
+// import { ItemFolderDescription } from "@/_lib/services/navbar/profile/panel-service";
+import GetToken from "@/_lib/middleware/get-token";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ panel: string }> }
 ) {
   try {
-    const token = req.cookies.get("access_token")?.value;
-    const { publicId } = (await TokenHelper(token)) || {};
+    const { id } = await GetToken();
     const key = req.nextUrl.searchParams.get("key");
     const pathUrl = (await params).panel;
 

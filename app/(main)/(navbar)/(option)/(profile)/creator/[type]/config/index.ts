@@ -37,17 +37,20 @@ export const ROUTES_PROFILE = {
     key,
     path,
     typeBtn,
-    iuProduct,
+    idProduct,
   }: {
     key: string;
     path?: string;
     typeBtn?: string;
-    iuProduct?: number;
+    idProduct?: number | null;
   }) => {
     switch (key) {
       case "photo":
       case "video": {
         return `/creator/${key}/api-general?type-btn=${typeBtn}`;
+      }
+      case "getUpdate": {
+        return `/creator/${path}/api-general?id-product=${idProduct}`;
       }
       default:
         return "";

@@ -9,3 +9,15 @@ export type TItemFolderDescription = {
   created_at: Date;
 };
 
+export type TGetUpdateImage = {
+  ref_id_product: number;
+  folder_name: string;
+  description: string;
+  image_name: string;
+  url: string;
+  total_like: number;
+  total_dislike: number;
+  hashtag: string[];
+  category: string[];
+  created_at: Date;
+};

@@ -1,6 +1,6 @@
 export type ListFolderType = {
   folderName: string;
-  totalProduct: number;
+  amountItem: number;
 };
 export type TOriginalListFolder = {
   data: ListFolderType[];

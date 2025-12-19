@@ -53,7 +53,7 @@ model users_followers {
 }
 
 model users_product {
-  ref_id                       String                         @unique @db.Uuid
+  ref_id                       String                         @db.Uuid
   id_product                   Int                            @unique
   type                         type_product?
   folder_name                  String                         @db.VarChar(255)

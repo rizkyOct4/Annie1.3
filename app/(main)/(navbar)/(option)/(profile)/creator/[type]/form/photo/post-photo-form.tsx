@@ -187,9 +187,13 @@ const PostPhotoForm = ({
                       ListPostFolderData.map((i) => (
                         <div
                           key={i.folderName}
+                          defaultValue={watch("folderName")}
                           className="cursor-pointer px-3 py-2 hover:bg-white/10"
                           onClick={() => {
-                            console.log("Selected:", i.folderName);
+                            // console.log("Selected:", i.folderName);
+                            setValue("folderName", i.folderName, {
+                              shouldValidate: true,
+                            });
                             setShowDummyFolder(false);
                           }}>
                           {i.folderName}

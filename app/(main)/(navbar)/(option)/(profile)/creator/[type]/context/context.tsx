@@ -2,7 +2,7 @@
 
 import { creatorContext } from "@/app/context";
 import { profileContext } from "@/app/context";
-import { useListFolder, useListItemFolder, useItemDescription, useItemFolder, useCreatorButton } from "../hook/hook-photo";
+import { useListFolder, useListItemFolder, useItemDescription, useCreatorButton } from "../hook/hook-photo";
 import { ReactNode, useContext } from "react";
 // import { useCreatorVideo } from "./hook/hook-video";
 
@@ -16,7 +16,7 @@ const CreatorContext: React.FC<CreatorContextProps> = ({ children }) => {
 
   const listFolder = useListFolder(id)
   const listItemFolder = useListItemFolder(id)
-  const itemFolder = useItemFolder(id)
+  // const itemFolder = useItemFolder(id)
   const itemFolderDescription = useItemDescription(id)
   // const photo = useCreatorPhoto(publicId);
   // const video = useCreatorVideo(publicId);
@@ -25,7 +25,7 @@ const CreatorContext: React.FC<CreatorContextProps> = ({ children }) => {
   const value = {
     ...listFolder,
     ...listItemFolder,
-    ...itemFolder,
+    // ...itemFolder,
     ...itemFolderDescription,
     // ...photo,
     // ...video,

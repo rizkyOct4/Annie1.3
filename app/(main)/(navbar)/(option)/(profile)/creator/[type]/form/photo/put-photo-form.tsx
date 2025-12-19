@@ -4,13 +4,13 @@ import { LocalISOTime } from "@/_util/GenerateData";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { creatorContext } from "@/app/context";
-import { zPutFormSchema } from "./schema";
+import { zPutFormSchema } from "../../schema/schema-form";
 import { z } from "zod";
 import { ForbiddenRegex } from "@/_util/Regex";
-import { IsRenderComponent } from "../../../folder-list";
-import type { PutImageSchema } from "../../types/type";
+// import { IsRenderComponent } from "../../../folder-list";
+// import type { PutImageSchema } from "../../types/type";
 
 type PutFormSchema = z.infer<typeof zPutFormSchema>;
 
@@ -34,15 +34,16 @@ const categories = [
 const PutPhotoForm = ({
   setIsRender,
 }: {
-  setIsRender: React.Dispatch<React.SetStateAction<IsRenderComponent>>;
+  setIsRender: React.Dispatch<React.SetStateAction<any>>;
 }) => {
-  const { descriptionItemFolderData, putPhoto, publicId } =
-    useContext(creatorContext);
+  // const { descriptionItemFolderData, putPhoto, publicId } =
+  //   useContext(creatorContext);
+  const [showDummyFolder, setShowDummyFolder] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState,
+    formState: { errors },
     setValue,
     getValues,
     watch,
@@ -60,72 +61,72 @@ const PutPhotoForm = ({
     },
   });
 
-  useEffect(() => {
-    // ! INITIATE DATA cuma berlaku saat pertama kali mount ke component !! kalau data beda pastikan RESET !!!
-    if (descriptionItemFolderData) {
-      reset({
-        imageName: descriptionItemFolderData[0].imageName || "",
-        imagePath: descriptionItemFolderData[0].url || "",
-        prevImage: descriptionItemFolderData[0].url || "",
-        hashtag: descriptionItemFolderData[0].hashtag || [],
-        category: descriptionItemFolderData[0].category || [],
-        description: descriptionItemFolderData[0].description || "",
-      });
-    }
-  }, [descriptionItemFolderData, reset]);
+  // useEffect(() => {
+  //   // ! INITIATE DATA cuma berlaku saat pertama kali mount ke component !! kalau data beda pastikan RESET !!!
+  //   if (descriptionItemFolderData) {
+  //     reset({
+  //       imageName: descriptionItemFolderData[0].imageName || "",
+  //       imagePath: descriptionItemFolderData[0].url || "",
+  //       prevImage: descriptionItemFolderData[0].url || "",
+  //       hashtag: descriptionItemFolderData[0].hashtag || [],
+  //       category: descriptionItemFolderData[0].category || [],
+  //       description: descriptionItemFolderData[0].description || "",
+  //     });
+  //   }
+  // }, [descriptionItemFolderData, reset]);
 
   const submit = handleSubmit(async (values) => {
     try {
-      const payload: PutImageSchema = {
-        iuProduct: descriptionItemFolderData[0].tarIuProduct,
-        publicId: publicId,
-        description: values.description,
-        imageName: values.imageName,
-        imagePath: values.imagePath,
-        prevImage: descriptionItemFolderData[0].url,
-        hashtag: values.hashtag,
-        category: values.category,
-        type: "photo",
-        createdAt: LocalISOTime(),
-      };
-      await putPhoto(payload);
-      setIsRender({ isOpen: false, iuProduct: null, value: "" });
+      // const payload: PutImageSchema = {
+      //   iuProduct: descriptionItemFolderData[0].tarIuProduct,
+      //   publicId: publicId,
+      //   description: values.description,
+      //   imageName: values.imageName,
+      //   imagePath: values.imagePath,
+      //   prevImage: descriptionItemFolderData[0].url,
+      //   hashtag: values.hashtag,
+      //   category: values.category,
+      //   type: "photo",
+      //   createdAt: LocalISOTime(),
+      // };
+      // await putPhoto(payload);
+      // setIsRender({ isOpen: false, iuProduct: null, value: "" });
     } catch (error) {
       console.error(error);
     }
   });
 
   return (
-    <div className="overlay">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl p-6 relative">
+    <div className="overlay z-70">
+      <div className="relative w-full max-w-3xl rounded-2xl backdrop-blur-sm border border-white/10 p-6 md:p-8 text-white">
         {/* Close button */}
         <button
           type="button"
-          onClick={() =>
-            setIsRender({ isOpen: false, iuProduct: null, value: "" })
-          }
-          className="absolute top-4 right-4 text-2xl leading-none text-gray-800 hover:text-black hover:cursor-pointer"
-        >
+          onClick={() => setIsRender({ open: false, type: "" })}
+          className="absolute right-4 top-4 text-2xl text-white/70 hover:text-white transition">
           &times;
         </button>
 
-        <h2 className="text-2xl font-semibold mb-6 text-black">Update Photo</h2>
+        <h2 className="mb-6 text-2xl font-bold">Update Photo</h2>
 
-        <form className="flex flex-col gap-6" onSubmit={submit}>
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* // * Left side */}
-            <div className="flex-1 flex flex-col gap-4">
+        <form
+          className="flex max-h-[75vh] flex-col gap-6 overflow-hidden"
+          onSubmit={submit}>
+          <div className="flex flex-col gap-6 overflow-y-auto pr-1 md:flex-row">
+            {/* LEFT */}
+            <div className="flex flex-1 flex-col gap-4 p-1">
               {watch("imagePath") && (
                 <Image
                   src={watch("imagePath")}
                   alt="Preview"
-                  width={160}
+                  width={240}
                   height={140}
-                  className="object-cover rounded-xl"
+                  className="w-full h-40 rounded-xl border border-white/20 object-cover"
                 />
               )}
-              <label className="flex flex-col text-sm text-black w-full">
-                Upload Photo
+
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-white/80">Upload Photo</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -144,34 +145,94 @@ const PutPhotoForm = ({
                       reader.readAsDataURL(file);
                     }
                   }}
-                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="rounded-md border border-white/20 bg-white/10 p-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
                 />
               </label>
 
-              <label className="flex flex-col text-sm text-black">
-                Description
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="flex items-center gap-2 text-white/80">
+                  Description
+                  {errors.description && (
+                    <span className="text-xs text-red-500">
+                      {errors.description.message}
+                    </span>
+                  )}
+                </span>
                 <textarea
                   {...register("description")}
-                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-600"
                   rows={5}
+                  className="resize-none rounded-md border border-white/20 bg-white/10 p-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </label>
-              {formState.errors.description && (
-                <p className="text-red-600 text-sm">
-                  {formState.errors.description.message}
-                </p>
-              )}
             </div>
 
-            {/* // * Right side */}
-            <div className="flex-1 flex flex-col gap-4">
-              {/* Hashtags */}
-              <label className="flex flex-col text-sm text-black">
-                Hashtags
+            {/* RIGHT */}
+            <div className="relative flex flex-1 flex-col gap-4 p-1">
+              {/* Folder */}
+              <div className="relative">
+                <label className="flex flex-col gap-1 text-sm">
+                  <span className="flex items-center gap-4 text-white/80">
+                    Folder
+                    {errors.folderName && (
+                      <span className="text-xs text-red-500">
+                        {errors.folderName.message}
+                      </span>
+                    )}
+                  </span>
+
+                  <div className="flex overflow-hidden rounded-md border border-white/20 bg-white/10 focus-within:ring-2 focus-within:ring-blue-500">
+                    <input
+                      {...register("folderName")}
+                      placeholder="Select folder..."
+                      className="flex-1 bg-transparent p-2 text-white outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowDummyFolder(!showDummyFolder)}
+                      className="bg-white/10 px-3 transition hover:bg-white/20">
+                      ▼
+                    </button>
+                  </div>
+                </label>
+
+                {/* {showDummyFolder && (
+                  <div className="absolute z-20 mt-1 max-h-40 w-full overflow-y-auto rounded-md border border-white/20 bg-black/90 shadow-lg">
+                    {Array.isArray(ListPostFolderData) &&
+                      ListPostFolderData.map((i) => (
+                        <div
+                          key={i.folderName}
+                          defaultValue={watch("folderName")}
+                          className="cursor-pointer px-3 py-2 hover:bg-white/10"
+                          onClick={() => {
+                            // console.log("Selected:", i.folderName);
+                            setValue("folderName", i.folderName, {
+                              shouldValidate: true,
+                            });
+                            setShowDummyFolder(false);
+                          }}>
+                          {i.folderName}
+                        </div>
+                      ))}
+                  </div>
+                )} */}
+              </div>
+
+              {/* Hashtag */}
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="flex items-center gap-2 text-white/80">
+                  Hashtag
+                  {errors.hashtag && (
+                    <span className="text-xs text-red-500">
+                      {errors.hashtag.message}
+                    </span>
+                  )}
+                </span>
+
                 <input
                   type="text"
                   placeholder="Type and press Enter..."
-                  className="mt-1 p-2 border border-gray-400 rounded-md text-black bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="rounded-md border bg-white/10 p-2 text-white placeholder-white/50 focus:ring-2 focus:ring-blue-500"
                   onKeyDown={(e) => {
                     const input = e.currentTarget.value
                       .trim()
@@ -193,37 +254,37 @@ const PutPhotoForm = ({
                 />
                 <input type="hidden" {...register("hashtag")} />
               </label>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {getValues("hashtag").map((i) => (
+
+              {/* Hashtag list */}
+              <div className="flex flex-wrap gap-2">
+                {watch("hashtag").map((i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center gap-1 bg-gray-200 px-2 py-1 rounded-md text-sm text-black"
-                  >
+                    className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm">
                     #{i}
                     <button
                       type="button"
                       onClick={() => {
-                        const values = getValues("hashtag");
+                        const values = watch("hashtag");
                         setValue(
                           "hashtag",
                           values.filter((v) => v !== i),
                           { shouldValidate: true }
                         );
                       }}
-                      className="text-xs text-gray-700 hover:text-red-500"
-                    >
+                      className="text-xs text-white/60 hover:text-red-500">
                       &times;
                     </button>
                   </span>
                 ))}
               </div>
 
-              {/* Categories */}
-              <label className="flex flex-col text-sm text-black gap-2">
-                Category
-                <div className="flex flex-wrap gap-2 max-h-50 overflow-y-auto">
+              {/* Category */}
+              <label className="flex flex-col gap-2 text-sm">
+                <span className="text-white/80">Category</span>
+                <div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
                   {categories.map((i) => {
-                    const selected = getValues("category").includes(i.name);
+                    const selected = watch("category").includes(i.name);
                     return (
                       <button
                         key={i.name}
@@ -242,12 +303,11 @@ const PutPhotoForm = ({
                             });
                           }
                         }}
-                        className={`px-3 py-1 rounded-full text-sm border transition-colors ${
+                        className={`rounded-full border px-3 py-1 text-sm transition ${
                           selected
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-gray-100 text-black border-gray-300 hover:bg-gray-200"
-                        }`}
-                      >
+                            ? "border-blue-500 bg-blue-500 text-white"
+                            : "border-white/20 bg-white/10 hover:bg-white/20"
+                        }`}>
                         {i.icon} {i.name}
                       </button>
                     );
@@ -259,8 +319,7 @@ const PutPhotoForm = ({
 
           <button
             type="submit"
-            className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-          >
+            className="rounded-lg bg-blue-500 py-3 font-medium text-white transition hover:bg-blue-600">
             Submit
           </button>
         </form>
@@ -270,3 +329,6 @@ const PutPhotoForm = ({
 };
 
 export default PutPhotoForm;
+
+
+// todo kondisikan besok sama kau ini !! data update !! 

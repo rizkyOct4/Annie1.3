@@ -14,7 +14,7 @@ export const ListFolderPhoto = async ({
 }) => {
   "use cache";
   cacheLife("minutes");
-  cacheTag("list-folders", id);
+  cacheTag(`list-folders-${id}`);
 
   const data = await prisma.$queryRaw`
         SELECT

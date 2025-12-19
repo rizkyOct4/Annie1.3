@@ -13,7 +13,6 @@ export type TImagePost = {
   createdAt: Date;
 };
 
-
 export const zPostFormSchema = z.object({
   imageName: z.string(),
   imagePath: z.string(),
@@ -46,6 +45,12 @@ export const zPutFormSchema = z.object({
   imageName: z.string(),
   imagePath: z.string(),
   prevImage: z.string(),
+  folderName: z
+    .string()
+    .max(20, "* Max 20 Characters")
+    .refine((val) => !val.match(ForbiddenRegex()), {
+      message: `* Invalid character`,
+    }),
   description: z
     .string()
     .max(30, "* Max 30 characters")

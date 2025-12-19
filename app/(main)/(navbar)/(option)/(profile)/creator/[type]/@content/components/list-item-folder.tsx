@@ -8,13 +8,20 @@ import React, {
   useEffect,
 } from "react";
 import { creatorContext } from "@/app/context";
-// import { usePathname } from "next/navigation";
 import { ChartSpline, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-// import PutPhotoForm from "./form/photo/put-photo-form";
 import ItemsList from "./items-list";
 import { TListItemFolderPhoto } from "../../types/content/type";
+import dynamic from "next/dynamic";
+import Loading from "@/app/loading";
+
+const LazyUpdatePhotoForm = dynamic(
+  () => import("../../form/photo/put-photo-form"),
+  {
+    loading: () => <Loading />,
+  }
+);
 
 export interface FolderListToggle {
   open: boolean;
@@ -23,7 +30,7 @@ export interface FolderListToggle {
 
 export interface IsRenderComponent {
   isOpen: boolean;
-  iuProduct: number | null;
+  idProduct: number | null;
   value: string;
 }
 
@@ -53,11 +60,12 @@ const ListItemPhoto = ({
 
   //   const currentPath = usePathname();
 
-  //   const [isRender, setIsRender] = useState<IsRenderComponent>({
-  //     isOpen: false,
-  //     iuProduct: null,
-  //     value: "",
-  //   });
+  const [isRender, setIsRender] = useState<IsRenderComponent>({
+    isOpen: false,
+    idProduct: null,
+    value: "",
+  });
+
 
   const handleAction = useCallback(
     (actionType: string, folderName: string) => {
@@ -84,13 +92,13 @@ const ListItemPhoto = ({
     [setStateFolder, router, currentPath]
   );
 
-  //   const renderComponent = useCallback(() => {
-  //     switch (isRender.value) {
-  //       case "update": {
-  //         return <PutPhotoForm setIsRender={setIsRender} />;
-  //       }
-  //     }
-  //   }, [isRender]);
+  const renderComponent = useCallback(() => {
+    switch (isRender.value) {
+      case "update": {
+        return <LazyUpdatePhotoForm setIsRender={setIsRender} />;
+      }
+    }
+  }, [isRender]);
 
   return (
     <>
@@ -163,7 +171,7 @@ const ListItemPhoto = ({
                     <ItemsList
                       data={itemFolderPhotoData}
                       folderName={f.folderName}
-                      setStateFolder={setStateFolder}
+                      setIsRender={setIsRender}
                     />
                   )}
                 </>
@@ -171,7 +179,7 @@ const ListItemPhoto = ({
             ))}
         </div>
       </div>
-      {/* {renderComponent()} */}
+      {renderComponent()}
     </>
   );
 };

@@ -71,6 +71,11 @@ const useListItemFolder = (id: string) => {
     year: "",
     month: "",
   });
+  const [stateFolder, setStateFolder] = useState({
+    isOpen: false,
+    isFolder: "",
+    isIuProduct: null,
+  });
 
   // * List Item Folder
   const { data: listItemFolder } = useInfiniteQuery({
@@ -101,41 +106,7 @@ const useListItemFolder = (id: string) => {
     retry: false,
   });
 
-  const listItemFolderPhotoData = useMemo(
-    () => listItemFolder?.pages.flatMap((page) => page.data) ?? [],
-    [listItemFolder?.pages]
-  );
-
-  const { postPhoto } = usePost({
-    keyListFolder: [
-      "keyListItemFolder",
-      id,
-      stateContent?.year,
-      stateContent?.month,
-    ],
-    keyItemFolder: [],
-    type: type,
-  });
-
-  // console.log(listItemFolderPhotoData)
-
-  return {
-    // ? STATE
-    setStateContent,
-
-    // ? DATA
-    listItemFolderPhotoData,
-  };
-};
-
-const useItemFolder = (id: string) => {
-  const { type } = useParams<{ type: string }>();
-  const [stateFolder, setStateFolder] = useState({
-    isOpen: false,
-    isFolder: "",
-    isIuProduct: null,
-  });
-
+  // * Items Folder
   const {
     data: itemFolderPhoto,
     isLoading: isLoadingItemFolderPhoto,
@@ -169,23 +140,42 @@ const useItemFolder = (id: string) => {
     retry: false,
   });
 
+  // console.log(`list item Folder:`, listItemFolder);
+  // console.log(itemFolderPhoto);
+
+  // ? LIST
+  const listItemFolderPhotoData = useMemo(
+    () => listItemFolder?.pages.flatMap((page) => page.data) ?? [],
+    [listItemFolder?.pages]
+  );
+
+  // ? ITEMS
   const itemFolderPhotoData = useMemo(
     () => itemFolderPhoto?.pages.flatMap((page) => page.data) ?? [],
     [itemFolderPhoto?.pages]
   );
 
   const { postPhoto } = usePost({
-    keyListFolder: [],
+    keyListFolder: [
+      "keyListItemFolder",
+      id,
+      stateContent?.year,
+      stateContent?.month,
+    ],
     keyItemFolder: ["keyItemFolderPhoto", id, stateFolder.isFolder],
     type: type,
   });
 
-  // console.log(itemFolderPhotoData)
+  // console.log(listItemFolderPhotoData)
 
   return {
     // ? STATE
+    setStateContent,
     stateFolder,
     setStateFolder,
+
+    // ? DATA
+    listItemFolderPhotoData,
 
     // ? DATA
     itemFolderPhotoData,
@@ -224,7 +214,7 @@ const useItemDescription = (id: string) => {
     refetchOnMount: false,
     retry: false,
   });
-  const descriptionItemFolderData: TItemFolderDescription[] = useMemo(
+  const descriptionItemFolderData = useMemo(
     () => descriptionItemFolderPhoto ?? [],
     [descriptionItemFolderPhoto]
   );
@@ -235,6 +225,9 @@ const useItemDescription = (id: string) => {
 // ? ===============
 const useCreatorButton = (id: string) => {
   const [typeBtn, setTypeBtn] = useState<string>("");
+  const { type } = useParams<{ type: string }>();
+
+  const [updateState, setUpdateState] = useState(null);
 
   // * LIST POST FOLDER
   const { data: listPostFolder, isLoading: isLoadingListPost } = useQuery({
@@ -253,11 +246,35 @@ const useCreatorButton = (id: string) => {
     retry: false,
   });
 
+  // * UPDATE DATA
+  const { data: getUpdatePhoto } = useQuery({
+    queryKey: ["keyUpdatePhoto", id, updateState],
+    queryFn: async () => {
+      const URL = ROUTES_PROFILE.GET_BTN({
+        key: "getUpdate",
+        path: type,
+        idProduct: updateState,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: !!updateState,
+    gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false,
+    retry: false,
+  });
+
+  const UpdatedData = useMemo(() => getUpdatePhoto ?? [], [getUpdatePhoto]);
+
   const ListPostFolderData = useMemo(
     () => listPostFolder ?? [],
     [listPostFolder]
   );
 
+  console.log(`updated data:`, UpdatedData);
   // console.log(ListPostFolderData);
 
   return {
@@ -267,6 +284,9 @@ const useCreatorButton = (id: string) => {
     setTypeBtn,
 
     // ? updateDataPhoto
+    UpdatedData,
+    getUpdatePhoto,
+    setUpdateState,
     // UpdatePhotoData,
     // setIuProduct,
     // isLoadingUpdatePhoto,
@@ -276,7 +296,6 @@ const useCreatorButton = (id: string) => {
 export {
   useListFolder,
   useListItemFolder,
-  useItemFolder,
   useItemDescription,
   // useCreatorPhoto,
   useCreatorButton,

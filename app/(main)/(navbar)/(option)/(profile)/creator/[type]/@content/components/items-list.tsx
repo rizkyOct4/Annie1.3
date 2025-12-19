@@ -47,13 +47,14 @@ export interface ItemListStateNav {
 const ItemsList = ({
   data,
   folderName,
-  setStateFolder,
+  setIsRender,
 }: {
   data: TItemFolderPhoto[];
   folderName: string;
-  setStateFolder: React.Dispatch<React.SetStateAction<any>>;
+  setIsRender: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const {
+    setUpdateState,
     isLoadingItemFolderPhoto,
     fetchNextPageItemFolder,
     isHasPageItemFolder,
@@ -82,7 +83,7 @@ const ItemsList = ({
   ]);
 
   const pathname = usePathname();
-  const router = useRouter()
+  const router = useRouter();
 
   // ? Items State
   const [isOpen, setIsOpen] = useState<ItemListState>({
@@ -124,16 +125,20 @@ const ItemsList = ({
           // );
           break;
         }
-        // case "update": {
-        //   setStateFolder({
-        //     isOpen: true,
-        //     iuProduct: idProduct,
-        //     value: value,
-        //   });
-        //   break;
-        // }
+        case "update": {
+          setIsRender({
+            isOpen: true,
+            idProduct: idProduct,
+            value: value,
+          });
+          setUpdateState(idProduct);
+          // console.log("test")
+          break;
+        }
         case "openDescription": {
-          router.push(`${pathname}/description?folder-name=${folderName}&id=${idProduct}`)
+          router.push(
+            `${pathname}/description?folder-name=${folderName}&id=${idProduct}`
+          );
           break;
           // const newUrl = `${pathname}/description?folder-name=${folderName}&id=${idProduct}`;
           // history.pushState({}, "", newUrl);
@@ -141,7 +146,7 @@ const ItemsList = ({
         }
       }
     },
-    [folderName, pathname, router]
+    [folderName, pathname, router, setIsRender, setUpdateState]
   );
 
   return (
@@ -151,18 +156,16 @@ const ItemsList = ({
       )}
       <div
         ref={containerRef}
-        className="relative flex justify-center flex-wrap gap-5 w-full my-4 max-h-[400px] overflow-y-auto"
-      >
+        className="relative flex justify-center flex-wrap gap-5 w-full my-4 max-h-100 overflow-y-auto">
         {Array.isArray(data) &&
           data.length > 0 &&
           data.map((i: { idProduct: number; url: string }, idx) => {
             const isLast = idx === data.length - 1;
             return (
               <div
-                key={idx}
+                key={i.idProduct}
                 ref={isLast ? lastItemRef : null}
-                className="relative flex flex-col w-[22%] h-65 rounded-2xl overflow-hidden border border-gray-100 "
-              >
+                className="relative flex flex-col w-[22%] h-65 rounded-2xl overflow-hidden border border-gray-100">
                 {/* Image wrapper */}
                 <div className="relative w-full md:h-64 lg:h-72">
                   <Image
@@ -179,8 +182,7 @@ const ItemsList = ({
                           isOpenNav?.iuProduct.includes(i.idProduct)
                             ? "bg-black/80 text-white"
                             : "bg-white/80 text-gray-700"
-                        }`}
-                    >
+                        }`}>
                       {isOpenNav?.iuProduct.includes(i.idProduct) ? (
                         <MdCheck size={20} />
                       ) : (
@@ -194,8 +196,7 @@ const ItemsList = ({
                     {/* Toggle button */}
                     <button
                       className="w-9 h-9 rounded-xl bg-white/80 border border-gray-200 text-gray-700 flex-center"
-                      onClick={() => handleAction("toggle", i.idProduct, "")}
-                    >
+                      onClick={() => handleAction("toggle", i.idProduct, "")}>
                       {isOpen.iuProduct === i.idProduct && isOpen.open ? (
                         <IoMdOpen />
                       ) : (
@@ -213,8 +214,7 @@ const ItemsList = ({
                           onClick={() =>
                             handleAction(btn.name, i.idProduct, btn.name)
                           }
-                          title={btn.title}
-                        >
+                          title={btn.title}>
                           {btn.icon}
                         </button>
                       ))}
@@ -228,6 +228,4 @@ const ItemsList = ({
   );
 };
 
-export default ItemsList
-
-// todo KONDISIKAN LAGI INI DIKIT !!! 
+export default ItemsList;

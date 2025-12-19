@@ -1,9 +1,9 @@
 import { prisma } from "@/_lib/db";
 import sharp from "sharp";
 import cloudinary from "@/_lib/cloudinary";
-import type { GetUpdateImageType } from "../../../../../navbar/profile/type";
 import camelcaseKeys from "camelcase-keys";
 import { cacheLife, cacheTag } from "next/cache";
+import type { TGetUpdateImage } from "../type";
 
 // * GET LIST POST FOLDER =======
 export const GetListPostFolder = async (id: string, type: string) => {
@@ -25,26 +25,38 @@ export const GetListPostFolder = async (id: string, type: string) => {
 };
 
 // * GET UPDATE IMAGE =======
-export const GetUpdateImage = async (iuProduct: number) => {
-  const query = await prisma.$queryRaw<GetUpdateImageType[]>`
-        SELECT up.iu_product, up.folder_name, up.created_at, upi.description, upi.image_name, upi.url, upi.hashtag, upi.category
-        FROM users_product up
-        JOIN users_product_image upi ON (up.iu_product = upi.tar_iu_product)
-        WHERE up.iu_product = ${iuProduct}
+export const GetUpdateImage = async (id: string, idProduct: number) => {
+  const query = await prisma.$queryRaw<TGetUpdateImage[]>`
+    SELECT upi.ref_id_product, upi.description, upi.url, upi.hashtag, upi.category, COALESCE(SUM(upiv.like), 0)::int AS total_like, COALESCE(SUM(upiv.dislike), 0)::int AS total_dislike, up.folder_name, up.created_at
+    FROM users_product_image upi
+    JOIN users_product up ON (up.id_product = upi.ref_id_product)
+    JOIN users u ON (u.id = up.ref_id)
+    LEFT JOIN users_product_image_vote upiv ON (upiv.ref_id_product = up.id_product)
+    WHERE upi.ref_id_product = ${idProduct} AND u.id = ${id}::uuid
+    GROUP BY
+      upi.description,
+      upi.ref_id_product,
+      upi.url,
+      upi.hashtag,
+      upi.category,
+      up.folder_name,
+      up.created_at
     `;
 
-  if (!query) return [];
-
-  return query.map((i) => ({
-    iuProduct: i.iu_product,
+  const dataRaw = query.map((i) => ({
+    idProduct: i.ref_id_product,
     folderName: i.folder_name,
-    createdAt: i.created_at,
     description: i.description,
     imageName: i.image_name,
     url: i.url,
     hashtag: i.hashtag,
+    total_like: i.total_like,
+    total_dislike: i.total_dislike,
     category: i.category,
+    createdAt: i.created_at,
   }));
+
+  return camelcaseKeys(dataRaw);
 };
 
 // ? PUT IMAGE

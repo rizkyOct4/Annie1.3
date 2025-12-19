@@ -55,7 +55,7 @@ const OptionBtn = ({
               ${
                 isOpenNav.type === i.value
                   ? "bg-white/10 border-white/20"
-                  : "text-gray-400 hover:bg-white/5"
+                  : "text-white hover:bg-white/5 hover:border-white/30"
               }
             `}
           >
@@ -67,7 +67,7 @@ const OptionBtn = ({
           {isOpenNav.type === i.value && (
             <form
               onSubmit={handleSubmit}
-              className="z-60 bg-black/80 absolute top-[-60px] flex items-center gap-2 border-white/10 rounded-md text-white p-2"
+              className="z-60 bg-black/80 absolute -top-15 flex items-center gap-2 border-white/10 rounded-md text-white p-2"
             >
               <div className="border rounded-md px-3 py-1 text-sm">
                 {isOpenNav.iuProduct.length}

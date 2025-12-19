@@ -32,15 +32,22 @@ const usePost = ({
   });
 
   const { mutateAsync: postPhoto } = useMutation({
-    mutationFn: async (data) => await axios.post(URL, data),
+    mutationFn: async (data) => {
+      const res = await axios.post(URL, data);
+      return res.data;
+    },
     onMutate: async (mutate: TImagePost) => {
       showToast({ type: "loading", fallback: true });
 
       await queryClient.cancelQueries({
         queryKey: keyListFolder,
       });
+      await queryClient.cancelQueries({
+        queryKey: keyItemFolder,
+      });
 
       const prevListFolderData = queryClient.getQueryData(keyListFolder);
+      const prevItemFolderData = queryClient.getQueryData(keyItemFolder);
 
       queryClient.setQueryData<InfiniteData<TOriginalListFolder>>(
         keyListFolder,
@@ -49,7 +56,7 @@ const usePost = ({
 
           return {
             ...oldData,
-            pages: oldData?.pages.flatMap((page: any) => {
+            pages: oldData?.pages.map((page: any) => {
               const isExist = page.data.some(
                 (i: { folderName: string }) =>
                   i.folderName === mutate.folderName
@@ -58,9 +65,9 @@ const usePost = ({
                 return {
                   ...page,
                   data: page.data.map(
-                    (i: { folderName: string; totalProduct: number }) =>
+                    (i: { folderName: string; amountItem: number }) =>
                       i.folderName === mutate.folderName
-                        ? { ...i, totalProduct: i.totalProduct + 1 }
+                        ? { ...i, amountItem: i.amountItem + 1 }
                         : i
                   ),
                 };
@@ -69,7 +76,7 @@ const usePost = ({
                   ...page,
                   data: [
                     ...page.data,
-                    { folderName: mutate.folderName, totalProduct: 1 },
+                    { folderName: mutate.folderName, amountItem: 1 },
                   ],
                 };
               }
@@ -78,7 +85,7 @@ const usePost = ({
         }
       );
 
-      return { prevListFolderData };
+      return { prevListFolderData, prevItemFolderData };
     },
     onSuccess: (response) => {
       const { data } = response;
@@ -90,13 +97,19 @@ const usePost = ({
 
           return {
             ...oldData,
-            pages: oldData?.pages.flatMap((page) => ({
-              ...page,
-              data: [
-                ...page.data,
-                { idProduct: data[0].idProduct, url: data[0].url },
-              ],
-            })),
+            pages: oldData?.pages.map((page) => {
+              const space = page.hasMore !== true;
+              if (space) {
+                return {
+                  ...page,
+                  data: [
+                    ...page.data,
+                    { idProduct: data[0].idProduct, url: data[0].url },
+                  ],
+                };
+              }
+              return page;
+            }),
           };
         }
       );
@@ -105,8 +118,9 @@ const usePost = ({
       showToast({ type: "loading", fallback: false });
       showToast({ type: "error", fallback: error });
       console.error(error);
-      if (context?.prevListFolderData) {
+      if (context?.prevListFolderData && context?.prevItemFolderData) {
         queryClient.setQueryData(keyListFolder, context.prevListFolderData);
+        queryClient.setQueryData(keyItemFolder, context.prevItemFolderData);
       }
     },
   });
@@ -132,10 +146,10 @@ const usePut = ({
   });
 
   const { mutateAsync: putPhoto } = useMutation({
-    mutationFn: async (data) =>
-      await axios.put(URL, data, {
-        withCredentials: true, // kalau perlu cookie/session
-      }),
+    mutationFn: async (data) => {
+      const res = await axios.put(URL, data);
+      return res.data;
+    },
     onMutate: async () => {
       showToast({ type: "loading", fallback: true });
 
@@ -152,21 +166,18 @@ const usePut = ({
       const { data } = response.data;
 
       // ? DESCTIPTION
-      queryClient.setQueryData<ItemFolderDescriptionType[]>(
-        keyDescriptionItem,
-        (oldData) => {
-          if (!oldData) return [];
+      queryClient.setQueryData(keyDescriptionItem, (oldData) => {
+        if (!oldData) return [];
 
-          return oldData.map((i) => ({
-            ...i,
-            description: data[0].description,
-            hashtag: data[0].hashtag,
-            category: data[0].category,
-            url: data[0].url,
-            createdAt: data[0].createdAt,
-          }));
-        }
-      );
+        return oldData.map((i) => ({
+          ...i,
+          description: data[0].description,
+          hashtag: data[0].hashtag,
+          category: data[0].category,
+          url: data[0].url,
+          createdAt: data[0].createdAt,
+        }));
+      });
 
       // ? ITEMS FOLDER
       queryClient.setQueryData<InfiniteData<OriginaItemFolderType>>(

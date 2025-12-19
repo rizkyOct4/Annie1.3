@@ -17,7 +17,7 @@ export const ROUTES_CREATOR_PHOTO_PANEL = {
     // const limit = 4;
     switch (typeConfig) {
       case "panelDescriptionPhoto": {
-        return `${BASE_URL}/creator/${prevPath}/${currentPath}/api-panel?key=${currentPath}&folder-name=${encodeURIComponent(
+        return `/creator/${prevPath}/${currentPath}/api-panel?key=${currentPath}&folder-name=${encodeURIComponent(
           folderName
         )}&id=${id}`;
       }

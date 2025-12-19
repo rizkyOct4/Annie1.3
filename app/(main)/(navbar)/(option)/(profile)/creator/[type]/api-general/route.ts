@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     // const token = req.cookies.get("access_token")?.value;
     const { id } = await GetToken();
     const typeBtn = req.nextUrl.searchParams.get("type-btn");
-    const iuProduct = Number(req.nextUrl.searchParams.get("iu-product"));
+    const idProduct = Number(req.nextUrl.searchParams.get("id-product"));
 
     // * List Folder Form
     if (typeBtn) {
@@ -18,8 +18,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(result);
     }
 
-    if (iuProduct) {
-      const result = await GetUpdateImage(iuProduct);
+    if (idProduct) {
+      const result = await GetUpdateImage(id, idProduct);
       return NextResponse.json(result);
     }
   } catch (err: any) {
