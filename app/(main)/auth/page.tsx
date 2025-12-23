@@ -1,4 +1,4 @@
-import ModalAuth from "../@intercept/(.)auth/modal";
+import ModalAuth from "../@intAuth/(.)auth/modal";
 
 const page = () => {
   return <ModalAuth />;

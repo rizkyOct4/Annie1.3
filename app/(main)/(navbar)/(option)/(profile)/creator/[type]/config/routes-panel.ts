@@ -1,5 +1,3 @@
-import { BASE_URL } from "@/_lib/config";
-
 export const ROUTES_CREATOR_PHOTO_PANEL = {
   GET: ({
     typeConfig,

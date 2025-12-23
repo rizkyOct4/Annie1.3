@@ -9,8 +9,6 @@ import { creatorContext } from "@/app/context";
 import { TImagePut, zPutFormSchema } from "../../schema/schema-form";
 import { z } from "zod";
 import { ForbiddenRegex } from "@/_util/Regex";
-// import { IsRenderComponent } from "../../../folder-list";
-// import type { PutImageSchema } from "../../types/type";
 
 type PutFormSchema = z.infer<typeof zPutFormSchema>;
 
@@ -43,8 +41,6 @@ const PutPhotoForm = ({
     setTypeBtn,
     putPhoto,
   } = useContext(creatorContext);
-  // console.log(UpdatedData);
-  // console.log(ListPostFolderData);
 
   const [showDummyFolder, setShowDummyFolder] = useState(false);
 
@@ -53,7 +49,6 @@ const PutPhotoForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
     watch,
     reset,
   } = useForm<PutFormSchema>({
@@ -84,13 +79,9 @@ const PutPhotoForm = ({
       });
     }
     setTypeBtn("photo");
-    if (!ListPostFolderData) {
-      refetchListPostFolder();
-    }
   }, [
     ListPostFolderData,
     UpdatedData,
-    refetchListPostFolder,
     reset,
     setTypeBtn,
   ]);

@@ -21,10 +21,10 @@ import { useRouter } from "next/navigation";
 
 const Sidebar = ({
   children,
-  intercept,
+  intAuth,
 }: {
   children: React.ReactNode;
-  intercept: React.ReactNode;
+  intAuth: React.ReactNode;
 }) => {
   const [activePanel, setActivePanel] = useState<string | null>(null);
   const router = useRouter();
@@ -134,7 +134,7 @@ const Sidebar = ({
       </aside>
       {/* === MAIN CONTENT === */}
       <main className="flex-1 pb-10 min-h-screen overflow-y-auto bg-black/80">
-        {intercept}
+        {intAuth}
         {children}
       </main>
     </div>

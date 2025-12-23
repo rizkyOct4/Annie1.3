@@ -41,7 +41,10 @@ export const ROUTES_PROFILE = {
         return `/creator/${path}/api-content/action?method=${method}&type=${type}`;
       }
       case "putNameFolder": {
-        return `/creator/${path}/api-content/action?change-folder=${true}&type=${type}`;
+        return `/creator/${path}/api-content/action?key=${method}&change-folder=${true}&type=${type}`;
+      }
+      case "groupedPutImage": {
+        return `/creator/${path}/api-content/action?key=${method}&change-folder=${true}`;
       }
       default:
         return "";

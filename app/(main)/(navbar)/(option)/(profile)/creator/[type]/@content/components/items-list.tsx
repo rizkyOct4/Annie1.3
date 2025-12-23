@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import {
-  memo,
   useCallback,
   useContext,
   useState,
@@ -101,7 +100,13 @@ const ItemsList = ({
   });
 
   const handleAction = useCallback(
-    (actionType: string, idProduct: number, value?: string) => {
+    (
+      e: React.SyntheticEvent,
+      actionType: string,
+      idProduct: number,
+      value?: string
+    ) => {
+      e.preventDefault()
       switch (actionType) {
         // ? Item Nav Action
         case "navAction": {
@@ -180,7 +185,9 @@ const ItemsList = ({
                     />
                     {["move", "delete"].includes(isOpenNav.type) && (
                       <button
-                        onClick={() => handleAction("navAction", i.idProduct)}
+                        onClick={(e) =>
+                          handleAction(e, "navAction", i.idProduct)
+                        }
                         className={`absolute top-3 left-3 flex items-center justify-center w-9 h-9 rounded-xl transition-colors
                         ${
                           isOpenNav?.idProduct.includes(i.idProduct)
@@ -200,7 +207,9 @@ const ItemsList = ({
                       {/* Toggle button */}
                       <button
                         className="w-9 h-9 rounded-xl bg-white/80 border border-gray-200 text-gray-700 flex-center"
-                        onClick={() => handleAction("toggle", i.idProduct, "")}>
+                        onClick={(e) =>
+                          handleAction(e, "toggle", i.idProduct, "")
+                        }>
                         {isOpen.iuProduct === i.idProduct && isOpen.open ? (
                           <IoMdOpen />
                         ) : (
@@ -215,8 +224,8 @@ const ItemsList = ({
                           <button
                             key={idx}
                             className="text-sm font-medium text-gray-600 w-9 h-9 rounded-xl bg-white/80 border border-gray-200 flex-center hover:bg-white hover:text-black"
-                            onClick={() =>
-                              handleAction(btn.name, i.idProduct, btn.name)
+                            onClick={(e) =>
+                              handleAction(e, btn.name, i.idProduct, btn.name)
                             }
                             title={btn.title}>
                             {btn.icon}

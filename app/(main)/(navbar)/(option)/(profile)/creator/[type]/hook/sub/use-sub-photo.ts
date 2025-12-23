@@ -493,4 +493,22 @@ const usePutFolderName = ({
   return { updateNameFolder };
 };
 
-export { usePost, usePut, usePutFolderName };
+const useGroupedPut = ({type}: {type: string}) => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: groupedPutPhoto } = useMutation({
+    mutationFn: async (data) => {
+      const URL = ROUTES_PROFILE.ACTION_PHOTO({
+        method: "groupedPutImage",
+        type: "photo",
+        path: type,
+      });
+      const res = await axios.put(URL, data);
+      return res.data;
+    },
+  });
+
+  return { groupedPutPhoto };
+};
+
+export { usePost, usePut, usePutFolderName, useGroupedPut };

@@ -16,7 +16,9 @@ const ProfilePath = async ({
   };
   // ? ROLE SPESIFIC
   if (!pathname.startsWith(rolePaths[role])) {
-    return NextResponse.redirect(new URL(`/auth`, req.url));
+    return NextResponse.redirect(
+      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url)
+    );
   }
 };
 

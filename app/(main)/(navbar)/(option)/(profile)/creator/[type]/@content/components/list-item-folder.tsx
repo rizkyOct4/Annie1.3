@@ -5,7 +5,6 @@ import { creatorContext } from "@/app/context";
 import { ChartSpline, ChevronDown } from "lucide-react";
 import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
-
 import ItemsList from "./items-list";
 import { TListItemFolderPhoto } from "../../types/content/type";
 import dynamic from "next/dynamic";
@@ -13,10 +12,7 @@ import Loading from "@/app/loading";
 import PutFolderNameForm from "../../form/photo/put-name-folder-form";
 
 const LazyUpdatePhotoForm = dynamic(
-  () => import("../../form/photo/put-photo-form"),
-  {
-    loading: () => <Loading />,
-  }
+  () => import("../../form/photo/put-photo-form")
 );
 // const LazyPutFolderNameForm = dynamic(
 //   () => import("../../form/photo/put-name-folder-form"),
@@ -60,6 +56,7 @@ const ListItemPhoto = ({
   const {
     stateFolder,
     setStateFolder,
+    isFetchingListItemFolder,
     itemFolderPhotoData,
     isSort,
     sortItemFolder,
@@ -122,7 +119,10 @@ const ListItemPhoto = ({
     <>
       <div className="w-full flex pl-4">
         <div className="flex flex-col gap-2 w-full">
-          {Array.isArray(data) &&
+          {isFetchingListItemFolder ? (
+            <Loading />
+          ) : (
+            Array.isArray(data) &&
             data.length > 0 &&
             data.map((f) => (
               <div
@@ -207,7 +207,8 @@ const ListItemPhoto = ({
                   )}
                 </>
               </div>
-            ))}
+            ))
+          )}
         </div>
       </div>
       {renderComponent()}

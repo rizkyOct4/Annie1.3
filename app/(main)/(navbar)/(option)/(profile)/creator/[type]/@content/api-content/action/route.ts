@@ -4,7 +4,6 @@ import {
   PutImage,
   PutFolderName,
 } from "@/_lib/services/navbar/option/profile/action/services-btn";
-// import { ItemFolderDescription } from "@/_lib/navbar/profile/route";
 import GetToken from "@/_lib/middleware/get-token";
 import {
   PostImageProductCloudinary,
@@ -14,28 +13,28 @@ import {
 import { revalidateTag } from "next/cache";
 import { GetUpdateImage } from "@/_lib/services/navbar/option/profile/action/services-btn";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ panel: string }> }
-) {
-  try {
-    const { id } = await GetToken();
-    const key = req.nextUrl.searchParams.get("key");
-    const pathUrl = (await params).panel;
+// export async function GET(
+//   req: NextRequest,
+//   { params }: { params: Promise<{ panel: string }> }
+// ) {
+//   try {
+//     const { id } = await GetToken();
+//     const key = req.nextUrl.searchParams.get("key");
+//     const pathUrl = (await params).panel;
 
-    const pathFolderName = req.nextUrl.searchParams.get("folder-name") ?? "";
-    // const id = Number(req.nextUrl.searchParams.get("id"));
+//     const pathFolderName = req.nextUrl.searchParams.get("folder-name") ?? "";
+//     // const id = Number(req.nextUrl.searchParams.get("id"));
 
-    switch (key) {
-      case "description": {
-        const result = await ItemFolderDescription(id);
-        return NextResponse.json(result);
-      }
-    }
-  } catch (err: any) {
-    return NextResponse.json({ message: err.message }, { status: 500 });
-  }
-}
+//     switch (key) {
+//       case "description": {
+//         const result = await ItemFolderDescription(id);
+//         return NextResponse.json(result);
+//       }
+//     }
+//   } catch (err: any) {
+//     return NextResponse.json({ message: err.message }, { status: 500 });
+//   }
+// }
 
 export async function POST(req: NextRequest) {
   try {
@@ -102,6 +101,7 @@ export async function PUT(req: NextRequest) {
     const method = req.nextUrl.searchParams.get("method");
     const typePut = req.nextUrl.searchParams.get("type");
 
+    const key = req.nextUrl.searchParams.get("key");
     const changeNameFolder = req.nextUrl.searchParams.get("change-folder");
 
     if (method === "put" && typePut === "photo") {
@@ -146,7 +146,7 @@ export async function PUT(req: NextRequest) {
         data: result,
       });
     }
-    if (changeNameFolder && typePut === "photo") {
+    if (key === "putNameFolder" && changeNameFolder) {
       const { targetFolder, value } = await req.json();
 
       const result = await PutFolderName({
@@ -157,6 +157,18 @@ export async function PUT(req: NextRequest) {
         message: "Update Success",
         data: result,
       });
+    }
+    if (key === "groupedPutImage" && changeNameFolder) {
+      // const { targetFolder, value } = await req.json();
+
+      // const result = await PutFolderName({
+      //   targetFolder: targetFolder,
+      //   value: value,
+      // });
+      // return NextResponse.json({
+      //   message: "Update Success",
+      //   data: result,
+      // });
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });

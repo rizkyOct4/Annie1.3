@@ -1,3 +1,5 @@
+"use cache";
+
 import type { Metadata } from "next";
 import LegalContent from "./components/content";
 import { Suspense } from "react";
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
     "Terms of Service, Privacy Policy, and Content Guidelines for YourApp.",
 };
 
-const LegalPage = () => {
+const LegalPage = async () => {
   return (
     <Suspense fallback={<Loading />}>
       <LegalContent />

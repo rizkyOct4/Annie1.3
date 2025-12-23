@@ -68,33 +68,39 @@ const useContentProfile = (id: string) => {
 
   // ! START CONTENT ==========================
   // * List Item Folder
-  const { data: listItemFolder } = useInfiniteQuery({
-    queryKey: ["keyListItemFolder", id, stateContent.year, stateContent.month],
-    queryFn: async ({ pageParam = 1 }) => {
-      const URL = ROUTES_ITEM_FOLDER.GET({
-        typeConfig: "listItemFolderPhoto",
-        path: type,
-        pageParam: pageParam,
-        year: stateContent.year,
-        month: stateContent.month,
-      });
-      const { data } = await axios.get(URL);
-      return data;
-    },
+  const { data: listItemFolder, isFetching: isFetchingListItemFolder } =
+    useInfiniteQuery({
+      queryKey: [
+        "keyListItemFolder",
+        id,
+        stateContent.year,
+        stateContent.month,
+      ],
+      queryFn: async ({ pageParam = 1 }) => {
+        const URL = ROUTES_ITEM_FOLDER.GET({
+          typeConfig: "listItemFolderPhoto",
+          path: type,
+          pageParam: pageParam,
+          year: stateContent.year,
+          month: stateContent.month,
+        });
+        const { data } = await axios.get(URL);
+        return data;
+      },
 
-    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage?.hasMore ? allPages.length + 1 : undefined;
-    },
-    staleTime: 1000 * 60 * 3,
-    gcTime: 1000 * 60 * 60,
-    initialPageParam: 1,
-    enabled: !!stateContent.year && !!stateContent.month,
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
-    refetchOnMount: false, // "always" => refetch jika stale saja
-    retry: false,
-  });
+      // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage?.hasMore ? allPages.length + 1 : undefined;
+      },
+      staleTime: 1000 * 60 * 3,
+      gcTime: 1000 * 60 * 60,
+      initialPageParam: 1,
+      enabled: !!stateContent.year && !!stateContent.month,
+      placeholderData: keepPreviousData,
+      refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+      refetchOnMount: false, // "always" => refetch jika stale saja
+      retry: false,
+    });
 
   // * Items Folder
   const {
@@ -209,12 +215,17 @@ const useContentProfile = (id: string) => {
   // * UPDATE NEW NAME FOLDER
   const { updateNameFolder } = usePutFolderName({
     keyFolder: ["keyListFolderPhoto", id, type],
-    keyListItemFolder: ["keyListItemFolder", id, stateContent.year, stateContent.month],
+    keyListItemFolder: [
+      "keyListItemFolder",
+      id,
+      stateContent.year,
+      stateContent.month,
+    ],
     keyItemFolder: ["keyItemFolderPhoto", id, stateFolder.isFolder],
     keyUpdatePhoto: ["keyUpdatePhoto", id, updateState],
     type: type,
   });
-  // console.log(listItemFolder);
+  // console.log(itemFolderPhoto);
 
   return {
     // ? STATE
@@ -229,6 +240,7 @@ const useContentProfile = (id: string) => {
     IFNPListFolderPhoto,
 
     // ? DATA
+    isFetchingListItemFolder,
     listItemFolderPhotoData,
 
     // ? DATA
@@ -255,6 +267,9 @@ const useContentProfile = (id: string) => {
 
     // * UPDATE NEW NAME FOLDER
     updateNameFolder,
+
+    // * CURRENT-PATH
+    type
   };
 };
 
@@ -309,7 +324,7 @@ const useCreatorButton = (id: string) => {
       return data;
     },
     enabled: typeBtn !== "",
-    staleTime: 1000 * 60 * 1,
+    staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
@@ -322,7 +337,6 @@ const useCreatorButton = (id: string) => {
     [listPostFolder]
   );
 
-  // console.log(`updated data:`, UpdatedData);
   // console.log(ListPostFolderData);
 
   return {
@@ -339,7 +353,6 @@ const useCreatorButton = (id: string) => {
 };
 
 export {
-  // useListFolder,
   useContentProfile,
   useItemDescription,
   // useCreatorPhoto,

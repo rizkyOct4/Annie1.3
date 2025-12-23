@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 
 const ModalAuth = () => {
   const [state, setState] = useState(false);
-  const redirect = useSearchParams().get("redirect") ?? "/homepage";
+  const redirect = useSearchParams().get("redirect");
 
   return (
     <>

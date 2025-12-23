@@ -2,29 +2,26 @@
 
 import { creatorContext } from "@/app/context";
 import { FolderClock, ArrowUp01, RefreshCcw } from "lucide-react";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { MdDriveFileMove, MdDelete } from "react-icons/md";
+import { ItemListStateNav } from "../items-list";
 
 const OptionBtn = ({
   isOpenNav,
   setIsOpenNav,
 }: {
-  isOpenNav: any;
-  setIsOpenNav: any;
+  isOpenNav: ItemListStateNav;
+  setIsOpenNav: React.Dispatch<React.SetStateAction<ItemListStateNav>>;
 }) => {
-  const { setIsSort, isRefetchItemFolder } =
-    useContext(creatorContext);
-  // console.log(itemFolderPhotoData);
+  const {
+    setIsSort,
+    isRefetchItemFolder,
+    type,
+    setTypeBtn,
+    ListPostFolderData,
+    refetchListPostFolder,
+  } = useContext(creatorContext);
 
-  // const sort = SortASC(itemFolderPhotoData);
-
-  const dummyFolders = [
-    "Folder A",
-    "Folder B",
-    "Folder C",
-    "Folder D",
-    "Folder E",
-  ];
   const listBtn = [
     { name: `Move`, icon: <MdDriveFileMove size={20} />, value: "move" },
     { name: `Delete`, icon: <MdDelete size={20} />, value: "delete" },
@@ -39,6 +36,9 @@ const OptionBtn = ({
       switch (actionType) {
         case "move":
         case "delete": {
+          if (actionType === "move") {
+            setTypeBtn(type);
+          }
           setIsOpenNav((prev: { type: string }) => ({
             ...prev,
             idProduct: [],
@@ -56,18 +56,28 @@ const OptionBtn = ({
         }
       }
     },
-    [setIsOpenNav, setIsSort, isRefetchItemFolder]
+    [setIsOpenNav, setTypeBtn, type, setIsSort, isRefetchItemFolder]
   );
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    setIsOpenNav({
-      isOpen: true,
-      iuProduct: [],
-      type: "",
-      targetFolder: "",
-    });
-  };
+  const handleSubmit = useCallback(
+    (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      const payload = {
+        targetIdProduct: isOpenNav.idProduct,
+        type: type,
+        targetFolder: isOpenNav.targetFolder,
+      };
+      console.log(payload);
+
+      setIsOpenNav({
+        isOpen: false,
+        idProduct: [],
+        type: "",
+        targetFolder: "",
+      });
+    },
+    [isOpenNav.idProduct, isOpenNav.targetFolder, setIsOpenNav, type]
+  );
 
   return (
     <div className="flex gap-3 mt-4 relative z-50">
@@ -115,7 +125,7 @@ const OptionBtn = ({
             <select
               value={isOpenNav.targetFolder}
               onChange={(e) =>
-                setIsOpenNav((prev: any) => ({
+                setIsOpenNav((prev) => ({
                   ...prev,
                   targetFolder: e.target.value,
                 }))
@@ -126,14 +136,17 @@ const OptionBtn = ({
             text-sm text-white
             focus:outline-none focus:ring-1 focus:ring-white/30
           ">
-              <option value="" className="text-black">
-                Select folder
-              </option>
-              {dummyFolders.map((folder, idx) => (
-                <option key={idx} value={folder} className="text-black">
-                  {folder}
-                </option>
-              ))}
+              {Array.isArray(ListPostFolderData) &&
+                ListPostFolderData.map(
+                  (i: { folderName: string }, idx: number) => (
+                    <option
+                      key={idx}
+                      value={i.folderName}
+                      className="text-black">
+                      {i.folderName}
+                    </option>
+                  )
+                )}
             </select>
           )}
 

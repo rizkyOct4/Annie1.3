@@ -1,8 +1,11 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import ModalPanel from "./modal";
 import { ISGQuery } from "@/_util/fetch";
-import Fetching from "@/_util/fetch";
+// import Fetching from "@/_util/fetch";
+import GetToken from "@/_lib/middleware/get-token";
 import { ROUTES_CREATOR_PHOTO_PANEL } from "../../config/routes-panel";
+import { getQueryClient } from "@/app/get-query-client";
+import { ItemFolderDescription } from "@/_lib/services/navbar/option/profile/services-panel";
 
 const page = async ({
   params,
@@ -14,36 +17,30 @@ const page = async ({
     id?: string;
   }>;
 }) => {
-  const { queryClient, publicId } = await Fetching();
+  const { id } = await GetToken();
+  const queryClient = getQueryClient();
 
   const prevPath = (await params).type;
   const currentPath = (await params).panel;
   const pathFolderName = (await searchParams)?.["folder-name"] ?? "";
-  const id = (await searchParams).id ?? "";
+  const idProduct = Number((await searchParams).id);
 
-  const queryKeyDescription = [
-    "keyDescriptionItemFolder",
-    publicId,
-    currentPath,
-    pathFolderName,
-    id,
-  ];
   switch (currentPath) {
     // case "stats": {
     //   break;
     // }
     case "description": {
-      const config = ROUTES_CREATOR_PHOTO_PANEL.GET({
-        typeConfig: "panelDescriptionPhoto",
-        prevPath: prevPath,
-        currentPath: currentPath,
-        folderName: pathFolderName,
-        id: id,
-      });
-      await ISGQuery({
+      const queryKeyDescription = [
+        "keyDescriptionItemFolder",
+        id,
+        currentPath,
+        pathFolderName,
+        idProduct,
+      ];
+
+      await queryClient.prefetchQuery({
         queryKey: queryKeyDescription,
-        config: config,
-        queryClient: queryClient,
+        queryFn: () => ItemFolderDescription(idProduct, id),
       });
     }
   }

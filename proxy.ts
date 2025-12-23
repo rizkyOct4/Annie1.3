@@ -31,6 +31,10 @@ export const config = {
   ],
 };
 
+// todo kau perbaiki lagi besok PROXY NI !!! KONDISIKAN !!
+// todo INTERCEPT ?? LOGIN AMAN TAPI ETC ??
+// todo GANTI SELECT OPTION !! BUAT SEMANTIC !!
+
 //  * 085212635051 (bg dimas)
 
 // todo buat besok SAMA KAU SSG LAGI !!!

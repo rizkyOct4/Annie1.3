@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 // import { TokenHelper } from "@/_lib/tokenHelper";
 // import { ItemFolderDescription } from "@/_lib/services/navbar/profile/panel-service";
 import GetToken from "@/_lib/middleware/get-token";
+import { ItemFolderDescription } from "@/_lib/services/navbar/option/profile/services-panel";
 
 export async function GET(
   req: NextRequest,
@@ -13,11 +14,11 @@ export async function GET(
     const pathUrl = (await params).panel;
 
     const pathFolderName = req.nextUrl.searchParams.get("folder-name") ?? "";
-    const id = Number(req.nextUrl.searchParams.get("id"));
+    const idProduct = Number(req.nextUrl.searchParams.get("id"));
 
     switch (key) {
       case "description": {
-        const result = await ItemFolderDescription(id);
+        const result = await ItemFolderDescription(idProduct, id);
         return NextResponse.json(result);
       }
     }

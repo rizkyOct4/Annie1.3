@@ -2,12 +2,9 @@
 
 import { useContext } from "react";
 import { creatorContext } from "@/app/context";
-import { SLoading } from "@/_util/Spinner-loading";
 import dynamic from "next/dynamic";
 
-const LazyListListItemPhoto = dynamic(() => import("./list-item-folder"), {
-  loading: () => <SLoading />,
-});
+const LazyListListItemPhoto = dynamic(() => import("./list-item-folder"));
 
 export default function ModalListItem({
   currentPath,

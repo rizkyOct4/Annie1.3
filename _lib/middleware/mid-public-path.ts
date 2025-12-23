@@ -26,7 +26,9 @@ const PublicPath = ({
     return NextResponse.next();
   }
   if (!role && req.method !== "GET") {
-    return NextResponse.redirect(new URL(`/auth`, req.url));
+    return NextResponse.redirect(
+      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url)
+    );
   }
   if (role) return NextResponse.next();
 };

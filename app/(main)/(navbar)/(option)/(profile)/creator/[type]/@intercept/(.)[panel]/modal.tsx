@@ -5,12 +5,7 @@ import ItemDescription from "./components/description/id-desc";
 import ModalStats from "./components/modal/modal-stats";
 import { creatorContext } from "@/app/context";
 
-
-const ModalPanel = ({
-  currentPath,
-}: {
-  currentPath: string;
-}) => {
+const ModalPanel = ({ currentPath }: { currentPath: string }) => {
   const { descriptionItemFolderData } = useContext(creatorContext);
 
   const render = useCallback(() => {
