@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: "Report",
 };
 
-// export const dynamic = "force-static";
 
 const ReportPage = async () => {
   return (

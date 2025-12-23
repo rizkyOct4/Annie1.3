@@ -2,7 +2,7 @@
 
 import { creatorContext } from "@/app/context";
 import { FolderClock, ArrowUp01, RefreshCcw } from "lucide-react";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import { MdDriveFileMove, MdDelete } from "react-icons/md";
 import { ItemListStateNav } from "../items-list";
 
@@ -19,15 +19,14 @@ const OptionBtn = ({
     type,
     setTypeBtn,
     ListPostFolderData,
-    refetchListPostFolder,
   } = useContext(creatorContext);
 
   const listBtn = [
-    { name: `Move`, icon: <MdDriveFileMove size={20} />, value: "move" },
-    { name: `Delete`, icon: <MdDelete size={20} />, value: "delete" },
-    { name: `History`, icon: <FolderClock size={20} />, value: "history" },
-    { name: `Filter`, icon: <ArrowUp01 size={20} />, value: "filter" },
-    { name: `Refresh`, icon: <RefreshCcw size={20} />, value: "refresh" },
+    { name: `Move`, icon: <MdDriveFileMove size={18} />, value: "move" },
+    { name: `Delete`, icon: <MdDelete size={18} />, value: "delete" },
+    { name: `History`, icon: <FolderClock size={18} />, value: "history" },
+    { name: `Filter`, icon: <ArrowUp01 size={18} />, value: "filter" },
+    { name: `Refresh`, icon: <RefreshCcw size={18} />, value: "refresh" },
   ];
 
   const handleAction = useCallback(
@@ -36,10 +35,8 @@ const OptionBtn = ({
       switch (actionType) {
         case "move":
         case "delete": {
-          if (actionType === "move") {
-            setTypeBtn(type);
-          }
-          setIsOpenNav((prev: { type: string }) => ({
+          if (actionType === "move") setTypeBtn(type);
+          setIsOpenNav((prev) => ({
             ...prev,
             idProduct: [],
             type: prev.type === actionType ? "" : actionType,
@@ -62,13 +59,6 @@ const OptionBtn = ({
   const handleSubmit = useCallback(
     (e: React.SyntheticEvent) => {
       e.preventDefault();
-      const payload = {
-        targetIdProduct: isOpenNav.idProduct,
-        type: type,
-        targetFolder: isOpenNav.targetFolder,
-      };
-      console.log(payload);
-
       setIsOpenNav({
         isOpen: false,
         idProduct: [],
@@ -76,51 +66,66 @@ const OptionBtn = ({
         targetFolder: "",
       });
     },
-    [isOpenNav.idProduct, isOpenNav.targetFolder, setIsOpenNav, type]
+    [setIsOpenNav]
   );
 
   return (
-    <div className="flex gap-3 mt-4 relative z-50">
-      {listBtn.map((i, idx) => (
-        <div key={idx} className="flex flex-col w-auto">
-          {/* Button */}
+    <div
+      className="
+        flex items-center
+        w-full
+        mt-4
+      ">
+      {/* ===== LEFT: ACTION BUTTONS ===== */}
+      <div className="flex items-center gap-3">
+        {listBtn.map((i, idx) => (
           <button
+            key={idx}
+            title={i.name}
             onClick={(e) => handleAction(e, i.value)}
             className={`
-          flex items-center gap-2 px-4 py-2 rounded-md
-          text-sm font-medium
-          transition-colors
-          border border-transparent
-          ${
-            isOpenNav.type === i.value
-              ? "bg-white/10 border-white/20"
-              : "text-white hover:bg-white/5 hover:border-white/30"
-          }
-        `}>
+              flex items-center gap-2
+              px-4 py-2
+              rounded-lg
+              text-sm font-medium
+              transition
+              border
+              ${
+                isOpenNav.type === i.value
+                  ? "bg-white/10 border-white/20 text-gray-200"
+                  : "bg-white/5 border-white/10 text-gray-400 hover:text-gray-200 hover:bg-white/10"
+              }
+            `}>
             {i.icon}
-            <span>{i.name}</span>
           </button>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      {/* Dropdown */}
+      {/* ===== SPACER ===== */}
+      <div className="flex-1" />
+
+      {/* ===== RIGHT: INLINE PANEL ===== */}
       {["move", "delete"].includes(isOpenNav.type) && (
         <form
           onSubmit={handleSubmit}
-          className="absolute -top-15 right-40
-        flex items-center gap-2
-        bg-black/80 border border-white/10 rounded-md
-        text-white p-2
-        shadow-lg
-        z-50
-        w-auto
-      ">
+          className="
+            flex items-center gap-4
+          ">
           {/* Counter */}
-          <div className="border rounded-md px-3 py-1 text-sm">
+          <div
+            className="
+              min-w-11
+              text-center
+              px-3 py-1
+              rounded-md
+              bg-white/10
+              border border-white/10
+              text-sm text-gray-200
+            ">
             {isOpenNav.idProduct.length}
           </div>
 
-          {/* Select folder */}
+          {/* Select */}
           {isOpenNav.type === "move" && (
             <select
               value={isOpenNav.targetFolder}
@@ -131,11 +136,16 @@ const OptionBtn = ({
                 }))
               }
               className="
-            px-3 py-2 rounded-md
-            bg-white/10 border border-black/80
-            text-sm text-white
-            focus:outline-none focus:ring-1 focus:ring-white/30
-          ">
+                px-3 py-2
+                rounded-md
+                bg-white/10
+                border border-white/10
+                text-sm text-gray-200
+                focus:outline-none focus:ring-1 focus:ring-emerald-500/50
+              ">
+              <option value="" disabled>
+                Choose folder
+              </option>
               {Array.isArray(ListPostFolderData) &&
                 ListPostFolderData.map(
                   (i: { folderName: string }, idx: number) => (
@@ -150,13 +160,17 @@ const OptionBtn = ({
             </select>
           )}
 
-          {/* Submit button */}
+          {/* Submit */}
           <button
             type="submit"
             className="
-          px-4 py-2 bg-white/10 hover:bg-white/20
-          text-white rounded-md text-sm transition-colors
-        ">
+              px-4 py-2
+              rounded-md
+              bg-emerald-600/80
+              hover:bg-emerald-600
+              text-sm font-medium text-white
+              transition
+            ">
             Submit
           </button>
         </form>

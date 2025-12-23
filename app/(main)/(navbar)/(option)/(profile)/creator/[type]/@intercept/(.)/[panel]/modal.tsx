@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useContext, useCallback } from "react";
-import ItemDescription from "./components/description/id-desc";
 import ModalStats from "./components/modal/modal-stats";
+import ItemDescription from "./components/description/id-desc";
+
 import { creatorContext } from "@/app/context";
 
 const ModalPanel = ({ currentPath }: { currentPath: string }) => {

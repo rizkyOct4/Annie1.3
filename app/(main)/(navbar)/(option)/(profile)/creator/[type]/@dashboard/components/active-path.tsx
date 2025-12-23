@@ -8,7 +8,14 @@ const ActivePath = ({ currentPath }: { currentPath: string }) => {
   const typeBtn = ["photo", "video"];
 
   return (
-    <div className="flex items-center gap-6">
+    <div
+      className="
+        flex items-center gap-6
+        px-4 py-2
+        rounded-xl
+        bg-white/5
+        border border-white/10
+      ">
       {typeBtn.map((name, idx) => {
         const isActive = currentPath === name;
 
@@ -17,17 +24,28 @@ const ActivePath = ({ currentPath }: { currentPath: string }) => {
             key={idx}
             onClick={() => router.push(`/creator/${name}`)}
             className={`
-          relative
-          px-2 py-1
-          text-sm font-semibold
-          transition-colors duration-300
-          ${
-            isActive
-              ? "text-white after:scale-x-100 after:bg-black"
-              : "text-gray-500 hover:text-black after:scale-x-0 hover:after:scale-x-100 after:bg-black/60"
-          }
-        `}>
+              relative
+              px-3 py-1.5
+              text-sm font-semibold capitalize
+              transition-all duration-300
+              ${
+                isActive ? "text-gray-200" : "text-gray-400 hover:text-gray-200"
+              }
+            `}>
             {name}
+
+            {/* underline */}
+            <span
+              className={`
+                absolute left-0 -bottom-1
+                h-0.5 w-full
+                rounded-full
+                bg-emerald-500
+                transition-transform duration-300
+                origin-left
+                ${isActive ? "scale-x-100" : "scale-x-0"}
+              `}
+            />
           </button>
         );
       })}
@@ -36,7 +54,3 @@ const ActivePath = ({ currentPath }: { currentPath: string }) => {
 };
 
 export default memo(ActivePath);
-
-// todo PERBAIKI DASHBOARD KAU BESOK !! BUAT SMOOTH !!! 
-
-// todo QUERYCACHE KAU KONDISIKAN LAGI BESOK !! PASTIKAN BERSIH !! 

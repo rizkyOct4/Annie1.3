@@ -1,9 +1,6 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import ModalPanel from "./modal";
-import { ISGQuery } from "@/_util/fetch";
-// import Fetching from "@/_util/fetch";
 import GetToken from "@/_lib/middleware/get-token";
-import { ROUTES_CREATOR_PHOTO_PANEL } from "../../config/routes-panel";
 import { getQueryClient } from "@/app/get-query-client";
 import { ItemFolderDescription } from "@/_lib/services/navbar/option/profile/services-panel";
 

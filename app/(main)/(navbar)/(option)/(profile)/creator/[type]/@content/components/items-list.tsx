@@ -1,13 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useCallback,
-  useContext,
-  useState,
-  useRef,
-  useEffect,
-} from "react";
+import { useCallback, useContext, useState, useRef, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { creatorContext } from "@/app/context";
 import { IoMdOpen } from "react-icons/io";
@@ -106,7 +100,7 @@ const ItemsList = ({
       idProduct: number,
       value?: string
     ) => {
-      e.preventDefault()
+      e.preventDefault();
       switch (actionType) {
         // ? Item Nav Action
         case "navAction": {
@@ -162,51 +156,169 @@ const ItemsList = ({
       {isFetchingItemFolder ? (
         <Loading />
       ) : (
+        // <div
+        //   ref={containerRef}
+        //   className="relative flex justify-center flex-wrap gap-5 w-full my-4 max-h-100 overflow-y-auto">
+        //   {Array.isArray(data) &&
+        //     data.length > 0 &&
+        //     data.map((i: { idProduct: number; url: string }, idx) => {
+        //       const isLast = idx === data.length - 1;
+        //       return (
+        //         <div
+        //           key={i.idProduct}
+        //           ref={isLast ? lastItemRef : null}
+        //           className="relative flex flex-col w-[22%] h-65 rounded-2xl overflow-hidden border border-gray-100">
+        //           {/* Image wrapper */}
+        //           <div className="relative w-full md:h-64 lg:h-72">
+        //             <Image
+        //               src={i.url}
+        //               alt={"Image"}
+        //               fill
+        //               sizes="(max-width: 200px) 100vw"
+        //               className="object-cover"
+        //             />
+        //             {["move", "delete"].includes(isOpenNav.type) && (
+        //               <button
+        //                 onClick={(e) =>
+        //                   handleAction(e, "navAction", i.idProduct)
+        //                 }
+        //                 className={`absolute top-3 left-3 flex items-center justify-center w-9 h-9 rounded-xl transition-colors
+        //                 ${
+        //                   isOpenNav?.idProduct.includes(i.idProduct)
+        //                     ? "bg-black/80 text-white"
+        //                     : "bg-white/80 text-gray-700"
+        //                 }`}>
+        //                 {isOpenNav?.idProduct.includes(i.idProduct) ? (
+        //                   <MdCheck size={20} />
+        //                 ) : (
+        //                   <MdClose size={20} />
+        //                 )}
+        //               </button>
+        //             )}
+
+        //             {/* Buttons overlay */}
+        //             <div className="absolute bottom-3 flex flex-wrap gap-2 px-4">
+        //               {/* Toggle button */}
+        //               <button
+        //                 className="w-9 h-9 rounded-xl bg-white/80 border border-gray-200 text-gray-700 flex-center"
+        //                 onClick={(e) =>
+        //                   handleAction(e, "toggle", i.idProduct, "")
+        //                 }>
+        //                 {isOpen.iuProduct === i.idProduct && isOpen.open ? (
+        //                   <IoMdOpen />
+        //                 ) : (
+        //                   <BiExit />
+        //                 )}
+        //               </button>
+
+        //               {/* Action buttons */}
+        //               {isOpen.open &&
+        //                 isOpen.iuProduct === i.idProduct &&
+        //                 btnList.map((btn, idx) => (
+        //                   <button
+        //                     key={idx}
+        //                     className="text-sm font-medium text-gray-600 w-9 h-9 rounded-xl bg-white/80 border border-gray-200 flex-center hover:bg-white hover:text-black"
+        //                     onClick={(e) =>
+        //                       handleAction(e, btn.name, i.idProduct, btn.name)
+        //                     }
+        //                     title={btn.title}>
+        //                     {btn.icon}
+        //                   </button>
+        //                 ))}
+        //             </div>
+        //           </div>
+        //         </div>
+        //       );
+        //     })}
+        // </div>
         <div
           ref={containerRef}
-          className="relative flex justify-center flex-wrap gap-5 w-full my-4 max-h-100 overflow-y-auto">
+          className="
+    relative
+    flex flex-wrap justify-center gap-6
+    w-full my-4
+    max-h-100
+    overflow-y-auto
+  ">
           {Array.isArray(data) &&
             data.length > 0 &&
             data.map((i: { idProduct: number; url: string }, idx) => {
               const isLast = idx === data.length - 1;
+
               return (
                 <div
                   key={i.idProduct}
                   ref={isLast ? lastItemRef : null}
-                  className="relative flex flex-col w-[22%] h-65 rounded-2xl overflow-hidden border border-gray-100">
-                  {/* Image wrapper */}
-                  <div className="relative w-full md:h-64 lg:h-72">
+                  className="
+            relative
+            flex flex-col
+            w-[22%]
+            rounded-2xl
+            overflow-hidden
+            bg-white/5
+            border border-white/10
+            hover:border-white/20
+            transition
+            group
+          ">
+                  {/* ===== IMAGE ===== */}
+                  <div className="relative w-full aspect-3/4">
                     <Image
                       src={i.url}
-                      alt={"Image"}
+                      alt="Image"
                       fill
                       sizes="(max-width: 200px) 100vw"
-                      className="object-cover"
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     />
+
+                    {/* Select / Move / Delete */}
                     {["move", "delete"].includes(isOpenNav.type) && (
                       <button
                         onClick={(e) =>
                           handleAction(e, "navAction", i.idProduct)
                         }
-                        className={`absolute top-3 left-3 flex items-center justify-center w-9 h-9 rounded-xl transition-colors
-                        ${
-                          isOpenNav?.idProduct.includes(i.idProduct)
-                            ? "bg-black/80 text-white"
-                            : "bg-white/80 text-gray-700"
-                        }`}>
+                        className={`
+                  absolute top-3 left-3
+                  w-9 h-9
+                  rounded-xl
+                  flex items-center justify-center
+                  transition
+                  backdrop-blur-sm
+                  ${
+                    isOpenNav?.idProduct.includes(i.idProduct)
+                      ? "bg-black/70 text-white"
+                      : "bg-white/80 text-gray-700 hover:bg-white"
+                  }
+                `}>
                         {isOpenNav?.idProduct.includes(i.idProduct) ? (
-                          <MdCheck size={20} />
+                          <MdCheck size={18} />
                         ) : (
-                          <MdClose size={20} />
+                          <MdClose size={18} />
                         )}
                       </button>
                     )}
 
-                    {/* Buttons overlay */}
-                    <div className="absolute bottom-3 flex flex-wrap gap-2 px-4">
-                      {/* Toggle button */}
+                    {/* ===== OVERLAY ACTIONS ===== */}
+                    {/* <div
+                      className="
+                absolute bottom-3 left-0 right-0
+                flex justify-start gap-2
+                px-4
+                opacity-0
+                group-hover:opacity-100
+                transition
+              ">
                       <button
-                        className="w-9 h-9 rounded-xl bg-white/80 border border-gray-200 text-gray-700 flex-center"
+                        className="
+                  w-9 h-9
+                  rounded-xl
+                  bg-white/80
+                  border border-gray-200
+                  text-gray-700
+                  flex items-center justify-center
+                  hover:bg-white
+                  transition
+                "
                         onClick={(e) =>
                           handleAction(e, "toggle", i.idProduct, "")
                         }>
@@ -217,17 +329,84 @@ const ItemsList = ({
                         )}
                       </button>
 
-                      {/* Action buttons */}
                       {isOpen.open &&
                         isOpen.iuProduct === i.idProduct &&
                         btnList.map((btn, idx) => (
                           <button
                             key={idx}
-                            className="text-sm font-medium text-gray-600 w-9 h-9 rounded-xl bg-white/80 border border-gray-200 flex-center hover:bg-white hover:text-black"
+                            title={btn.title}
+                            className="
+                      w-9 h-9
+                      rounded-xl
+                      bg-white/80
+                      border border-gray-200
+                      text-gray-600
+                      flex items-center justify-center
+                      hover:bg-white hover:text-black
+                      transition
+                    "
                             onClick={(e) =>
                               handleAction(e, btn.name, i.idProduct, btn.name)
-                            }
-                            title={btn.title}>
+                            }>
+                            {btn.icon}
+                          </button>
+                        ))}
+                    </div> */}
+                    <div
+                      className="
+    absolute bottom-3 left-0 right-0
+    flex items-center gap-2
+    px-4
+    opacity-0 translate-y-2
+    group-hover:opacity-100 group-hover:translate-y-0
+    transition-all duration-200 ease-out
+  ">
+                      {/* Toggle */}
+                      <button
+                        className="
+      w-9 h-9
+      rounded-lg
+      bg-white/80
+      backdrop-blur-sm
+      border border-gray-200
+      text-gray-700
+      flex items-center justify-center
+      hover:bg-white
+      hover:shadow-sm
+      transition
+    "
+                        onClick={(e) =>
+                          handleAction(e, "toggle", i.idProduct, "")
+                        }>
+                        {isOpen.iuProduct === i.idProduct && isOpen.open ? (
+                          <IoMdOpen />
+                        ) : (
+                          <BiExit />
+                        )}
+                      </button>
+
+                      {/* Extra actions */}
+                      {isOpen.open &&
+                        isOpen.iuProduct === i.idProduct &&
+                        btnList.map((btn, idx) => (
+                          <button
+                            key={idx}
+                            title={btn.title}
+                            className="
+          w-9 h-9
+          rounded-lg
+          bg-white/80
+          backdrop-blur-sm
+          border border-gray-200
+          text-gray-600
+          flex items-center justify-center
+          hover:bg-white hover:text-black
+          hover:shadow-sm
+          transition
+        "
+                            onClick={(e) =>
+                              handleAction(e, btn.name, i.idProduct, btn.name)
+                            }>
                             {btn.icon}
                           </button>
                         ))}

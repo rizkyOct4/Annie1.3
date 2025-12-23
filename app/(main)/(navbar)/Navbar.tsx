@@ -26,37 +26,101 @@ const Navbar = () => {
   }, []);
 
   return (
+    // <div
+    //   className="fixed top-0 left-0 right-0 w-full h-20 z-101 bg-black/80
+    //             flex justify-between items-center px-8 border-b-white border-b-2 backdrop-blur-sm">
+    //   {/* Brand */}
+    //   <div className="text-white font-semibold text-lg tracking-wide">
+    //     Next Prototype
+    //   </div>
+
+    //   {/* Right Section */}
+    //   <div className="flex items-center gap-6">
+    //     {/* Dynamic Nav List */}
+    //     {Array.isArray(navbarList) &&
+    //       navbarList.map((i, index) => (
+    //         <button
+    //           key={index}
+    //           onClick={() => router.push(i.link)}
+    //           className="flex items-center gap-2
+    //                   px-4 py-2 rounded-md bg-white text-black
+    //                 hover:bg-gray-200 transition hover:cursor-pointer">
+    //           <span className="text-lg">{i.icon}</span>
+    //           {i.name}
+    //         </button>
+    //       ))}
+
+    //     {/* Options */}
+    //     <div className="relative">
+    //       <button
+    //         className="text-white flex justify-center items-center p-2
+    //               rounded-md border border-white/20 bg-white/10
+    //             hover:bg-white/20 transition hover:cursor-pointer"
+    //         onClick={() => handleAction("option")}>
+    //         {state ? (
+    //           <AiOutlineFullscreenExit className="text-xl" />
+    //         ) : (
+    //           <SlOptionsVertical className="text-xl" />
+    //         )}
+    //       </button>
+
+    //       {state && <Options setState={setState} />}
+    //     </div>
+    //   </div>
+    // </div>
     <div
-      className="fixed top-0 left-0 right-0 w-full h-20 z-101 bg-black/80
-                flex justify-between items-center px-8 border-b-white border-b-2 backdrop-blur-sm">
-      {/* Brand */}
-      <div className="text-white font-semibold text-lg tracking-wide">
+      className="
+    fixed top-0 left-0 right-0
+    w-full h-20 z-101
+    flex items-center justify-between
+    px-8
+    bg-black/80
+    backdrop-blur-md
+    border-b border-emerald-500
+  ">
+      {/* ===== BRAND ===== */}
+      <div className="text-gray-200 font-semibold text-lg tracking-wide">
         Next Prototype
       </div>
 
-      {/* Right Section */}
+      {/* ===== RIGHT SECTION ===== */}
       <div className="flex items-center gap-6">
-        {/* Dynamic Nav List */}
+        {/* NAV LIST */}
         {Array.isArray(navbarList) &&
           navbarList.map((i, index) => (
             <button
               key={index}
               onClick={() => router.push(i.link)}
-              className="flex items-center gap-2 
-                      px-4 py-2 rounded-md bg-white text-black 
-                    hover:bg-gray-200 transition hover:cursor-pointer">
-              <span className="text-lg">{i.icon}</span>
-              {i.name}
+              className="
+            flex items-center gap-2
+            px-4 py-2
+            rounded-lg
+            text-sm font-medium
+            bg-white/5
+            border border-white/10
+            text-gray-200
+            hover:bg-white/10 hover:border-white/20
+            transition
+          ">
+              <span className="text-base">{i.icon}</span>
+              <span>{i.name}</span>
             </button>
           ))}
 
-        {/* Options */}
+        {/* OPTIONS */}
         <div className="relative">
           <button
-            className="text-white flex justify-center items-center p-2 
-                  rounded-md border border-white/20 bg-white/10 
-                hover:bg-white/20 transition hover:cursor-pointer"
-            onClick={() => handleAction("option")}>
+            onClick={() => handleAction("option")}
+            className="
+          flex items-center justify-center
+          p-2
+          rounded-lg
+          bg-white/5
+          border border-white/10
+          text-gray-200
+          hover:bg-white/10 hover:border-white/20
+          transition
+        ">
             {state ? (
               <AiOutlineFullscreenExit className="text-xl" />
             ) : (

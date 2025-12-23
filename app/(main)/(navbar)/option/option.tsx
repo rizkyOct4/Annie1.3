@@ -18,7 +18,7 @@ import { signOut } from "next-auth/react";
 const Options = ({
   setState,
 }: {
-  setState: React.Dispatch<React.SetStateAction<boolean>>;
+  setState: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const { data: getData, setData } = useContext(profileContext);
   const id = getData?.id;
@@ -100,10 +100,67 @@ const Options = ({
   );
 
   return (
+    // <div
+    //   className="absolute right-0 mt-6 w-54 bg-black/80 border border-white/20 rounded-md
+    //              flex flex-col overflow-hidden p-1.5 z-101"
+    // >
+    //   {optionList.map((item, i) => {
+    //     const isActive = pathname === item.link;
+    //     const isLogout = item.actionType === "logout" && logoutConfirm;
+
+    //     return (
+    //       <div
+    //         key={i}
+    //         className={`flex items-center gap-2  ${
+    //           isActive ? "bg-white/30" : "hover:bg-white/20"
+    //         }`}
+    //       >
+    //         <button
+    //           onClick={(e) => handleAction(e, item.actionType, item.link)}
+    //           className={`w-full text-left px-4 py-2 flex items-center gap-3 text-white transition
+    //           `}
+    //         >
+    //           <div className="flex items-center gap-3">
+    //             {item.icon}
+    //             <span>{item.label}</span>
+    //           </div>
+
+    //           <span
+    //             className={`bg-white/10 border border-white/10 text-white text-xs font-semibold px-2 py-0.5 rounded-md ${
+    //               !item.count ? "invisible" : ""
+    //             }`}
+    //           >
+    //             {item.count || ""}
+    //           </span>
+    //         </button>
+    //         {isLogout && (
+    //           <div className="flex gap-1 px-1">
+    //             <button
+    //               type="button"
+    //               onClick={(e) => handleAction(e, "confirmLogout", "")}
+    //               className="px-2 p-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+    //             >
+    //               <FaCheck className="w-4 h-4 text-white" />
+    //             </button>
+    //           </div>
+    //         )}
+    //       </div>
+    //     );
+    //   })}
+    // </div>
     <div
-      className="absolute right-0 mt-6 w-54 bg-black/80 border border-white/20 rounded-md
-                 flex flex-col overflow-hidden p-1.5 z-101"
-    >
+      className="
+    absolute right-0 mt-6
+    w-56
+    rounded-xl
+    bg-black/70
+    backdrop-blur-md
+    border border-white/10
+    shadow-xl
+    p-1.5
+    z-[101]
+    flex flex-col
+  ">
       {optionList.map((item, i) => {
         const isActive = pathname === item.link;
         const isLogout = item.actionType === "logout" && logoutConfirm;
@@ -111,35 +168,59 @@ const Options = ({
         return (
           <div
             key={i}
-            className={`flex items-center gap-2  ${
-              isActive ? "bg-white/30" : "hover:bg-white/20"
-            }`}
-          >
+            className={`
+          flex items-center
+          rounded-lg
+          transition
+          ${isActive ? "bg-white/10" : "hover:bg-white/10"}
+        `}>
             <button
               onClick={(e) => handleAction(e, item.actionType, item.link)}
-              className={`w-full text-left px-4 py-2 flex items-center gap-3 text-white transition 
-              `}
-            >
+              className="
+            w-full
+            flex items-center justify-between
+            px-4 py-2
+            text-sm
+            text-gray-200
+            transition
+            focus:outline-none
+          ">
+              {/* Left */}
               <div className="flex items-center gap-3">
-                {item.icon}
+                <span className="text-base">{item.icon}</span>
                 <span>{item.label}</span>
               </div>
 
+              {/* Badge */}
               <span
-                className={`bg-white/10 border border-white/10 text-white text-xs font-semibold px-2 py-0.5 rounded-md ${
-                  !item.count ? "invisible" : ""
-                }`}
-              >
+                className={`
+              min-w-6
+              text-center
+              text-xs font-semibold
+              px-2 py-0.5
+              rounded-md
+              bg-white/10
+              border border-white/10
+              text-gray-300
+              ${!item.count ? "invisible" : ""}
+            `}>
                 {item.count || ""}
               </span>
             </button>
+
+            {/* Logout confirm */}
             {isLogout && (
-              <div className="flex gap-1 px-1">
+              <div className="flex items-center gap-1 pr-2">
                 <button
                   type="button"
                   onClick={(e) => handleAction(e, "confirmLogout", "")}
-                  className="px-2 p-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                >
+                  className="
+                p-1.5
+                rounded-md
+                bg-red-600/80
+                hover:bg-red-600
+                transition
+              ">
                   <FaCheck className="w-4 h-4 text-white" />
                 </button>
               </div>

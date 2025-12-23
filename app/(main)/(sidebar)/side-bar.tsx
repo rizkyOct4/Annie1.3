@@ -86,45 +86,120 @@ const Sidebar = ({
   ];
 
   return (
-    <div className="w-full fixed top-20 h-screen z-100 flex ">
+    // <div className="w-full fixed top-20 h-screen z-100 flex ">
+    //   <aside
+    //     className="
+    //       w-20 bg-black/80 backdrop-blur-sm
+    //       border-white/10
+    //       flex flex-col items-center pt-6
+    //       overflow-y-auto
+    //       border-r-white border-r-2
+    //     ">
+    //     {sidebarItems.map((item) => (
+    //       <div
+    //         key={item.key}
+    //         className="w-full flex flex-col items-center mb-4">
+    //         {/* === ICON BUTTON === */}
+    //         <button
+    //           title={item.title}
+    //           onClick={() =>
+    //             setActivePanel(activePanel === item.key ? null : item.key)
+    //           }
+    //           className="
+    //             w-12 h-12
+    //             flex items-center justify-center
+    //             mb-1
+    //             rounded-md bg-white/10 border border-white/10 text-white
+    //             hover:bg-white/20 hover:cursor-pointer transition group
+    //           ">
+    //           {item.icon}
+    //         </button>
+
+    //         {activePanel === item.key && (
+    //           <div className="w-20 flex flex-col items-center mt-2 gap-2">
+    //             {item.menus.map((m, i) => (
+    //               <button
+    //                 key={i}
+    //                 type="button"
+    //                 title={m.label}
+    //                 onClick={() => router.push(m.to)}
+    //                 className="w-10 h-10 flex items-center justify-center rounded-md bg-white/10 border border-white/10 text-white hover:bg-white/20 transition relative">
+    //                 <span className="text-xl">{m.icon}</span>
+    //               </button>
+    //             ))}
+    //           </div>
+    //         )}
+    //       </div>
+    //     ))}
+    //   </aside>
+    //   {/* === MAIN CONTENT === */}
+    //   <main className="flex-1 pb-10 min-h-screen overflow-y-auto bg-black/80">
+    //     {intAuth}
+    //     {children}
+    //   </main>
+    // </div>
+    <div className="w-full fixed top-20 h-screen z-100 flex">
+      {/* ===== SIDEBAR ===== */}
       <aside
         className="
-          w-20 bg-black/80 backdrop-blur-sm 
-          border-white/10
-          flex flex-col items-center pt-6
-          overflow-y-auto
-          border-r-white border-r-2
-        ">
+      w-20
+      bg-black/80
+      backdrop-blur-md
+      border-r border-emerald-500
+      flex flex-col items-center
+      pt-6
+      overflow-y-auto
+    ">
         {sidebarItems.map((item) => (
           <div
             key={item.key}
-            className="w-full flex flex-col items-center mb-4">
-            {/* === ICON BUTTON === */}
+            className="w-full flex flex-col items-center mb-5">
+            {/* ICON BUTTON */}
             <button
               title={item.title}
               onClick={() =>
                 setActivePanel(activePanel === item.key ? null : item.key)
               }
-              className="
-                w-12 h-12
-                flex items-center justify-center
-                mb-1
-                rounded-md bg-white/10 border border-white/10 text-white
-                hover:bg-white/20 hover:cursor-pointer transition group
-              ">
+              className={`
+      w-12 h-12
+      flex items-center justify-center
+      rounded-xl
+      border
+      transition
+      ${
+        activePanel === item.key
+          ? "bg-white/10 border-emerald-500/40 text-emerald-400"
+          : "bg-white/5 border-white/10 text-gray-200 hover:bg-white/10 hover:border-white/20"
+      }
+    `}>
               {item.icon}
             </button>
 
+            {/* SUB MENU */}
             {activePanel === item.key && (
-              <div className="w-20 flex flex-col items-center mt-2 gap-2">
+              <div
+                className="
+              w-full
+              mt-3
+              flex flex-col items-center gap-2
+            ">
                 {item.menus.map((m, i) => (
                   <button
                     key={i}
                     type="button"
                     title={m.label}
                     onClick={() => router.push(m.to)}
-                    className="w-10 h-10 flex items-center justify-center rounded-md bg-white/10 border border-white/10 text-white hover:bg-white/20 transition relative">
-                    <span className="text-xl">{m.icon}</span>
+                    className="
+                  w-10 h-10
+                  flex items-center justify-center
+                  rounded-lg
+                  bg-white/5
+                  border border-white/10
+                  text-gray-200
+                  hover:bg-white/10 hover:text-emerald-500 hover:border-white/20
+                  transition
+                ">
+                    <span className="text-lg">{m.icon}</span>
                   </button>
                 ))}
               </div>
@@ -132,8 +207,16 @@ const Sidebar = ({
           </div>
         ))}
       </aside>
-      {/* === MAIN CONTENT === */}
-      <main className="flex-1 pb-10 min-h-screen overflow-y-auto bg-black/80">
+
+      {/* ===== MAIN CONTENT ===== */}
+      <main
+        className="
+      flex-1
+      min-h-screen
+      pb-10
+      overflow-y-auto
+      bg-black/80
+    ">
         {intAuth}
         {children}
       </main>

@@ -18,12 +18,19 @@ const Charts = () => {
   const maxViews = Math.max(...chartData.map((d) => d.views));
 
   return (
-    <div className="p-5 rounded-xl border border-neutral-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-      <h2 className="font-semibold text-lg text-neutral-800 mb-4">
+    <div
+      className="
+        p-6 rounded-xl
+        bg-white/5
+        border border-white/10
+        backdrop-blur-sm
+      "
+    >
+      <h2 className="font-semibold text-lg text-gray-200 mb-5 tracking-wide">
         Weekly Views
       </h2>
 
-      <div className="flex items-end justify-between h-32 gap-2">
+      <div className="flex items-end justify-between h-36 gap-3">
         {chartData.map((data) => {
           const heightPercent = (data.views / maxViews) * 100;
           return (
@@ -33,11 +40,20 @@ const Charts = () => {
             >
               {/* Bar */}
               <div
-                className="w-3 bg-emerald-500 rounded-t-md transition-all duration-300"
+                className="
+                  w-3
+                  rounded-t-md
+                  bg-emerald-500/80
+                  transition-all duration-300
+                  hover:bg-emerald-500
+                "
                 style={{ height: `${heightPercent}%` }}
               />
+
               {/* Label */}
-              <span className="text-xs text-neutral-500 mt-1">{data.day}</span>
+              <span className="text-xs text-gray-400 mt-2">
+                {data.day}
+              </span>
             </div>
           );
         })}

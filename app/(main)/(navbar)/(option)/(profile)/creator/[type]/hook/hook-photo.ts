@@ -14,6 +14,7 @@ import { ROUTES_LIST_FOLDER } from "../config/list-folder";
 import { ROUTES_ITEM_FOLDER } from "../config/item-folder";
 import { ROUTES_CREATOR_PHOTO_PANEL } from "../config/routes-panel";
 import { SortASC } from "@/_util/GenerateData";
+import { TPhotoDescription } from "../types/panel/description/type";
 
 // * CONTENT ====
 const useContentProfile = (id: string) => {
@@ -299,7 +300,7 @@ const useItemDescription = (id: string) => {
     refetchOnMount: false,
     retry: false,
   });
-  const descriptionItemFolderData = useMemo(
+  const descriptionItemFolderData: TPhotoDescription[] = useMemo(
     () => descriptionItemFolderPhoto ?? [],
     [descriptionItemFolderPhoto]
   );

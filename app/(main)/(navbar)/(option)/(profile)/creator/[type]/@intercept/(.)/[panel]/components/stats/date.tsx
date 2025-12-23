@@ -14,10 +14,18 @@ const Date = () => {
       {dates.map((d) => (
         <div
           key={d.date}
-          className="flex flex-col items-center justify-center w-[5.5%] h-12 rounded bg-gray-100 hover:bg-gray-200 cursor-pointer"
-        >
-          <span className="text-sm font-medium">{d.date}</span>
-          <span className="text-xs text-gray-500">{d.productCount}</span>
+          className="
+            flex flex-col items-center justify-center
+            w-[5.5%] h-12
+            rounded-lg
+            bg-black/30
+            border border-white/10
+            cursor-pointer
+            transition
+            hover:bg-black/40
+          ">
+          <span className="text-sm font-semibold text-gray-200">{d.date}</span>
+          <span className="text-xs text-gray-400">{d.productCount}</span>
         </div>
       ))}
     </div>

@@ -51,35 +51,108 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
     [openYear, setStateContent]
   );
 
+  // return (
+  //   <div className="w-full max-w-md mx-auto">
+  //     {Array.isArray(listFolderData) &&
+  //       listFolderData.map((item) => (
+  //         <div
+  //           key={item.year}
+  //           className="mb-2 rounded-lg bg-white/10 overflow-hidden border border-white/10">
+  //           {/* YEAR BUTTON */}
+  //           <button
+  //             onClick={(e) => handleAction(e, "open", item.year)}
+  //             className="flex items-center justify-between w-full text-left px-4 py-2 text-white font-medium hover:bg-white/20 transition">
+  //             {item.year}
+  //             <ChevronDown
+  //               size={16}
+  //               className={`transition-transform ${
+  //                 openYear ? "rotate-180" : "rotate-0"
+  //               }`}
+  //             />
+  //           </button>
+
+  //           {openYear === item.year && (
+  //             <div className="flex flex-col px-6 py-2 bg-white/20">
+  //               {listMonth.map((i, idx) => (
+  //                 <div key={idx} className="py-1 text-sm text-black ">
+  //                   <button
+  //                     onClick={(e) => handleAction(e, "year", openYear, i.num)}
+  //                     className="w-full flex justify-between hover:text-white cursor-pointer transition">
+  //                     <h4>{i.name}</h4>
+  //                     <h4>{item.month === i.num && item.totalProduct}</h4>
+  //                   </button>
+  //                 </div>
+  //               ))}
+  //             </div>
+  //           )}
+  //         </div>
+  //       ))}
+  //   </div>
+  // );
   return (
     <div className="w-full max-w-md mx-auto">
       {Array.isArray(listFolderData) &&
         listFolderData.map((item) => (
           <div
             key={item.year}
-            className="mb-2 rounded-lg bg-white/10 overflow-hidden border border-white/10">
-            {/* YEAR BUTTON */}
+            className="
+            mb-3
+            rounded-xl
+            bg-white/5
+            border border-white/10
+            overflow-hidden
+            transition
+          ">
+            {/* ===== YEAR HEADER ===== */}
             <button
               onClick={(e) => handleAction(e, "open", item.year)}
-              className="flex items-center justify-between w-full text-left px-4 py-2 text-white font-medium hover:bg-white/20 transition">
-              {item.year}
+              className="
+              flex items-center justify-between
+              w-full
+              px-4 py-3
+              text-left
+              text-sm font-semibold text-gray-200
+              hover:bg-white/10
+              transition
+            ">
+              <span>{item.year}</span>
               <ChevronDown
                 size={16}
-                className={`transition-transform ${
-                  openYear ? "rotate-180" : "rotate-0"
-                }`}
+                className={`
+                text-gray-400
+                transition-transform duration-300
+                ${openYear === item.year ? "rotate-180" : "rotate-0"}
+              `}
               />
             </button>
 
+            {/* ===== MONTH LIST ===== */}
             {openYear === item.year && (
-              <div className="flex flex-col px-6 py-2 bg-white/20">
+              <div
+                className="
+                flex flex-col gap-1
+                px-2 py-2
+                bg-white/5
+                border-t border-white/10
+              ">
                 {listMonth.map((i, idx) => (
-                  <div key={idx} className="py-1 text-sm text-black ">
+                  <div key={idx}>
                     <button
                       onClick={(e) => handleAction(e, "year", openYear, i.num)}
-                      className="w-full flex justify-between hover:text-white cursor-pointer transition">
-                      <h4>{i.name}</h4>
-                      <h4>{item.month === i.num && item.totalProduct}</h4>
+                      className="
+                      w-full
+                      flex items-center justify-between
+                      px-2 py-1.5
+                      rounded-md
+                      text-sm
+                      text-gray-300
+                      hover:bg-white/10 hover:text-gray-100
+                      transition
+                    ">
+                      <span>{i.name}</span>
+                      <span className="text-xs text-gray-400">
+                        {item.month === i.num && item.totalProduct}
+                      </span>
                     </button>
                   </div>
                 ))}

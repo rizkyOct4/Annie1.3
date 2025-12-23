@@ -17,8 +17,8 @@ const layout = ({
         {intercept}
         <section>{dashboard}</section>
         <section className="flex w-full h-auto">
-          <div className="w-[15%] h-auto">{list}</div>
-          <div className="w-[85%]">{content}</div>
+          <div className="w-[12%] h-auto">{list}</div>
+          <div className="w-[88%]">{content}</div>
         </section>
       </main>
     </CreatorContext>

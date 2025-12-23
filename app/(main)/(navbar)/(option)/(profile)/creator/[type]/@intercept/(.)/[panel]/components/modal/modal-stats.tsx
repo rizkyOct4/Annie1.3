@@ -2,7 +2,6 @@
 
 import { SLoading } from "@/_util/Spinner-loading";
 import dynamic from "next/dynamic";
-// import overview from "../stats/overview";
 
 const LazyOverview = dynamic(() => import("../stats/overview"), {
   loading: () => <SLoading />,
@@ -22,25 +21,53 @@ const LazyMilestones = dynamic(() => import("../stats/milestone"), {
 
 const ModalStats = () => {
   return (
-    <div className="flex w-full h-full gap-4 flex-col p-10">
-      {/* Kolom kiri: Tanggal */}
-      <div className="w-[100%] h-auto">
+    <div
+      className="
+        flex flex-col gap-6
+        w-full h-full
+        p-8
+        bg-black/20
+      "
+    >
+      {/* ===== TOP : DATE SELECTOR ===== */}
+      <div
+        className="
+          w-full
+          p-4 rounded-xl
+          bg-white/5
+          border border-white/10
+        "
+      >
         <LazyDate />
       </div>
 
-      {/* Kolom tengah: Overview / Content */}
-      <div className="flex gap-2 w-full h-[100%] overflow-y-auto">
-        <div className="flex flex-col gap-4 w-[70%]">
+      {/* ===== MAIN CONTENT ===== */}
+      <div className="flex gap-6 w-full flex-1 overflow-hidden">
+        {/* ===== LEFT (PRIMARY) ===== */}
+        <div
+          className="
+            flex flex-col gap-6
+            w-[70%]
+            overflow-y-auto
+            pr-2
+          "
+        >
           <LazyOverview />
         </div>
 
-        {/* Kolom kanan: Charts */}
-        <div className="flex flex-col gap-4 w-[30%]">
+        {/* ===== RIGHT (SECONDARY) ===== */}
+        <div
+          className="
+            flex flex-col gap-6
+            w-[30%]
+            overflow-y-auto
+            pr-1
+          "
+        >
           <LazyCharts />
           <LazyOverview />
           <LazyMilestones />
           <LazyAudience />
-          {/* <Engagement /> */}
         </div>
       </div>
     </div>
