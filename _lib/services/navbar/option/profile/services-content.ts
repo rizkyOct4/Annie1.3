@@ -17,9 +17,6 @@ export const ListItemFolderPhoto = async ({
   limit: number;
   offset: number;
 }) => {
-  // "use cache";
-  // cacheLife("minutes");
-  // cacheTag(`folders-photo-${id}`);
 
   const dataRaw = await prisma.$queryRaw<any[]>`
         SELECT up.folder_name, COUNT(up.folder_name)::int AS amount_item
@@ -29,6 +26,7 @@ export const ListItemFolderPhoto = async ({
           AND EXTRACT(YEAR FROM up.created_at)::int = ${year}
           AND EXTRACT(MONTH FROM up.created_at)::int = ${month}
           AND up.type = ${path}::type_product
+          AND up.status = true
         GROUP BY
           up.folder_name
         LIMIT ${limit}
@@ -40,7 +38,7 @@ export const ListItemFolderPhoto = async ({
         SELECT COUNT(DISTINCT up.folder_name)::int AS amount_folder
         FROM users_product up
         JOIN users u ON (u.id = up.ref_id)
-        WHERE u.id = ${id}::uuid
+        WHERE u.id = ${id}::uuid AND up.status = true
         AND EXTRACT(YEAR FROM up.created_at)::int = ${year}
         AND EXTRACT(MONTH FROM up.created_at)::int = ${month}
         AND up.type = ${path}::type_product
@@ -64,9 +62,6 @@ export const ItemFolderPhoto = async ({
   limit: number;
   offset: number;
 }) => {
-  // "use cache";
-  // cacheLife("minutes");
-  // cacheTag(`item-folder-photo-${folderName}`);
 
   const query = await prisma.$queryRaw<
     {
@@ -79,7 +74,9 @@ export const ItemFolderPhoto = async ({
     SELECT up.folder_name, up.created_at, upi.ref_id_product, upi.url
     FROM users_product_image upi
     JOIN users_product up ON (up.id_product = upi.ref_id_product)
-    WHERE up.folder_name = ${folderName} AND up.type = ${path}::type_product
+    WHERE up.folder_name = ${folderName} 
+    AND up.type = ${path}::type_product
+    AND up.status = true
     ORDER BY up.created_at DESC
     LIMIT ${limit}
     OFFSET ${offset}
@@ -96,7 +93,7 @@ export const ItemFolderPhoto = async ({
       SELECT COUNT(up.folder_name) AS amount_item
       FROM users_product up
       JOIN users u ON (u.id = up.ref_id)
-      WHERE up.folder_name = ${folderName}`;
+      WHERE up.folder_name = ${folderName} AND up.status = true` ;
 
   const hasMore = offset + limit < Number(queryCheck[0].amount_item);
 

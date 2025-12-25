@@ -7,13 +7,14 @@ import {
 } from "@tanstack/react-query";
 import { useMemo, useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, usePathname } from "next/navigation";
 import { ROUTES_PROFILE } from "../config";
 import {
   usePost,
   usePut,
   usePutFolderName,
   usePutGrouped,
+  useDeleteGrouped,
 } from "./sub/use-sub-photo";
 import { ROUTES_LIST_FOLDER } from "../config/list-folder";
 import { ROUTES_ITEM_FOLDER } from "../config/item-folder";
@@ -145,7 +146,6 @@ const useContentProfile = (id: string) => {
   });
   // ! END CONTENT ==========================
 
-
   // * UPDATE DATA
   const { data: getUpdatePhoto } = useQuery({
     queryKey: ["keyUpdatePhoto", id, updateState],
@@ -166,7 +166,6 @@ const useContentProfile = (id: string) => {
     refetchOnMount: false,
     retry: false,
   });
-  // console.log(getUpdatePhoto)
 
   // ? LIST FOLDERS DATA
   const listFolderData = useMemo(
@@ -243,15 +242,32 @@ const useContentProfile = (id: string) => {
       stateContent.month,
     ],
     keyItemFolder: ["keyItemFolderPhoto", id, stateFolder.isFolder],
+    rawKeyItemFolder: {
+      key: "keyItemFolderPhoto",
+      id: id,
+      folder: stateFolder.isFolder,
+    },
     keyUpdatePhoto: ["keyUpdatePhoto", id, updateState],
     rawKeyUpdatePhoto: {
       key: "keyUpdatePhoto",
       id: id,
-      idProduct: updateState
+      idProduct: updateState,
     },
     type: type,
   });
 
+  // * DELETE IMAGE
+  const { groupedDeletePhoto } = useDeleteGrouped({
+    keyFolder: ["keyListFolderPhoto", id, type],
+    keyListItemFolder: [
+      "keyListItemFolder",
+      id,
+      stateContent.year,
+      stateContent.month,
+    ],
+    keyItemFolder: ["keyItemFolderPhoto", id, stateFolder.isFolder],
+    type: type,
+  });
   // console.log(itemFolderPhoto);
 
   return {
@@ -292,8 +308,7 @@ const useContentProfile = (id: string) => {
     postPhoto,
     putPhoto,
     groupedPutPhoto,
-
-    // * UPDATE NEW NAME FOLDER
+    groupedDeletePhoto,
     updateNameFolder,
 
     // * CURRENT-PATH
@@ -302,7 +317,10 @@ const useContentProfile = (id: string) => {
 };
 
 const useItemDescription = (id: string) => {
-  const { type, panel } = useParams<{ type: string; panel: string }>();
+  const pathname = usePathname();
+  const panel = pathname.split("/").filter(Boolean).at(-1);
+
+  const { type } = useParams<{ type: string }>();
   const folderName = useSearchParams().get("folder-name") ?? "";
   const idDesc = useSearchParams().get("id") ?? "";
 

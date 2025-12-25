@@ -14,6 +14,9 @@ export const ROUTES_LIST_FOLDER = {
       case "listFolderPhoto": {
         return `/creator/${path}/api-list?section=${pageParam}&limit=${limit}`;
       }
+      case "listFolderVideo": {
+        return `/creator/${path}/api-list?section=${pageParam}&limit=${limit}`;
+      }
       default:
         return "";
     }

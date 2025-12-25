@@ -26,13 +26,15 @@ const ItemDescription = ({ data }: { data: TPhotoDescription[] }) => {
             </div>
 
             {/* IMAGE */}
-            <Image
-              width={400}
-              height={300}
-              src={i.url}
-              alt={i.description}
-              className="rounded-lg mb-4 border border-white/10"
-            />
+            <div className="relative w-full max-w-md min-h-90 aspect-4/3 mb-4 overflow-hidden rounded-lg border border-white/10">
+              <Image
+                src={i.url}
+                alt={i.description}
+                fill
+                sizes="(max-width: 768px) 100vw, 400px"
+                className="object-contain"
+              />
+            </div>
 
             {/* HASHTAG */}
             <div className="flex flex-wrap gap-2 mb-3">

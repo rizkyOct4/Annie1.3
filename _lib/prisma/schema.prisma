@@ -132,16 +132,19 @@ model users_product_image_vote {
 model users_product_video {
   ref_id_product  Int             @unique
   description     String          @db.VarChar(255)
-  video_name      String          @db.VarChar(255)
+  duration        Float?
+  width           Int?
+  height          Int?
+  format          String?
+  cloud_public_id      String          @db.VarChar(255)
   url             String          @db.VarChar(255)
-  thumbnail_url   String          @db.VarChar(255)
-  duration        Int            
+  thumbnail_url   String          @db.VarChar(255)           
   hashtag         String[]        @default([])
   category        String[]        @default([])
 
   users_product   users_product   @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
 
-  @@unique([ref_id_product, video_name])
+  @@unique([ref_id_product, cloud_public_id])
 }
 
 enum type_product {

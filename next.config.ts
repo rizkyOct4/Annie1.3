@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    middlewareClientMaxBodySize: '50mb', // contoh 50MB
+  },
   cacheComponents: true,
   logging: {
     fetches: {

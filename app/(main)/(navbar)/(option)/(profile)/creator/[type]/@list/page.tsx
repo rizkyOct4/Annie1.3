@@ -2,7 +2,7 @@ import ListFolder from "./components/list-folder";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import GetToken from "@/_lib/middleware/get-token";
 import { getQueryClient } from "@/app/get-query-client";
-import { ListFolderPhoto } from "@/_lib/services/navbar/option/profile/services-list-folder";
+import { GetListFolder } from "@/_lib/services/navbar/option/profile/services-list-folder";
 
 const page = async ({ params }: { params: Promise<{ type: string }> }) => {
   const pathUrl = (await params).type;
@@ -10,10 +10,15 @@ const page = async ({ params }: { params: Promise<{ type: string }> }) => {
 
   const queryClient = getQueryClient();
 
+  const key =
+    pathUrl === "photo"
+      ? ["keyListFolderPhoto", id, pathUrl]
+      : ["keyListFolderVideo", id, pathUrl];
+
   await queryClient.prefetchInfiniteQuery({
-    queryKey: ["keyListFolderPhoto", id, pathUrl],
+    queryKey: key,
     queryFn: ({ pageParam = 1 }) =>
-      ListFolderPhoto({
+      GetListFolder({
         id: id,
         pathUrl: pathUrl,
         limit: 4,

@@ -43,8 +43,34 @@ export const ROUTES_PROFILE = {
       case "putNameFolder": {
         return `/creator/${path}/api-content/action?key=${method}&change-folder=${true}&type=${type}`;
       }
-      case "groupedPutImage": {
-        return `/creator/${path}/api-content/action?key=${method}&change-folder=${true}`;
+      case "groupedPutImage":
+      case "groupedDeleteImage": {
+        return `/creator/${path}/api-content/action?key=${method}&type=${type}`;
+      }
+      default:
+        return "";
+    }
+  },
+  ACTION_VIDEO: ({
+    method,
+    type,
+    path,
+  }: {
+    method: any;
+    type: "video";
+    path?: string;
+  }) => {
+    switch (method) {
+      case "postVideo":
+      case "putVideo": {
+        return `/creator/${path}/api-content/action?method=${method}&type=${type}`;
+      }
+      case "putNameFolder": {
+        return `/creator/${path}/api-content/action?key=${method}&change-folder=${true}&type=${type}`;
+      }
+      case "groupedPutImage":
+      case "groupedDeleteImage": {
+        return `/creator/${path}/api-content/action?key=${method}&type=${type}`;
       }
       default:
         return "";

@@ -16,7 +16,10 @@ import type {
 } from "../../types/type";
 import { showToast } from "@/_util/Toast";
 import type { TImagePost, TImagePut } from "../../schema/schema-form";
-import { PutGroupedImage } from "../../@content/components/options/option-btn";
+import {
+  PutGroupedImage,
+  DeleteGroupedImage,
+} from "../../@content/components/options/option-btn";
 
 const usePost = ({
   keyFolder,
@@ -173,6 +176,7 @@ const usePost = ({
   return { postPhoto };
 };
 
+// * PUT ========
 const usePut = ({
   keyListFolder,
   keyItemFolder,
@@ -498,6 +502,7 @@ const usePutGrouped = ({
   keyFolder,
   keyListItemFolder,
   keyItemFolder,
+  rawKeyItemFolder,
   keyUpdatePhoto,
   rawKeyUpdatePhoto,
   type,
@@ -505,6 +510,11 @@ const usePutGrouped = ({
   keyFolder: Array<string>;
   keyListItemFolder: Array<string>;
   keyItemFolder: Array<string>;
+  rawKeyItemFolder?: {
+    key: string;
+    id: string;
+    folder: string;
+  };
   keyUpdatePhoto: Array<string | number | null>;
   rawKeyUpdatePhoto?: {
     key: string;
@@ -590,6 +600,19 @@ const usePutGrouped = ({
         }
       );
 
+      // ! TARGET FOLDER REFETCH
+      const queryExist = [
+        rawKeyItemFolder?.key,
+        rawKeyItemFolder?.id,
+        mutate.targetFolder,
+      ];
+      if (queryClient.getQueryData(queryExist)) {
+        queryClient.invalidateQueries({
+          queryKey: queryExist,
+          exact: true,
+        });
+      }
+
       // ? UPDATED DATA
       if (prevUpdatePhoto) {
         queryClient.setQueryData<TOriginalUpdated[]>(
@@ -617,15 +640,29 @@ const usePutGrouped = ({
     onSuccess: (response) => {
       const { data } = response;
 
-      // queryClient.setQueryData(keyFolder, (oldData) => {
-      //   if(!oldData) return oldData
+      if (data[0].value !== 0) return;
 
-
-      // })
-
-      // TODO KONDISIKAN BESOK INI SAMA KAU !! BUAT FOLDER KEY INI KETIKA GROUP PUT DATANYA HILANG JIKA TOTAL = 0
-
-      console.log(response);
+      queryClient.setQueryData<InfiniteData<TOriginalList>>(
+        keyFolder,
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map(
+                (i: { totalProduct: number; folder: string[] }) => {
+                  return {
+                    ...i,
+                    totalProduct: i.totalProduct - 1,
+                    folder: i.folder.filter((f) => !f.includes(data[0].folder)),
+                  };
+                }
+              ),
+            })),
+          };
+        }
+      );
     },
     onError: (error, _variables, context) => {
       showToast({ type: "loading", fallback: false });
@@ -648,4 +685,135 @@ const usePutGrouped = ({
   return { groupedPutPhoto };
 };
 
-export { usePost, usePut, usePutFolderName, usePutGrouped };
+// * DELETE ========
+const useDeleteGrouped = ({
+  keyFolder,
+  keyListItemFolder,
+  keyItemFolder,
+  type,
+}: {
+  keyFolder: Array<string>;
+  keyListItemFolder: Array<string>;
+  keyItemFolder: Array<string>;
+  type: string;
+}) => {
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: groupedDeletePhoto } = useMutation({
+    mutationFn: async (data) => {
+      const URL = ROUTES_PROFILE.ACTION_PHOTO({
+        method: "groupedDeleteImage",
+        type: "photo",
+        path: type,
+      });
+      const res = await axios.delete(URL, { data });
+      return res.data;
+    },
+    onMutate: async (mutate: DeleteGroupedImage) => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: keyFolder }),
+        queryClient.cancelQueries({ queryKey: keyListItemFolder }),
+        queryClient.cancelQueries({ queryKey: keyItemFolder }),
+      ]);
+
+      const prevFolder = queryClient.getQueryData(keyFolder);
+      const prevListItemData = queryClient.getQueryData(keyListItemFolder);
+      const prevItemData = queryClient.getQueryData(keyItemFolder);
+
+      // ? CONTENT LIST ITEM
+      queryClient.setQueryData<InfiniteData<TOriginalListFolder>>(
+        keyListItemFolder,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page) => ({
+              ...page,
+              data: page.data
+                .map((i) =>
+                  i.folderName === mutate.prevFolder
+                    ? {
+                        ...i,
+                        amountItem: i.amountItem - mutate.idProduct.length,
+                      }
+                    : i
+                )
+                .filter((f) => f.amountItem > 0),
+            })),
+          };
+        }
+      );
+
+      // ? ITEM
+      queryClient.setQueryData<InfiniteData<TOriginalItemFolder>>(
+        keyItemFolder,
+        (oldData) => {
+          if (!oldData) return oldData;
+          const pages = oldData?.pages
+            .map((page: any) => ({
+              ...page,
+              data: page.data.filter(
+                (f: { idProduct: number }) =>
+                  !mutate.idProduct.includes(f.idProduct)
+              ),
+            }))
+            .filter((d) => d.data.length > 0);
+
+          return {
+            ...oldData,
+            pages,
+          };
+        }
+      );
+
+      return { prevFolder, prevListItemData, prevItemData };
+    },
+    onSuccess: (response) => {
+      const { data } = response;
+
+      if (data[0].value !== 0) return;
+
+      // ? FOLDER
+      queryClient.setQueryData<InfiniteData<TOriginalList>>(
+        keyFolder,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map(
+                (i: { totalProduct: number; folder: string[] }) => ({
+                  ...i,
+                  totalProduct: i.totalProduct - 1,
+                  folder: i.folder.filter(
+                    (f: string) => f !== data[0].prevFolder
+                  ),
+                })
+              ),
+            })),
+          };
+        }
+      );
+    },
+    onError: (error, _variables, context) => {
+      showToast({ type: "loading", fallback: false });
+      showToast({ type: "error", fallback: error });
+      console.error(error);
+      if (
+        context?.prevFolder &&
+        context?.prevListItemData &&
+        context?.prevItemData
+      ) {
+        queryClient.setQueryData(keyFolder, context.prevFolder);
+        queryClient.setQueryData(keyListItemFolder, context.prevListItemData);
+        queryClient.setQueryData(keyItemFolder, context.prevItemData);
+      }
+    },
+  });
+  return { groupedDeletePhoto };
+};
+
+export { usePost, usePut, usePutFolderName, usePutGrouped, useDeleteGrouped };

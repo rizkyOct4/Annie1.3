@@ -52,7 +52,7 @@ const Login = ({
 
   return (
     <div className="w-full h-auto flex-center overflow-hidden px-4">
-      <div className="bg-black/80 backdrop-blur-sm text-white w-[460px] p-8 my-20 rounded-xl border border-white/10 shadow-xl">
+      <div className="bg-black/80 backdrop-blur-sm text-white w-115 p-8 my-20 rounded-xl border border-white/10 shadow-xl">
         {/* Header */}
         <div className="flex justify-between items-start mb-6 w-full">
           <div className="w-[70%]">

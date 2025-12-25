@@ -2,8 +2,7 @@ import { z } from "zod";
 import { ForbiddenRegex } from "@/_util/Regex";
 
 export const zPostVideoFormSchema = z.object({
-  videoName: z.string(),
-  videoFile: z.instanceof(File).nullable(),
+  // videoFile: z.instanceof(File).nullable(),
   description: z
     .string()
     .max(30, "Max 30 characters")

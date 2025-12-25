@@ -153,7 +153,7 @@ export const PutFolderName = ({
 }) => {
   return prisma.$transaction(async (tx) => {
     // ? users_product -> folder_name DB
-    await tx.$queryRaw`
+    await tx.$executeRaw`
         UPDATE users_product
         SET folder_name = ${value}
         WHERE folder_name = ${targetFolder}
@@ -187,11 +187,43 @@ export const getResultPutGrouped = async ({
 }: {
   prevFolder: string;
 }) => {
-  const query = await prisma.$queryRaw<{ prevFolder: number }[]>`
-    SELECT COALESCE(COUNT(folder_name), 0) AS prevFolder
+  const query = await prisma.$queryRaw<{ prev_folder: number }[]>`
+    SELECT COALESCE(COUNT(folder_name), 0)::int AS prev_folder
     FROM users_product
     WHERE folder_name = ${prevFolder}
   `;
-  const dataRaw = [{ data: query[0].prevFolder }];
+  const dataRaw = [{ folder: prevFolder, value: query[0].prev_folder }];
+  return dataRaw;
+};
+
+export const DelGroupedPhoto = async ({
+  id,
+  idProduct,
+  prevFolder,
+}: {
+  id: string;
+  idProduct: number[];
+  prevFolder: string;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    // ? users_product -> folder_name DB
+    await tx.$queryRaw`
+        UPDATE users_product SET status = false
+        WHERE ref_id = ${id}::uuid AND id_product = ANY(${idProduct}) AND folder_name = ${prevFolder}
+      `;
+  });
+};
+
+export const getResultDelGrouped = async ({
+  prevFolder,
+}: {
+  prevFolder: string;
+}) => {
+  const query = await prisma.$queryRaw<{ prev_folder: number }[]>`
+    SELECT COALESCE(COUNT(folder_name), 0)::int AS prev_folder
+    FROM users_product
+    WHERE folder_name = ${prevFolder} AND status = true
+  `;
+  const dataRaw = [{ folder: prevFolder, value: query[0].prev_folder }];
   return dataRaw;
 };

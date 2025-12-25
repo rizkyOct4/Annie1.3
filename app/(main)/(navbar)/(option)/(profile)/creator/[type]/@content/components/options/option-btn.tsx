@@ -12,6 +12,10 @@ export interface PutGroupedImage {
   targetFolder: string;
   prevFolder: string;
 }
+export interface DeleteGroupedImage {
+  idProduct: number[];
+  prevFolder: string;
+}
 
 const OptionBtn = ({
   isOpenNav,
@@ -26,6 +30,7 @@ const OptionBtn = ({
     type,
     setTypeBtn,
     groupedPutPhoto,
+    groupedDeletePhoto,
     ListPostFolderData,
   } = useContext(creatorContext);
 
@@ -65,27 +70,57 @@ const OptionBtn = ({
   );
 
   const handleSubmit = useCallback(
-    async (e: React.SyntheticEvent) => {
+    async (e: React.SyntheticEvent, actionType: string) => {
       e.preventDefault();
+      switch (actionType) {
+        case "move": {
+          try {
+            const payload: PutGroupedImage = {
+              idProduct: isOpenNav.idProduct,
+              targetFolder: isOpenNav.targetFolder,
+              prevFolder: isOpenNav.prevFolder,
+            };
+            const res = await groupedPutPhoto(payload);
+            showToast({ type: "success", fallback: res.message });
+            setIsOpenNav({
+              isOpen: false,
+              idProduct: [],
+              type: "",
+              targetFolder: "",
+              prevFolder: "",
+            });
+          } catch (error) {
+            console.error(error);
+          }
+          break;
+        }
+        case "delete":
+          {
+            try {
+              if (!isOpenNav.idProduct.length) return;
+              const payload: DeleteGroupedImage = {
+                prevFolder: isOpenNav.prevFolder,
+                idProduct: isOpenNav.idProduct,
+              };
+              const res = await groupedDeletePhoto(payload);
+              showToast({ type: "success", fallback: res.message });
+              setIsOpenNav({
+                isOpen: false,
+                idProduct: [],
+                type: "",
+                targetFolder: "",
+                prevFolder: "",
+              });
 
-      const payload: PutGroupedImage = {
-        idProduct: isOpenNav.idProduct,
-        targetFolder: isOpenNav.targetFolder,
-        prevFolder: isOpenNav.prevFolder,
-      };
-
-      const res = groupedPutPhoto(payload);
-      showToast({ type: "success", fallback: res.message });
-
-      setIsOpenNav({
-        isOpen: false,
-        idProduct: [],
-        type: "",
-        targetFolder: "",
-        prevFolder: "",
-      });
+              console.log(payload);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+          break;
+      }
     },
-    [setIsOpenNav, isOpenNav, groupedPutPhoto]
+    [setIsOpenNav, isOpenNav, groupedPutPhoto, groupedDeletePhoto]
   );
 
   return (
@@ -126,7 +161,7 @@ const OptionBtn = ({
       {/* ===== RIGHT: INLINE PANEL ===== */}
       {["move", "delete"].includes(isOpenNav.type) && (
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => handleSubmit(e, isOpenNav.type)}
           className="
             flex items-center gap-4
           ">

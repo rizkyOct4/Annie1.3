@@ -8,7 +8,7 @@ export const ROUTES_CREATOR_PHOTO_PANEL = {
   }: {
     typeConfig: string;
     prevPath: string;
-    currentPath: string;
+    currentPath: string | undefined;
     folderName: string;
     id: string;
   }) => {

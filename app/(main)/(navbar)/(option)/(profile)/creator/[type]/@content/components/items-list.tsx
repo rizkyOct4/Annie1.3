@@ -120,9 +120,6 @@ const ItemsList = ({
             open: prev.iuProduct === idProduct ? false : true,
             iuProduct: prev.iuProduct === idProduct ? null : idProduct,
           }));
-          // setIsIdDescription((prev: any) =>
-          //   prev === idProduct ? null : idProduct
-          // );
           break;
         }
         case "update": {
@@ -132,21 +129,20 @@ const ItemsList = ({
             value: value,
           });
           setUpdateState(idProduct);
-          // console.log("test")
           break;
         }
         case "openDescription": {
-          router.push(
-            `${pathname}/description?folder-name=${folderName}&id=${idProduct}`
-          );
-          break;
-          // const newUrl = `${pathname}/description?folder-name=${folderName}&id=${idProduct}`;
-          // history.pushState({}, "", newUrl);
+          // router.push(
+          //   `${pathname}/description?folder-name=${folderName}&id=${idProduct}`
+          // );
           // break;
+          const newUrl = `${pathname}/description?folder-name=${folderName}&id=${idProduct}`;
+          history.pushState({}, "", newUrl);
+          break;
         }
       }
     },
-    [folderName, pathname, router, setIsRender, setUpdateState]
+    [folderName, pathname, setIsRender, setUpdateState]
   );
 
   return (
@@ -157,81 +153,6 @@ const ItemsList = ({
       {isFetchingItemFolder ? (
         <Loading />
       ) : (
-        // <div
-        //   ref={containerRef}
-        //   className="relative flex justify-center flex-wrap gap-5 w-full my-4 max-h-100 overflow-y-auto">
-        //   {Array.isArray(data) &&
-        //     data.length > 0 &&
-        //     data.map((i: { idProduct: number; url: string }, idx) => {
-        //       const isLast = idx === data.length - 1;
-        //       return (
-        //         <div
-        //           key={i.idProduct}
-        //           ref={isLast ? lastItemRef : null}
-        //           className="relative flex flex-col w-[22%] h-65 rounded-2xl overflow-hidden border border-gray-100">
-        //           {/* Image wrapper */}
-        //           <div className="relative w-full md:h-64 lg:h-72">
-        //             <Image
-        //               src={i.url}
-        //               alt={"Image"}
-        //               fill
-        //               sizes="(max-width: 200px) 100vw"
-        //               className="object-cover"
-        //             />
-        //             {["move", "delete"].includes(isOpenNav.type) && (
-        //               <button
-        //                 onClick={(e) =>
-        //                   handleAction(e, "navAction", i.idProduct)
-        //                 }
-        //                 className={`absolute top-3 left-3 flex items-center justify-center w-9 h-9 rounded-xl transition-colors
-        //                 ${
-        //                   isOpenNav?.idProduct.includes(i.idProduct)
-        //                     ? "bg-black/80 text-white"
-        //                     : "bg-white/80 text-gray-700"
-        //                 }`}>
-        //                 {isOpenNav?.idProduct.includes(i.idProduct) ? (
-        //                   <MdCheck size={20} />
-        //                 ) : (
-        //                   <MdClose size={20} />
-        //                 )}
-        //               </button>
-        //             )}
-
-        //             {/* Buttons overlay */}
-        //             <div className="absolute bottom-3 flex flex-wrap gap-2 px-4">
-        //               {/* Toggle button */}
-        //               <button
-        //                 className="w-9 h-9 rounded-xl bg-white/80 border border-gray-200 text-gray-700 flex-center"
-        //                 onClick={(e) =>
-        //                   handleAction(e, "toggle", i.idProduct, "")
-        //                 }>
-        //                 {isOpen.iuProduct === i.idProduct && isOpen.open ? (
-        //                   <IoMdOpen />
-        //                 ) : (
-        //                   <BiExit />
-        //                 )}
-        //               </button>
-
-        //               {/* Action buttons */}
-        //               {isOpen.open &&
-        //                 isOpen.iuProduct === i.idProduct &&
-        //                 btnList.map((btn, idx) => (
-        //                   <button
-        //                     key={idx}
-        //                     className="text-sm font-medium text-gray-600 w-9 h-9 rounded-xl bg-white/80 border border-gray-200 flex-center hover:bg-white hover:text-black"
-        //                     onClick={(e) =>
-        //                       handleAction(e, btn.name, i.idProduct, btn.name)
-        //                     }
-        //                     title={btn.title}>
-        //                     {btn.icon}
-        //                   </button>
-        //                 ))}
-        //             </div>
-        //           </div>
-        //         </div>
-        //       );
-        //     })}
-        // </div>
         <div
           ref={containerRef}
           className="

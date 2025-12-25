@@ -86,58 +86,6 @@ const Sidebar = ({
   ];
 
   return (
-    // <div className="w-full fixed top-20 h-screen z-100 flex ">
-    //   <aside
-    //     className="
-    //       w-20 bg-black/80 backdrop-blur-sm
-    //       border-white/10
-    //       flex flex-col items-center pt-6
-    //       overflow-y-auto
-    //       border-r-white border-r-2
-    //     ">
-    //     {sidebarItems.map((item) => (
-    //       <div
-    //         key={item.key}
-    //         className="w-full flex flex-col items-center mb-4">
-    //         {/* === ICON BUTTON === */}
-    //         <button
-    //           title={item.title}
-    //           onClick={() =>
-    //             setActivePanel(activePanel === item.key ? null : item.key)
-    //           }
-    //           className="
-    //             w-12 h-12
-    //             flex items-center justify-center
-    //             mb-1
-    //             rounded-md bg-white/10 border border-white/10 text-white
-    //             hover:bg-white/20 hover:cursor-pointer transition group
-    //           ">
-    //           {item.icon}
-    //         </button>
-
-    //         {activePanel === item.key && (
-    //           <div className="w-20 flex flex-col items-center mt-2 gap-2">
-    //             {item.menus.map((m, i) => (
-    //               <button
-    //                 key={i}
-    //                 type="button"
-    //                 title={m.label}
-    //                 onClick={() => router.push(m.to)}
-    //                 className="w-10 h-10 flex items-center justify-center rounded-md bg-white/10 border border-white/10 text-white hover:bg-white/20 transition relative">
-    //                 <span className="text-xl">{m.icon}</span>
-    //               </button>
-    //             ))}
-    //           </div>
-    //         )}
-    //       </div>
-    //     ))}
-    //   </aside>
-    //   {/* === MAIN CONTENT === */}
-    //   <main className="flex-1 pb-10 min-h-screen overflow-y-auto bg-black/80">
-    //     {intAuth}
-    //     {children}
-    //   </main>
-    // </div>
     <div className="w-full fixed top-20 h-screen z-100 flex">
       {/* ===== SIDEBAR ===== */}
       <aside
@@ -213,9 +161,9 @@ const Sidebar = ({
         className="
       flex-1
       min-h-screen
-      pb-10
+      pb-20
       overflow-y-auto
-      bg-black/80
+      bg-black/60
     ">
         {intAuth}
         {children}

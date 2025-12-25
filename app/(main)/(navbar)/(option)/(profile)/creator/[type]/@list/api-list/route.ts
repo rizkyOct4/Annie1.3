@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ListFolderPhoto } from "@/_lib/services/navbar/option/profile/services-list-folder";
+import { GetListFolder } from "@/_lib/services/navbar/option/profile/services-list-folder";
 import GetToken from "@/_lib/middleware/get-token";
 
 export async function GET(
@@ -15,7 +15,7 @@ export async function GET(
     const offset = (section - 1) * limit;
 
     if (pathUrl) {
-      const result = await ListFolderPhoto({
+      const result = await GetListFolder({
         id,
         pathUrl,
         limit,
