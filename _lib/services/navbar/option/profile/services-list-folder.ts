@@ -15,7 +15,7 @@ export const GetListFolder = async ({
 }) => {
   "use cache";
   cacheLife("minutes");
-  cacheTag(`list-folders-${id}`);
+  cacheTag(`list-folders-${id}-${pathUrl}`);
 
   const query = await prisma.$queryRaw`
             SELECT 

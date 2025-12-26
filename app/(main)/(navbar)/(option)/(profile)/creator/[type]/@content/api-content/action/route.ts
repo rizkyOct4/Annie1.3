@@ -17,7 +17,6 @@ import {
 import { revalidateTag } from "next/cache";
 import { GetUpdateImage } from "@/_lib/services/navbar/option/profile/action/services-btn";
 import {
-  PostVideoProductCloudinary,
   PostDbVideo,
   OutputVideo,
 } from "@/_lib/services/navbar/option/profile/action/services-video";
@@ -76,27 +75,42 @@ export async function POST(req: NextRequest) {
       });
     }
     if (method === "postVideo" && typePost === "video") {
-      const formData = await req.formData();
-      const rawCategory = formData.get("category") as string;
-      const rawHashtag = formData.get("hashtag") as string;
-      const createdAtRaw = formData.get("createdAt") as string;
+      // const formData = await req.formData();
+      // const rawCategory = formData.get("category") as string;
+      // const rawHashtag = formData.get("hashtag") as string;
+      // const createdAtRaw = formData.get("createdAt") as string;
 
-      const idProduct = Number(formData.get("idProduct"));
-      const folderName = formData.get("folderName") as string;
-      const description = formData.get("description") as string;
-      const hashtag = rawHashtag.split(",");
-      const category = rawCategory.split(",");
-      const file = formData.get("file") as File;
-      const createdAt = new Date(createdAtRaw);
+      // const idProduct = Number(formData.get("idProduct"));
+      // const folderName = formData.get("folderName") as string;
+      // const description = formData.get("description") as string;
+      // const hashtag = rawHashtag.split(",");
+      // const category = rawCategory.split(",");
+      // const file = formData.get("file") as File;
+      // const createdAt = new Date(createdAtRaw);
 
-      const videoName = `video-${idProduct}-${id}`;
+      // const videoName = `video-${idProduct}-${id}`;
 
-      const { publicId, url, thumbnail, duration, width, height, format } =
-        await PostVideoProductCloudinary({
-          file: file,
-          videoName: videoName,
-          id: id,
-        });
+      // const { publicId, url, thumbnail, duration, width, height, format } =
+      //   await PostVideoProductCloudinary({
+      //     file: file,
+      //     videoName: videoName,
+      //     id: id,
+      //   });
+      const {
+        folderName,
+        description,
+        url,
+        publicId,
+        thumbnailUrl,
+        duration,
+        hashtag,
+        category,
+        idProduct,
+        format,
+        height,
+        width,
+        createdAt,
+      } = await req.json();
 
       await PostDbVideo({
         id,
@@ -104,7 +118,7 @@ export async function POST(req: NextRequest) {
         folderName,
         description,
         url,
-        thumbnail,
+        thumbnailUrl,
         duration,
         hashtag,
         category,

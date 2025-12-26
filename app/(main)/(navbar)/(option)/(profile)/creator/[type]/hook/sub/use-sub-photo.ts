@@ -186,7 +186,7 @@ const usePut = ({
 }: {
   keyListFolder: Array<string>;
   keyItemFolder: Array<string>;
-  keyUpdatePhoto: Array<string | null>;
+  keyUpdatePhoto: Array<string | number | null>;
   rawKeyItemFolder?:
     | {
         key: string;
@@ -363,7 +363,7 @@ const usePutFolderName = ({
   keyFolder: Array<string>;
   keyListItemFolder: Array<string>;
   keyItemFolder: Array<string>;
-  keyUpdatePhoto: Array<string | null>;
+  keyUpdatePhoto: Array<string | number | null>;
   type: string;
 }) => {
   const queryClient = useQueryClient();

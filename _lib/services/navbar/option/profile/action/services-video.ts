@@ -3,6 +3,56 @@ import cloudinary from "@/_lib/cloudinary";
 import camelcaseKeys from "camelcase-keys";
 
 // * POST VIDEO CLOUD ===========================
+// export const PostVideoProductCloudinary = async ({
+//   file,
+//   id,
+// }: {
+//   file: File;
+//   id: string;
+// }) => {
+//   // 1. Convert File -> Buffer
+//   const arrayBuffer = await file.arrayBuffer();
+//   const buffer = Buffer.from(arrayBuffer);
+
+//   // 2. Upload ke Cloudinary (VIDEO)
+//   const result = await new Promise<any>((resolve, reject) => {
+//     cloudinary.uploader
+//       .upload_stream(
+//         {
+//           folder: `users profile/${id}/videos`,
+//           public_id: id,
+//           resource_type: "video",
+//           overwrite: true,
+//         },
+//         (error, result) => {
+//           if (error) reject(error);
+//           else resolve(result);
+//         }
+//       )
+//       .end(buffer);
+//   });
+
+//   const thumbnailUrl = cloudinary.url(result.public_id, {
+//     resource_type: "video",
+//     format: "jpg",
+//     transformation: [
+//       { width: 800, crop: "scale" },
+//       { start_offset: "auto" }, // ambil frame terbaik
+//     ],
+//   });
+
+//   return {
+//     publicId: result.public_id,
+//     url: result.secure_url,
+//     thumbnail: thumbnailUrl,
+//     duration: result.duration,
+//     width: result.width,
+//     height: result.height,
+//     format: result.format,
+//   };
+// };
+
+
 export const PostVideoProductCloudinary = async ({
   file,
   videoName,
@@ -60,7 +110,7 @@ export const PostDbVideo = async({
   folderName,
   description,
   url,
-  thumbnail,
+  thumbnailUrl,
   duration,
   hashtag,
   category,
@@ -76,7 +126,7 @@ export const PostDbVideo = async({
   folderName: string;
   description: string;
   url: string;
-  thumbnail: string;
+  thumbnailUrl: string;
   duration: number;
   hashtag: string[];
   category: string[];
@@ -91,12 +141,12 @@ export const PostDbVideo = async({
     // ? users_product DB
     await tx.$executeRaw`
         INSERT INTO users_product (type, folder_name, status, created_at, id_product, ref_id)
-        VALUES (${type}::type_product, ${folderName}, ${true}, ${createdAt}, ${idProduct}, ${id}::uuid)
+        VALUES (${type}::type_product, ${folderName}, ${true}, ${createdAt}::timestamp, ${idProduct}, ${id}::uuid)
           `;
 
     await tx.$executeRaw`
         INSERT INTO users_product_video (description, url, thumbnail_url, duration, hashtag, category, ref_id_product, cloud_public_id, format, height, width)
-        VALUES (${description}, ${url}, ${thumbnail}, ${duration}, ${hashtag}::varchar[], ${category}::varchar[], ${idProduct}, ${publicId}, ${format}, ${height}, ${width})
+        VALUES (${description}, ${url}, ${thumbnailUrl}, ${duration}, ${hashtag}::varchar[], ${category}::varchar[], ${idProduct}, ${publicId}, ${format}, ${height}, ${width})
     `;
   });
 };

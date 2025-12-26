@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { ROUTES_PROFILE } from "../../config";
 import axios from "axios";
+import { MY_CLOUDINARY_NAME } from "@/_lib/config";
 
 export const usePostVideo = ({
   //   keyFolder,
@@ -21,18 +22,26 @@ export const usePostVideo = ({
   const queryClient = useQueryClient();
 
   const { mutateAsync: postVideo } = useMutation({
-    mutationFn: async (formData: FormData) => {
+    // mutationFn: async (formData: FormData) => {
+    //   const URL = `https://api.cloudinary.com/v1_1/${MY_CLOUDINARY_NAME}/video/upload`;
+
+    //   const res = await axios.post(URL, formData, {
+    //     onUploadProgress: (e) => {
+    //       if (!e.total) return;
+    //       const percent = Math.round((e.loaded * 100) / e.total);
+    //       console.log("Upload:", percent, "%");
+    //     },
+    //   });
+
+    //   return res.data;
+    // },
+    mutationFn: async (data) => {
       const URL = ROUTES_PROFILE.ACTION_VIDEO({
         method: "postVideo",
         type: "video",
         path: type,
       });
-      const res = await axios.post(URL, formData);
-    //   const res = await axios.post(URL, formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
+      const res = await axios.post(URL, data);
       return res.data;
     },
     // onMutate: async (mutate) => {
@@ -166,6 +175,5 @@ export const usePostVideo = ({
 
   return { postVideo };
 };
-
 
 // todo KONDISIKAN BESOK UNTUK VIDEO LAGI !! PASTIKAN SEMUA PAS !! JANGAN ADA BUG !!

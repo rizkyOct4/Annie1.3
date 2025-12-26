@@ -1,8 +1,9 @@
 import { prisma } from "@/_lib/db";
 import camelcaseKeys from "camelcase-keys";
+import { TItemFolderVideo } from "./type";
 
 // ? LIST ITEM FOLDER
-export const ListItemFolderPhoto = async ({
+export const ListItemFolder = async ({
   id,
   path,
   year,
@@ -17,7 +18,6 @@ export const ListItemFolderPhoto = async ({
   limit: number;
   offset: number;
 }) => {
-
   const dataRaw = await prisma.$queryRaw<any[]>`
         SELECT up.folder_name, COUNT(up.folder_name)::int AS amount_item
           FROM users_product up
@@ -39,8 +39,8 @@ export const ListItemFolderPhoto = async ({
         FROM users_product up
         JOIN users u ON (u.id = up.ref_id)
         WHERE u.id = ${id}::uuid AND up.status = true
-        AND EXTRACT(YEAR FROM up.created_at)::int = ${year}
-        AND EXTRACT(MONTH FROM up.created_at)::int = ${month}
+          AND EXTRACT(YEAR FROM up.created_at)::int = ${year}
+          AND EXTRACT(MONTH FROM up.created_at)::int = ${month}
         AND up.type = ${path}::type_product
     `;
 
@@ -62,7 +62,6 @@ export const ItemFolderPhoto = async ({
   limit: number;
   offset: number;
 }) => {
-
   const query = await prisma.$queryRaw<
     {
       folder_name: string;
@@ -93,11 +92,52 @@ export const ItemFolderPhoto = async ({
       SELECT COUNT(up.folder_name) AS amount_item
       FROM users_product up
       JOIN users u ON (u.id = up.ref_id)
-      WHERE up.folder_name = ${folderName} AND up.status = true` ;
+      WHERE up.folder_name = ${folderName} AND up.status = true`;
 
   const hasMore = offset + limit < Number(queryCheck[0].amount_item);
 
   const data = camelcaseKeys(dataRaw);
+
+  return { data, hasMore };
+};
+
+export const ItemFolderVideo = async ({
+  path,
+  folderName,
+  limit,
+  offset,
+}: {
+  path: string;
+  folderName: string;
+  limit: number;
+  offset: number;
+}) => {
+  const query = await prisma.$queryRaw<TItemFolderVideo>`
+    SELECT up.folder_name, up.created_at, upv.ref_id_product AS idProduct, upv.url, upv.thumbnail_url, upv.description, upv.duration, upv.hashtag, upv.category
+    FROM users_product_video upv
+    JOIN users_product up ON (up.id_product = upv.ref_id_product)
+    WHERE up.folder_name = ${folderName}
+    AND up.type = ${path}::type_product
+    AND up.status = true
+    ORDER BY up.created_at DESC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `;
+
+  // const dataRaw = query.map((i: { ref_id_product: number }) => ({
+  //   ...i,
+  //   idProduct: i.ref_id_product,
+  // }));
+
+  const queryCheck = await prisma.$queryRaw<{ amount_item: number }[]>`
+      SELECT COUNT(up.folder_name) AS amount_item
+      FROM users_product up
+      JOIN users u ON (u.id = up.ref_id)
+      WHERE up.folder_name = ${folderName} AND up.status = true`;
+
+  const hasMore = offset + limit < Number(queryCheck[0].amount_item);
+
+  const data = camelcaseKeys(query);
 
   return { data, hasMore };
 };

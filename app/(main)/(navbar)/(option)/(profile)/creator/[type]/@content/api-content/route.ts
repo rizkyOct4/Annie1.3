@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-// import {
-//   ListItemFolderPhoto,
-//   ItemFolderPhoto,
-// } from "@/_lib/services/navbar/profile/item-folder-service";
-import { ListItemFolderPhoto, ItemFolderPhoto } from "@/_lib/services/navbar/option/profile/services-content";
+import {
+  ListItemFolder,
+  ItemFolderPhoto,
+  ItemFolderVideo,
+} from "@/_lib/services/navbar/option/profile/services-content";
 import GetToken from "@/_lib/middleware/get-token";
 
 export async function GET(
@@ -20,10 +20,11 @@ export async function GET(
     const offset = (section - 1) * limit;
 
     switch (key) {
-      case "listItemFolderPhoto": {
+      case "listItemFolderPhoto":
+      case "listItemFolderVideo": {
         const year = Number(req.nextUrl.searchParams.get("year"));
         const month = Number(req.nextUrl.searchParams.get("month"));
-        const itemFolder = await ListItemFolderPhoto({
+        const output = await ListItemFolder({
           id,
           path: typeParams,
           year,
@@ -31,7 +32,7 @@ export async function GET(
           limit,
           offset,
         });
-        return NextResponse.json(itemFolder);
+        return NextResponse.json(output);
       }
       case "itemFolderPhoto": {
         const folderName = req.nextUrl.searchParams.get("folder-name") ?? "";
@@ -42,6 +43,16 @@ export async function GET(
           offset,
         });
         return NextResponse.json(result);
+      }
+      case "itemFolderVideo": {
+        const folderName = req.nextUrl.searchParams.get("folder-name") ?? "";
+        const output = await ItemFolderVideo({
+          path: typeParams,
+          folderName,
+          limit,
+          offset,
+        });
+        return NextResponse.json(output);
       }
     }
   } catch (err: any) {

@@ -4,7 +4,7 @@ import { creatorContext } from "@/app/context";
 import { FolderClock, ArrowUp01, RefreshCcw } from "lucide-react";
 import { useCallback, useContext } from "react";
 import { MdDriveFileMove, MdDelete } from "react-icons/md";
-import { ItemListStateNav } from "../items-list";
+import { ItemListStateNav } from "../photo-card";
 import { showToast } from "@/_util/Toast";
 
 export interface PutGroupedImage {

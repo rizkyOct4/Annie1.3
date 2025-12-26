@@ -4,12 +4,13 @@ import { RandomId, LocalISOTime } from "@/_util/GenerateData";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useContext, memo, useState } from "react";
-import { creatorContext } from "@/app/context";
+import { creatorContext, profileContext } from "@/app/context";
 import { ToggleStateType } from "../../types/interface";
 import { z } from "zod";
 import { ForbiddenRegex } from "@/_util/Regex";
 import { zPostVideoFormSchema } from "./schema";
 import { showToast } from "@/_util/Toast";
+import { uploadVideoToCloudinary } from "./direct-upload-video";
 
 type PostFormSchema = z.infer<typeof zPostVideoFormSchema>;
 
@@ -45,6 +46,8 @@ const PostVideoForm = ({
 }: {
   setIsRender: React.Dispatch<React.SetStateAction<ToggleStateType>>;
 }) => {
+  const { data: getData } = useContext(profileContext);
+  const id = getData?.id;
   const { ListPostFolderData, refetchListPostFolder, postVideo } =
     useContext(creatorContext);
 
@@ -68,39 +71,75 @@ const PostVideoForm = ({
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
+  // const submit = handleSubmit(async (values) => {
+  //   try {
+  //     if (!videoFile) {
+  //       throw new Error("Video belum dipilih");
+  //     }
+
+  //     const formData = new FormData();
+
+  //     // VIDEO FILE
+  //     formData.append("file", videoFile);
+  //     formData.append("idProduct", RandomId().toString());
+  //     formData.append("description", values.description);
+  //     formData.append("hashtag", values.hashtag.join(","));
+  //     formData.append("category", values.category.join(","));
+  //     formData.append("folderName", values.folderName);
+  //     formData.append("type", "video");
+  //     formData.append("createdAt", LocalISOTime().toString());
+
+  //     // console.log(formData)
+  //     // for (const pair of formData.entries()) {
+  //     //   console.log(pair[0], pair[1]);
+  //     // }
+  //     showToast({ type: "loading", fallback: true });
+  //     const res = await postVideo(formData);
+  //     console.log(res);
+
+  //     showToast({ type: "loading", fallback: false });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // });
+
   const submit = handleSubmit(async (values) => {
     try {
-      if (!videoFile) {
-        throw new Error("Video belum dipilih");
-      }
+      setIsRender({ open: false, type: "" });
 
-      const formData = new FormData();
-
-      // VIDEO FILE
-      formData.append("file", videoFile);
-      formData.append("idProduct", RandomId().toString());
-      formData.append("description", values.description);
-      formData.append("hashtag", values.hashtag.join(","));
-      formData.append("category", values.category.join(","));
-      formData.append("folderName", values.folderName);
-      formData.append("type", "video");
-      formData.append("createdAt", LocalISOTime().toString());
-
-      // console.log(formData)
-      // for (const pair of formData.entries()) {
-      //   console.log(pair[0], pair[1]);
-      // }
+      if (!videoFile) throw new Error("Video belum dipilih");
       showToast({ type: "loading", fallback: true });
 
-      const res = await postVideo(formData);
-      console.log(res);
+      // ! DIRECT CLOUDINARY
+      const cloudinaryRes = await uploadVideoToCloudinary(videoFile, id);
+
+      // === 2. SIMPAN KE DATABASE (JSON) ===
+      const payload = {
+        idProduct: RandomId(),
+        description: values.description,
+        hashtag: values.hashtag,
+        category: values.category,
+        folderName: values.folderName,
+        type: "video",
+        createdAt: LocalISOTime(),
+
+        // hasil cloudinary
+        url: cloudinaryRes.secure_url,
+        publicId: cloudinaryRes.public_id,
+        duration: cloudinaryRes.duration,
+        width: cloudinaryRes.width,
+        height: cloudinaryRes.height,
+        format: cloudinaryRes.format,
+        thumbnailUrl: cloudinaryRes.secure_url.replace(".mp4", ".jpg"),
+      };
+
+      const res = await postVideo(payload);
+      console.log(res.message);
 
       showToast({ type: "loading", fallback: false });
-      // setIsRender({ open: false, type: "" });
-      // refetchListPostFolder();
-      // console.log(payload);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      showToast({ type: "error", message: "Upload gagal" });
     }
   });
 

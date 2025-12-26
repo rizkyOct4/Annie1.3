@@ -2,9 +2,15 @@
 
 import { creatorContext } from "@/app/context";
 import { profileContext } from "@/app/context";
-import { useContentProfile, useItemDescription, useCreatorButton } from "../hook/hook-photo";
+import {
+  useCreatorPhoto,
+  useDescription,
+  useCreatorButton,
+} from "../hook/hook-photo";
 import { ReactNode, useContext } from "react";
 import { useCreatorVideo } from "../hook/hook-video";
+import { useCreatorContextState } from "./helperCreatorContext";
+import { useParams } from "next/navigation";
 
 interface CreatorContextProps {
   children: ReactNode;
@@ -13,21 +19,81 @@ interface CreatorContextProps {
 const CreatorContext: React.FC<CreatorContextProps> = ({ children }) => {
   const { data: getData } = useContext(profileContext);
   const id = getData?.id;
+  const { type } = useParams<{ type: string }>();
 
+  // ? HELPER
+  const {
+    stateContent,
+    setStateContent,
+
+    stateFolder,
+    setStateFolder,
+
+    updateState,
+    setUpdateState,
+
+    isSort,
+    setIsSort,
+
+    panel,
+    folderName,
+    idProduct,
+  } = useCreatorContextState();
+
+  // ! DATA
   // ? PHOTO
-  const content = useContentProfile(id)
-  const itemFolderDescription = useItemDescription(id)
+  const photo = useCreatorPhoto({
+    stateContent,
+    stateFolder,
+    updateState,
+    id,
+    type: "photo",
+  });
+  const photoDescription = useDescription({
+    id,
+    panel,
+    folderName,
+    idProduct,
+    type: "photo",
+  });
   const z = useCreatorButton(id);
-  
-  
+
   // ? VIDEO
-  const video = useCreatorVideo(id);
+  const video = useCreatorVideo({
+    stateContent,
+    setStateContent,
+    stateFolder,
+    setStateFolder,
+    updateState,
+    setUpdateState,
+    isSort,
+    setIsSort,
+    id,
+    type: "video",
+  });
 
   const value = {
-    ...content,
-    ...itemFolderDescription,
-    ...z,
+    ...photo,
+    ...photoDescription,
     ...video,
+    ...z,
+    stateContent,
+    setStateContent,
+
+    stateFolder,
+    setStateFolder,
+
+    updateState,
+    setUpdateState,
+
+    isSort,
+    setIsSort,
+
+    panel,
+    folderName,
+    idProduct,
+
+    type,
   };
 
   return (

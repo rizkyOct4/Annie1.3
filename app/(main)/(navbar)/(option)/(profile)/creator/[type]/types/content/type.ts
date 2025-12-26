@@ -1,4 +1,4 @@
-export type TListItemFolderPhoto = {
+export type TListItemFolder = {
   folderName: string;
   amountItem: number;
 };

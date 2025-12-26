@@ -5,9 +5,8 @@ import {
   keepPreviousData,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import axios from "axios";
-import { useParams, useSearchParams, usePathname } from "next/navigation";
 import { ROUTES_PROFILE } from "../config";
 import {
   usePost,
@@ -21,26 +20,23 @@ import { ROUTES_ITEM_FOLDER } from "../config/item-folder";
 import { ROUTES_CREATOR_PHOTO_PANEL } from "../config/routes-panel";
 import { SortASC } from "@/_util/GenerateData";
 import { TPhotoDescription } from "../types/panel/description/type";
+import type {
+  UseCreatorPhotoParams,
+  UseDescriptionParams,
+} from "../context/type";
+import { useParams } from "next/navigation";
+
 
 // * CONTENT ====
-const useContentProfile = (id: string) => {
-  const { type } = useParams<{ type: string }>();
-  const [stateContent, setStateContent] = useState({
-    year: "",
-    month: "",
-  });
-  const [stateFolder, setStateFolder] = useState({
-    isOpen: false,
-    isFolder: "",
-    isIuProduct: null,
-  });
-
-  // ? UPDATE STATE
-  const [updateState, setUpdateState] = useState(null);
-
-  // ? SORT ITEMS DATA
-  const [isSort, setIsSort] = useState(false);
-
+const useCreatorPhoto = ({
+  stateContent,
+  stateFolder,
+  updateState,
+  id,
+  type,
+}: UseCreatorPhotoParams) => {
+    const { type: currentPath } = useParams<{ type: string }>();
+  
   // ! START LIST FOLDERS ==========================
   const {
     data: listFolderPhoto,
@@ -65,7 +61,7 @@ const useContentProfile = (id: string) => {
     staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!type,
+    enabled: type === currentPath,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -102,7 +98,7 @@ const useContentProfile = (id: string) => {
       staleTime: 1000 * 60 * 3,
       gcTime: 1000 * 60 * 60,
       initialPageParam: 1,
-      enabled: !!stateContent.year && !!stateContent.month,
+      enabled: !!stateContent.year && !!stateContent.month && type === currentPath,
       placeholderData: keepPreviousData,
       refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
       refetchOnMount: false, // "always" => refetch jika stale saja
@@ -138,7 +134,7 @@ const useContentProfile = (id: string) => {
     staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!stateFolder.isFolder,
+    enabled: !!stateFolder.isFolder && type === currentPath,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -271,11 +267,6 @@ const useContentProfile = (id: string) => {
   // console.log(itemFolderPhoto);
 
   return {
-    // ? STATE
-    setStateContent,
-    stateFolder,
-    setStateFolder,
-
     // * LIST FOLDER PHOTO
     listFolderData,
     FNPListFolderPhoto,
@@ -297,12 +288,9 @@ const useContentProfile = (id: string) => {
 
     // * UTLS
     sortItemFolder,
-    isSort,
-    setIsSort,
 
     // ? DATA UPDATE
     UpdatedData,
-    setUpdateState,
 
     // ? ACTION
     postPhoto,
@@ -310,35 +298,31 @@ const useContentProfile = (id: string) => {
     groupedPutPhoto,
     groupedDeletePhoto,
     updateNameFolder,
-
-    // * CURRENT-PATH
-    type,
   };
 };
 
-const useItemDescription = (id: string) => {
-  const pathname = usePathname();
-  const panel = pathname.split("/").filter(Boolean).at(-1);
-
-  const { type } = useParams<{ type: string }>();
-  const folderName = useSearchParams().get("folder-name") ?? "";
-  const idDesc = useSearchParams().get("id") ?? "";
-
+const useDescription = ({
+  id,
+  panel,
+  folderName,
+  idProduct,
+  type,
+}: UseDescriptionParams) => {
   const { data: descriptionItemFolderPhoto } = useQuery({
-    queryKey: ["keyDescriptionItemFolder", id, panel, folderName, idDesc],
+    queryKey: ["keyDescriptionItemFolder", id, panel, folderName, idProduct],
     queryFn: async () => {
       const URL = ROUTES_CREATOR_PHOTO_PANEL.GET({
         typeConfig: "panelDescriptionPhoto",
         prevPath: type,
         currentPath: panel,
         folderName: folderName,
-        id: idDesc,
+        id: idProduct,
       });
       const { data } = await axios.get(URL);
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: !!panel && !!idDesc,
+    enabled: !!panel && !!idProduct,
     gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
@@ -391,16 +375,7 @@ const useCreatorButton = (id: string) => {
     ListPostFolderData,
     setTypeBtn,
     refetchListPostFolder,
-
-    // UpdatePhotoData,
-    // setIuProduct,
-    // isLoadingUpdatePhoto,
   };
 };
 
-export {
-  useContentProfile,
-  useItemDescription,
-  // useCreatorPhoto,
-  useCreatorButton,
-};
+export { useCreatorPhoto, useDescription, useCreatorButton };

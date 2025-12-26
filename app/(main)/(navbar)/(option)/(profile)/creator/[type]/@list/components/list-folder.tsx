@@ -5,7 +5,11 @@ import { ChevronDown } from "lucide-react";
 import { creatorContext } from "@/app/context";
 
 const ListFolder = ({ currentPath }: { currentPath: string }) => {
-  const { listFolderData, setStateContent } = useContext(creatorContext);
+  const { listFolderData, listFolderVideoData, setStateContent } =
+    useContext(creatorContext);
+
+  const useData =
+    currentPath === "photo" ? listFolderData : listFolderVideoData;
 
   const [openYear, setOpenYear] = useState<number | null>(null);
 
@@ -53,8 +57,8 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {Array.isArray(listFolderData) &&
-        listFolderData.map((item) => (
+      {Array.isArray(useData) &&
+        useData.map((item) => (
           <div
             key={item.year}
             className="

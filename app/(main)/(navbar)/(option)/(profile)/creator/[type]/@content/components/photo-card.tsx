@@ -37,7 +37,7 @@ export interface ItemListStateNav {
   prevFolder: string;
 }
 
-const ItemsList = ({
+const PhotoCard = ({
   data,
   folderName,
   setIsRender,
@@ -159,7 +159,7 @@ const ItemsList = ({
     relative
     flex flex-wrap justify-center gap-6
     w-full my-4
-    max-h-100
+    h-full
     overflow-y-auto
   ">
           {Array.isArray(data) &&
@@ -290,4 +290,4 @@ const ItemsList = ({
   );
 };
 
-export default ItemsList;
+export default PhotoCard;

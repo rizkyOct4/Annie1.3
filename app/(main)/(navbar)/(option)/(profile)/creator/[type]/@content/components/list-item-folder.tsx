@@ -5,21 +5,12 @@ import { creatorContext } from "@/app/context";
 import { ChartSpline, ChevronDown } from "lucide-react";
 import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import ItemsList from "./items-list";
-import { TListItemFolderPhoto } from "../../types/content/type";
-import dynamic from "next/dynamic";
+import { TListItemFolder } from "../../types/content/type";
 import Loading from "@/app/loading";
 import PutFolderNameForm from "../../form/photo/put-name-folder-form";
-
-const LazyUpdatePhotoForm = dynamic(
-  () => import("../../form/photo/put-photo-form")
-);
-// const LazyPutFolderNameForm = dynamic(
-//   () => import("../../form/photo/put-name-folder-form"),
-//   {
-//     loading: () => <Loading />,
-//   }
-// );
+import PutPhotoForm from "../../form/photo/put-photo-form";
+import PhotoCard from "./photo-card";
+import VideoCard from "./video-card";
 
 export interface FolderListToggle {
   open: boolean;
@@ -46,18 +37,20 @@ const listBtn = [
   },
 ];
 
-const ListItemPhoto = ({
+const ListItem = ({
   data,
   currentPath,
 }: {
-  data: TListItemFolderPhoto[];
+  data: TListItemFolder[];
   currentPath: string;
 }) => {
   const {
     stateFolder,
     setStateFolder,
     isFetchingListItemFolder,
+    isFetchingListItemFolderVideo,
     itemFolderPhotoData,
+    ItemsVideoData,
     isSort,
     sortItemFolder,
   } = useContext(creatorContext);
@@ -110,7 +103,7 @@ const ListItemPhoto = ({
   const renderComponent = useCallback(() => {
     switch (isRender.value) {
       case "update": {
-        return <LazyUpdatePhotoForm setIsRender={setIsRender} />;
+        return <PutPhotoForm setIsRender={setIsRender} />;
       }
     }
   }, [isRender]);
@@ -119,14 +112,14 @@ const ListItemPhoto = ({
     <>
       <div className="w-full flex px-4">
         <div className="flex flex-col gap-3 w-full">
-          {isFetchingListItemFolder ? (
+          {isFetchingListItemFolder | isFetchingListItemFolderVideo ? (
             <Loading />
           ) : (
             Array.isArray(data) &&
             data.length > 0 &&
-            data.map((f) => (
+            data.map((f, idx) => (
               <div
-                key={f.folderName}
+                key={idx}
                 className="
                 w-full
                 p-4
@@ -240,12 +233,19 @@ const ListItemPhoto = ({
 
                   {/* ===== ITEMS LIST ===== */}
                   {stateFolder.isFolder === f.folderName && (
-                    <div className="mt-4 pl-4 border-l border-emerald-500">
-                      <ItemsList
-                        data={isSort ? sortItemFolder : itemFolderPhotoData}
-                        folderName={f.folderName}
-                        setIsRender={setIsRender}
-                      />
+                    <div className="relative flex flex-wrap justify-center gap-6 w-full max-h-120 overflow-y-auto mt-4 pl-4 border-l border-emerald-500">
+                      {currentPath === "photo" ? (
+                        <PhotoCard
+                          data={isSort ? sortItemFolder : itemFolderPhotoData}
+                          folderName={f.folderName}
+                          setIsRender={setIsRender}
+                        />
+                      ) : (
+                        <VideoCard
+                          data={ItemsVideoData}
+                          folderName={f.folderName}
+                        />
+                      )}
                     </div>
                   )}
                 </>
@@ -260,4 +260,4 @@ const ListItemPhoto = ({
   );
 };
 
-export default memo(ListItemPhoto);
+export default memo(ListItem);

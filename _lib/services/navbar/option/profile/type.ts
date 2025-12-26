@@ -21,3 +21,16 @@ export type TGetUpdateImage = {
   category: string[];
   created_at: Date;
 };
+
+
+export type TItemFolderVideo = {
+  folder_name: string;
+  created_at: Date;
+  ref_id_product: number;
+  description: string;
+  hashtag: string[]
+  category: string[]
+  url: string
+  duration: number;
+  thumbnail_url: string;
+}[]

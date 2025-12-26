@@ -4,36 +4,30 @@ import { useContext } from "react";
 import { creatorContext } from "@/app/context";
 import dynamic from "next/dynamic";
 
-const LazyListListItemPhoto = dynamic(() => import("./list-item-folder"));
+const LazyListListItem = dynamic(() => import("./list-item-folder"));
 
 export default function ModalListItem({
   currentPath,
 }: {
   currentPath: string;
 }) {
-  const {
-    listItemFolderPhotoData,
-    // itemFolderVideoData,
-  } = useContext(creatorContext);
+  const { listItemFolderPhotoData, listItemFolderVideoData } =
+    useContext(creatorContext);
 
   switch (currentPath) {
     case "photo":
+    case "video":
       return (
-        <LazyListListItemPhoto
-          data={listItemFolderPhotoData}
+        <LazyListListItem
+          data={
+            currentPath === "photo"
+              ? listItemFolderPhotoData
+              : listItemFolderVideoData
+          }
           currentPath={currentPath}
         />
       );
-    // case "video":
-    //   return <ListItemPhoto data={itemFolderVideoData} />;
     default:
-      return (
-        <div className="w-full flex flex-col items-center justify-center py-10 bg-black/80 text-white rounded-xl border border-white/10 shadow-lg">
-          <p className="text-lg font-medium">No items found</p>
-          <p className="text-sm text-white/70 mt-1">
-            There are no items to display for this section.
-          </p>
-        </div>
-      );
+      return;
   }
 }
