@@ -4,20 +4,20 @@ export const ROUTES_CREATORS = {
   GET: ({
     typeConfig,
     pageParams,
-    publicId,
+    targetId,
   }: {
     typeConfig: string;
     pageParams?: number;
-    publicId?: string;
+    targetId?: string;
   }) => {
-    const limit = 6;
+    const limit = 10;
     switch (typeConfig) {
       case "creators":
-        return `${BASE_URL}/creators/api?section=${pageParams}&limit=${limit}`;
+        return `/creators/api?section=${pageParams}&limit=${limit}`;
       case "creatorsDescription":
-        return `${BASE_URL}/creators/${publicId}/api`;
+        return `/creators/${targetId}/api`;
       case "listCreatorsProduct":
-        return `${BASE_URL}/creators/${publicId}/api?section=${pageParams}&limit=${limit}`;
+        return `/creators/${targetId}/api?section=${pageParams}&limit=${limit}`;
       default:
         return "";
     }

@@ -155,13 +155,7 @@ const PhotoCard = ({
       ) : (
         <div
           ref={containerRef}
-          className="
-    relative
-    flex flex-wrap justify-center gap-6
-    w-full my-4
-    h-full
-    overflow-y-auto
-  ">
+          className="relative flex flex-wrap justify-center gap-6 w-full h-full overflow-y-auto">
           {Array.isArray(data) &&
             data.length > 0 &&
             data.map((i: { idProduct: number; url: string }, idx) => {

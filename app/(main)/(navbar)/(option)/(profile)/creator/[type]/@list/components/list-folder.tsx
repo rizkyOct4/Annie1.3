@@ -61,14 +61,15 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
         useData.map((item) => (
           <div
             key={item.year}
-            className="
+            className={`
             mb-3
             rounded-xl
-            bg-white/5
-            border border-white/10
-            overflow-hidden
+            border 
+            overflow-hidden ${
+              openYear === item.year ? "border-emerald-500 bg-black/40 backdrop-blur-md" : "border-white/10 "
+            }
             transition
-          ">
+            `}>
             {/* ===== YEAR HEADER ===== */}
             <button
               onClick={(e) => handleAction(e, "open", item.year)}
@@ -99,7 +100,7 @@ const ListFolder = ({ currentPath }: { currentPath: string }) => {
                 flex flex-col gap-1
                 px-2 py-2
                 bg-white/5
-                border-t border-white/10
+                border-white/10
               ">
                 {listMonth.map((i, idx) => (
                   <div key={idx}>

@@ -1,36 +1,44 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import CreatorsCard from "./creators-card";
-import Fetching from "@/_util/fetch";
-import { SSRInfiniteQuery } from "@/_util/fetch";
-import { ROUTES_CREATORS } from "./config";
+// import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+// import CreatorsCard from "./creators-card";
+// import GetToken from "@/_lib/middleware/get-token";
+// import { getQueryClient } from "@/app/get-query-client";
+// import { GetAllCreators } from "@/_lib/services/sidebar/discover/creators/services-creators";
 
-const page = async () => {
-  const path = "creators";
-  const { queryClient } = await Fetching();
+// const page = async () => {
+//   const currentPath = "creators";
+//   const queryClient = getQueryClient();
+//   const { id } = await GetToken();
 
-  const queryKey = ["keyListCreators", path];
+//   const key = ["keyListAllCreators", currentPath, id];
 
-  await SSRInfiniteQuery({
-    queryKey: queryKey,
-    config: ROUTES_CREATORS.GET,
-    typeConfig: path,
-    path: path,
-    queryClient: queryClient,
-  });
+//   await queryClient.prefetchInfiniteQuery({
+//     queryKey: key,
+//     queryFn: ({ pageParam = 1 }) =>
+//       GetAllCreators({
+//         limit: 10,
+//         offset: (pageParam - 1) * 10,
+//       }),
+//     initialPageParam: 1,
+//   });
 
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <CreatorsCard url={path} />
-    </HydrationBoundary>
-  );
+//   return (
+//     <HydrationBoundary state={dehydrate(queryClient)}>
+//       <CreatorsCard currentPath={currentPath} />
+//     </HydrationBoundary>
+//   );
+// };
+
+// export default page;
+
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Authors",
+  description: "Enjoy~ ",
+};
+
+const page = () => {
+  return;
 };
 
 export default page;
-
-// ! HydrationBoundary itu jembatan antara SSR data React Query di server dan cache di browser. Dia memastikan data hasil prefetch server tidak hilang,dan React Query di client langsung bisa pakai data itu tanpa refetch. lempar data SSR -> client !!
-
-// * ❗️prefetch di page.tsx hanya berjalan kalau halaman itu benar-benar diakses (dirender oleh server). dia tidak akan jalan otomatis di background sebelum user masuk ke page itu.
-
-// * untuk data fetch SSR yg spesifik mengembalikan 1 buah data pakai => await queryClient.prefetchQuery
-
-// * kalau data banyak pakai infiniteQuery !!! LIAT ADA PAKAI FLAG !!!

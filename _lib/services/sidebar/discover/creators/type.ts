@@ -7,12 +7,12 @@ export type CreatorsType = {
   picture: string | undefined;
 };
 
-export interface CreatorDescriptionType {
-  first_name: string;
-  last_name: string;
+export interface TTargetCreatorsDescription {
   username: string | null;
   biodata: string | null;
   gender: string | null;
+  phone_number: number | null;
+  location: string | null;
   picture: string | null;
   social_link: string[];
 }
@@ -26,5 +26,5 @@ export interface ListCreatorProductType {
   created_at: Date;
   total_like: number;
   total_dislike: number;
-  status: boolean
+  status: boolean;
 }

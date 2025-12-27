@@ -41,6 +41,25 @@ const videoCategories = [
   { name: "Experimental", icon: "🧪" },
 ];
 
+export type TPostVideo = {
+  idProduct: number;
+  description: string;
+  hashtag: string[];
+  category: string[];
+  folderName: string;
+  type: string;
+  createdAt: Date;
+
+  // hasil cloudinary
+  url: string;
+  publicId: number;
+  duration: number;
+  width: number;
+  height: number;
+  format: string;
+  thumbnailUrl: string;
+};
+
 const PostVideoForm = ({
   setIsRender,
 }: {
@@ -70,51 +89,17 @@ const PostVideoForm = ({
   const [showDummyFolder, setShowDummyFolder] = useState(false);
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
-
-  // const submit = handleSubmit(async (values) => {
-  //   try {
-  //     if (!videoFile) {
-  //       throw new Error("Video belum dipilih");
-  //     }
-
-  //     const formData = new FormData();
-
-  //     // VIDEO FILE
-  //     formData.append("file", videoFile);
-  //     formData.append("idProduct", RandomId().toString());
-  //     formData.append("description", values.description);
-  //     formData.append("hashtag", values.hashtag.join(","));
-  //     formData.append("category", values.category.join(","));
-  //     formData.append("folderName", values.folderName);
-  //     formData.append("type", "video");
-  //     formData.append("createdAt", LocalISOTime().toString());
-
-  //     // console.log(formData)
-  //     // for (const pair of formData.entries()) {
-  //     //   console.log(pair[0], pair[1]);
-  //     // }
-  //     showToast({ type: "loading", fallback: true });
-  //     const res = await postVideo(formData);
-  //     console.log(res);
-
-  //     showToast({ type: "loading", fallback: false });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
-
+  
   const submit = handleSubmit(async (values) => {
     try {
       setIsRender({ open: false, type: "" });
-
-      if (!videoFile) throw new Error("Video belum dipilih");
       showToast({ type: "loading", fallback: true });
 
       // ! DIRECT CLOUDINARY
       const cloudinaryRes = await uploadVideoToCloudinary(videoFile, id);
 
-      // === 2. SIMPAN KE DATABASE (JSON) ===
-      const payload = {
+      // === 2. INSERT DATABASE (JSON) ===
+      const payload: TPostVideo = {
         idProduct: RandomId(),
         description: values.description,
         hashtag: values.hashtag,
@@ -123,7 +108,7 @@ const PostVideoForm = ({
         type: "video",
         createdAt: LocalISOTime(),
 
-        // hasil cloudinary
+        // result cloudinary
         url: cloudinaryRes.secure_url,
         publicId: cloudinaryRes.public_id,
         duration: cloudinaryRes.duration,

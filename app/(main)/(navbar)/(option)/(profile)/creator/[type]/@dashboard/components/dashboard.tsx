@@ -1,19 +1,12 @@
 "use client";
 
 import { memo, useState, useCallback } from "react";
-import dynamic from "next/dynamic";
-
 import ActivePath from "./active-path";
 import SearchFolder from "./search-folder";
 import PostingBtn from "./posting-btn";
 import { IDashboard } from "../../types/dashboard/interface";
-
-const LazyPostPhotoForm = dynamic(
-  () => import("../../form/photo/post-photo-form")
-);
-const LazyPostVideoForm = dynamic(
-  () => import("../../form/video/post-video-form")
-);
+import PostPhotoForm from "../../form/photo/post-photo-form";
+import PostVideoForm from "../../form/video/post-video-form";
 
 export const Dashboard = ({ currentPath }: { currentPath: string }) => {
   const [isRender, setIsRender] = useState<IDashboard>({
@@ -24,10 +17,10 @@ export const Dashboard = ({ currentPath }: { currentPath: string }) => {
   const render = useCallback(() => {
     switch (isRender.type) {
       case "video": {
-        return <LazyPostVideoForm setIsRender={setIsRender} />;
+        return <PostVideoForm setIsRender={setIsRender} />;
       }
       case "photo": {
-        return <LazyPostPhotoForm setIsRender={setIsRender} />;
+        return <PostPhotoForm setIsRender={setIsRender} />;
       }
     }
   }, [isRender]);

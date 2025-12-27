@@ -60,24 +60,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999 !important; 
+  z-index: 999 !important;
 }
-
-/* .border-f{
-  @apply border border-[rgb(29,205,159)]
-}
-.border-t{
-  @apply border border-[rgb(29,205,159)]
-}
-.border-b{
-  @apply border border-[rgb(29,205,159)]
-}
-.border-r{
-  @apply border border-[rgb(29,205,159)]
-}
-.border-l{
-  @apply border border-[rgb(29,205,159)]
-} */
 
 .form-input{
   @apply focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent

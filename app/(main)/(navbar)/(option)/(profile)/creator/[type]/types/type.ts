@@ -31,6 +31,22 @@ export type TOriginalItemFolder = {
   hasMore: boolean;
 };
 
+
+export type ItemsVideo = {
+  folderName: string;
+  idProduct: number;
+  url: string;
+  duration: number;
+  thumbnailUrl: string;
+};
+export type TOriginalItemsVideo = {
+  data: ItemsVideo[];
+  hasMore: boolean;
+};
+
+
+
+
 // ? 3
 export type TOriginalUpdated = {
   idProduct: number;

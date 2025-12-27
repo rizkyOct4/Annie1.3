@@ -7,12 +7,12 @@ export type CreatorsType = {
   picture?: string | undefined;
 };
 
-export type CreatorDescriptionType = {
-  firstName: string;
-  lastName: string;
+export type TTargetCreatorsDescription = {
   username?: string;
   biodata?: string;
   gender?: string;
+  phoneNumber?: number | null;
+  location?: string | null;
   picture?: string;
   socialLink?: [
     {

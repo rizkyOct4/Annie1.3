@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  memo
 } from "react";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
@@ -88,8 +89,13 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
   return (
     <div
       ref={containerRef}
-      className="overflow-y-auto w-full flex flex-wrap gap-4 justify-start rounded-md"
-    >
+      className="
+    w-full
+    flex-center
+    flex-wrap
+    gap-4
+    rounded-md
+  ">
       {Array.isArray(listCreatorProductData) &&
         listCreatorProductData.map((i, idx) => {
           const isLast = idx === listCreatorProductData.length - 1;
@@ -97,15 +103,25 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
             <div
               key={i.iuProduct}
               ref={isLast ? lastItemRef : null}
-              className="relative flex flex-col bg-white rounded-xl shadow-sm w-[30%] h-[300px] overflow-hidden"
-            >
+              className="
+            relative
+            flex
+            flex-col
+            w-[30%]
+            h-90
+            overflow-hidden
+            rounded-xl
+            bg-black/80
+            border border-white/10
+            backdrop-blur-sm
+          ">
               {/* Image section */}
-              <div className="relative w-full min-h-[200px] group">
+              <div className="relative w-full min-h-56">
                 <Image
                   src={i.url}
                   alt={i.description}
                   fill
-                  className="object-cover transition-transform"
+                  className="object-cover"
                 />
 
                 {/* Like button */}
@@ -114,30 +130,49 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
                   onClick={(e) =>
                     handleAction(e, "likePost", i.iuProduct, i.status)
                   }
-                  className="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow-md border border-white/40 hover:scale-110 hover:shadow-lg hover:bg-white transition-all duration-300"
-                >
+                  className="
+                absolute
+                top-3
+                right-3
+                w-9
+                h-9
+                flex
+                items-center
+                justify-center
+                rounded-full
+                bg-white/10
+                border border-white/20
+                backdrop-blur-sm
+              ">
                   <BiLike
-                    className={`${
-                      i.status ? "text-red-600" : "text-blue-600"
-                    }  transition-transform duration-300 `}
-                    size={22}
+                    size={20}
+                    className={i.status ? "text-red-500" : "text-blue-500"}
                   />
                 </button>
               </div>
 
-              {/* Description */}
-              <div className="h-auto p-4 flex flex-col justify-between overflow-y-auto">
-                {/* Deskripsi */}
-                <p className="text-sm">{i.description}</p>
+              {/* Content */}
+              <div className="p-4 flex flex-col gap-2">
+                {/* Description */}
+                <h1 className="text-sm text-gray-300 line-clamp-3">
+                  {i.description}
+                </h1>
 
-                {/* Kategori & hashtag */}
-                <div className="flex flex-wrap gap-1 mb-2">
+                {/* Category & hashtag */}
+                <div className="flex flex-wrap gap-1">
                   {i.category.map((cat: string) => (
                     <span
                       key={cat}
-                      className="px-2 py-0.5 text-[11px] font-medium bg-blue-50 text-blue-600 
-                     border border-blue-100 rounded-md"
-                    >
+                      className="
+                    px-2
+                    py-0.5
+                    text-[11px]
+                    font-medium
+                    rounded-md
+                    bg-white/10
+                    text-gray-300
+                    border border-white/10
+                  ">
                       {cat}
                     </span>
                   ))}
@@ -145,27 +180,34 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
                   {i.hashtag.map((tag: string) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 text-[11px] font-medium bg-gray-100 text-gray-600 
-                     border border-gray-200 rounded-md"
-                    >
+                      className="
+                    px-2
+                    py-0.5
+                    text-[11px]
+                    font-medium
+                    rounded-md
+                    bg-white/5
+                    text-gray-400
+                    border border-white/10
+                  ">
                       #{tag}
                     </span>
                   ))}
                 </div>
 
-                {/* Like / Dislike / Tanggal */}
-                <div className="flex items-center justify-between text-xs text-gray-500 pt-1">
+                {/* Footer */}
+                <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-white/10">
                   <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1">
-                      <span className="text-blue-600">
+                      <span className="text-blue-500">
                         <BiLike />
-                      </span>{" "}
+                      </span>
                       {i.totalLike ?? 0}
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="text-gray-400">
+                      <span className="text-gray-500">
                         <BiDislike />
-                      </span>{" "}
+                      </span>
                       {i.totalDislike ?? 0}
                     </span>
                   </div>
@@ -176,14 +218,14 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
           );
         })}
 
-      {/* Loading indicator */}
+      {/* Loading */}
       {isFetchingNextPageProduct && (
-        <div className="w-full flex justify-center py-4 text-gray-500">
-          <span className="animate-pulse">Loading more products...</span>
+        <div className="w-full flex justify-center py-4 text-gray-400">
+          <span>Loading more products...</span>
         </div>
       )}
     </div>
   );
 };
 
-export default ListProducts;
+export default memo(ListProducts);

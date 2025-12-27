@@ -2,7 +2,7 @@
 
 import { ReactNode, useContext } from "react";
 import { creatorsContext, profileContext } from "@/app/context";
-import { useCreators, useCreatorsDescription } from "./hook/hook";
+import { useCreators, useCreatorsDescription } from "../hook/hook";
 
 interface CategoryContextProps {
   children: ReactNode;
@@ -10,10 +10,10 @@ interface CategoryContextProps {
 
 const CreatorsContext: React.FC<CategoryContextProps> = ({ children }) => {
   const { data: getData } = useContext(profileContext);
-  const publicId = getData?.publicId;
+  const id = getData?.id;
 
-  const a = useCreators()
-  const b = useCreatorsDescription(publicId)
+  const a = useCreators(id)
+  const b = useCreatorsDescription(id)
 
   const values = {
     ...a,

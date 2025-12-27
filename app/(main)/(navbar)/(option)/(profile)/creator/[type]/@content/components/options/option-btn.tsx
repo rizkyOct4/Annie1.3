@@ -27,6 +27,7 @@ const OptionBtn = ({
   const {
     setIsSort,
     isRefetchItemFolder,
+    refetchItemsVideo,
     type,
     setTypeBtn,
     groupedPutPhoto,
@@ -61,12 +62,23 @@ const OptionBtn = ({
           break;
         }
         case "refresh": {
-          isRefetchItemFolder();
+          if (type === "photo") {
+            isRefetchItemFolder();
+          } else {
+            refetchItemsVideo();
+          }
           break;
         }
       }
     },
-    [setIsOpenNav, setTypeBtn, type, setIsSort, isRefetchItemFolder]
+    [
+      setIsOpenNav,
+      setTypeBtn,
+      type,
+      setIsSort,
+      isRefetchItemFolder,
+      refetchItemsVideo,
+    ]
   );
 
   const handleSubmit = useCallback(
@@ -124,14 +136,8 @@ const OptionBtn = ({
   );
 
   return (
-    <div
-      className="
-        flex items-center
-        w-full
-        mt-4
-      ">
-      {/* ===== LEFT: ACTION BUTTONS ===== */}
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between gap-3 w-full">
+      <div className="flex items-center gap-3 w-full">
         {listBtn.map((i, idx) => (
           <button
             key={idx}
@@ -154,20 +160,16 @@ const OptionBtn = ({
           </button>
         ))}
       </div>
-
-      {/* ===== SPACER ===== */}
-      <div className="flex-1" />
-
-      {/* ===== RIGHT: INLINE PANEL ===== */}
-      {["move", "delete"].includes(isOpenNav.type) && (
-        <form
-          onSubmit={(e) => handleSubmit(e, isOpenNav.type)}
-          className="
+      <div>
+        {["move", "delete"].includes(isOpenNav.type) && (
+          <form
+            onSubmit={(e) => handleSubmit(e, isOpenNav.type)}
+            className="
             flex items-center gap-4
           ">
-          {/* Counter */}
-          <div
-            className="
+            {/* Counter */}
+            <div
+              className="
               min-w-11
               text-center
               px-3 py-1
@@ -176,20 +178,20 @@ const OptionBtn = ({
               border border-white/10
               text-sm text-gray-200
             ">
-            {isOpenNav.idProduct.length}
-          </div>
+              {isOpenNav.idProduct.length}
+            </div>
 
-          {/* Select */}
-          {isOpenNav.type === "move" && (
-            <select
-              value={isOpenNav.targetFolder}
-              onChange={(e) =>
-                setIsOpenNav((prev) => ({
-                  ...prev,
-                  targetFolder: e.target.value,
-                }))
-              }
-              className="
+            {/* Select */}
+            {isOpenNav.type === "move" && (
+              <select
+                value={isOpenNav.targetFolder}
+                onChange={(e) =>
+                  setIsOpenNav((prev) => ({
+                    ...prev,
+                    targetFolder: e.target.value,
+                  }))
+                }
+                className="
                 px-3 py-2
                 rounded-md
                 bg-white/10
@@ -197,28 +199,28 @@ const OptionBtn = ({
                 text-sm text-gray-200
                 focus:outline-none focus:ring-1 focus:ring-emerald-500/50
               ">
-              <option value="" disabled>
-                Choose folder
-              </option>
-              {Array.isArray(ListPostFolderData) &&
-                ListPostFolderData.map(
-                  (i: { folderName: string }, idx: number) => (
-                    <option
-                      disabled={i.folderName === isOpenNav.prevFolder}
-                      key={idx}
-                      value={i.folderName}
-                      className="text-black">
-                      {i.folderName}
-                    </option>
-                  )
-                )}
-            </select>
-          )}
+                <option value="" disabled>
+                  Choose folder
+                </option>
+                {Array.isArray(ListPostFolderData) &&
+                  ListPostFolderData.map(
+                    (i: { folderName: string }, idx: number) => (
+                      <option
+                        disabled={i.folderName === isOpenNav.prevFolder}
+                        key={idx}
+                        value={i.folderName}
+                        className="text-black">
+                        {i.folderName}
+                      </option>
+                    )
+                  )}
+              </select>
+            )}
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="
+            {/* Submit */}
+            <button
+              type="submit"
+              className="
               px-4 py-2
               rounded-md
               bg-emerald-600/80
@@ -226,10 +228,11 @@ const OptionBtn = ({
               text-sm font-medium text-white
               transition
             ">
-            Submit
-          </button>
-        </form>
-      )}
+              Submit
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

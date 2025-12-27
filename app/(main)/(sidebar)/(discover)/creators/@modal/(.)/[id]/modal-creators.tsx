@@ -1,0 +1,46 @@
+"use client";
+
+import { creatorsContext } from "@/app/context";
+import { useContext, useCallback } from "react";
+import CreatorDesc from "./creator-description";
+import ListProducts from "./products";
+import OptionsMenu from "./option-menu";
+import FormEmail from "../../../form/form-email";
+import FormReport from "../../../form/form-report";
+import { useParams } from "next/navigation";
+
+const ModalPopup = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const { open, setOpen, creatorDescriptionData } = useContext(creatorsContext);
+
+  const renderContent = useCallback(() => {
+    switch (open.isValue) {
+      case "Email":
+        return <FormEmail />;
+      case "Products":
+        return <ListProducts creatorId={id} />;
+      case "Report":
+        return <FormReport creatorId={id} />;
+      case "Profile":
+        return <CreatorDesc data={creatorDescriptionData} />;
+      //   case "Profile":
+      //     return <CreatorDesc data={creatorDescriptionData} />;
+    }
+  }, [id, open.isValue, creatorDescriptionData]);
+
+  return (
+    <div className="overlay backdrop-blur-sm">
+      <div className="flex w-250 h-180 bg-gray-50/50 rounded-md relative overflow-hidden border-emerald-500 border">
+        <div className="flex flex-col md:flex-row h-auto">
+          <OptionsMenu open={open} setOpen={setOpen} />
+        </div>
+        <div className="w-full h-full p-4 overflow-y-auto">
+          {renderContent()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ModalPopup;

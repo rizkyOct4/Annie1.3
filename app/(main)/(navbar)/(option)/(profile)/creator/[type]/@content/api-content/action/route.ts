@@ -130,11 +130,11 @@ export async function POST(req: NextRequest) {
         createdAt,
       });
 
-      const output = await OutputVideo({ id: id, idProduct: idProduct });
+      // const output = await OutputVideo({ id: id, idProduct: idProduct });
 
       return NextResponse.json({
         message: "New Post Success",
-        data: output,
+        // data: output,
       });
     }
   } catch (err: any) {

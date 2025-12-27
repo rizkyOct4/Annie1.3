@@ -2,10 +2,10 @@
 
 import axios from "axios";
 
-export const uploadVideoToCloudinary = async (file: File, id: string) => {
+export const uploadVideoToCloudinary = async (file: File | null, id: string) => {
   const formData = new FormData();
 
-  formData.append("file", file);
+  formData.append("file", file!);
   formData.append("upload_preset", "nextprototype");
   formData.append("folder", `users profile/${id}/videos`);
 

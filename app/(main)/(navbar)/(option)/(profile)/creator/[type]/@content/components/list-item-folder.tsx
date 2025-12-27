@@ -54,7 +54,6 @@ const ListItem = ({
     isSort,
     sortItemFolder,
   } = useContext(creatorContext);
-  const router = useRouter();
 
   const [isRender, setIsRender] = useState<IsRenderComponent>({
     isOpen: false,
@@ -80,12 +79,8 @@ const ListItem = ({
           break;
         }
         case "stats": {
-          router.push(
-            `/creator/${currentPath}/stats?folder-name=${folderName}`
-          );
-          // router.push(
-          //   `/creator/${currentPath}/stats?folder-name=${folderName}`
-          // );
+          const newUrl = `/creator/${currentPath}/stats?folder-name=${folderName}`;
+          history.pushState({}, "", newUrl);
           break;
         }
         case "updateFolder": {
@@ -97,7 +92,7 @@ const ListItem = ({
         }
       }
     },
-    [setStateFolder, router, currentPath, setNewNamefolder]
+    [setStateFolder, currentPath, setNewNamefolder]
   );
 
   const renderComponent = useCallback(() => {
@@ -120,15 +115,11 @@ const ListItem = ({
             data.map((f, idx) => (
               <div
                 key={idx}
-                className="
-                w-full
-                p-4
-                rounded-xl
-                bg-white/5
-                border border-white/10
-                hover:bg-white/10
+                className={`
+                w-full p-4 rounded-xl
+                border ${stateFolder.isFolder === f.folderName ? 'border-emerald-500 bg-black/40 backdrop-blur-md' : 'border-white/10 bg-white/5'}
                 transition
-              ">
+                `}>
                 <>
                   {/* ===== HEADER ===== */}
                   <div className="flex items-center gap-4">

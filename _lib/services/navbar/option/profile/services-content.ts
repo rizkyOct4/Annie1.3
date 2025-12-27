@@ -113,7 +113,7 @@ export const ItemFolderVideo = async ({
   offset: number;
 }) => {
   const query = await prisma.$queryRaw<TItemFolderVideo>`
-    SELECT up.folder_name, up.created_at, upv.ref_id_product AS idProduct, upv.url, upv.thumbnail_url, upv.description, upv.duration, upv.hashtag, upv.category
+    SELECT up.folder_name, upv.ref_id_product AS "idProduct", upv.url, upv.thumbnail_url, upv.duration
     FROM users_product_video upv
     JOIN users_product up ON (up.id_product = upv.ref_id_product)
     WHERE up.folder_name = ${folderName}
@@ -123,11 +123,6 @@ export const ItemFolderVideo = async ({
     LIMIT ${limit}
     OFFSET ${offset}
   `;
-
-  // const dataRaw = query.map((i: { ref_id_product: number }) => ({
-  //   ...i,
-  //   idProduct: i.ref_id_product,
-  // }));
 
   const queryCheck = await prisma.$queryRaw<{ amount_item: number }[]>`
       SELECT COUNT(up.folder_name) AS amount_item

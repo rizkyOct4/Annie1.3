@@ -1,6 +1,7 @@
 "use client";
 
 import { VideoItem } from "../video-card";
+import { memo } from "react";
 
 interface Props {
   video: VideoItem;
@@ -29,4 +30,4 @@ const VideoPlayerModal = ({ video, onClose }: Props) => {
   );
 };
 
-export default VideoPlayerModal;
+export default memo(VideoPlayerModal);

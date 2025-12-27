@@ -2,6 +2,11 @@ import { prisma } from "@/_lib/db";
 import bcrypt from "bcrypt";
 import camelcaseKeys from "camelcase-keys";
 import type { TRegisterResultOAuth } from "./schema-auth";
+import { nanoid } from "nanoid";
+
+
+
+// const id = nanoid(8);  
 
 export const CredentialRegister = async ({
   firstName,
@@ -130,3 +135,6 @@ export const CredentialsLogin = async ({
     user: camelcaseKeys(rawData),
   };
 };
+
+// !import { nanoid } from "nanoid";
+// todo UBAH BESOK TABEL USERS !! TAMBAHKAN PUBLICID KHUSUS CLIENT !!! 

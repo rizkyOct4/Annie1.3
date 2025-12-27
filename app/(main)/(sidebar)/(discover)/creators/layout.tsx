@@ -1,16 +1,17 @@
 import CreatorsContext from "./context/context";
 
 const Layout = ({
-  children,
   modal,
+  creators,
 }: {
-  children: React.ReactNode;
   modal: React.ReactNode;
+  creators: React.ReactNode;
 }) => {
   return (
     <CreatorsContext>
-      {children}
       {modal}
+      {creators}
+      {/* <section className="w-full h-auto">{children}</section> */}
     </CreatorsContext>
   );
 };

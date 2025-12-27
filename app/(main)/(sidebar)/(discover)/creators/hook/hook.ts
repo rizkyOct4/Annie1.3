@@ -11,12 +11,12 @@ import {
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { CreatorDescriptionType, ListCreatorProductType } from "../../type";
 import { usePost } from "./Post";
-import { ModalState } from "../../types/interface";
+import { ModalState } from "../types/interface";
+import type { TTargetCreatorsDescription } from "../types/type";
 
-const useCreators = () => {
-  const path = "creators";
+const useCreators = (id: string) => {
+  const currentPath = "creators";
   // * List Creators
   const {
     data: listCreators,
@@ -24,10 +24,10 @@ const useCreators = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["keyListCreators", path],
+    queryKey: ["keyListAllCreators", currentPath, id],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await axios.get(
-        ROUTES_CREATORS.GET({ typeConfig: path, pageParams: pageParam })
+        ROUTES_CREATORS.GET({ typeConfig: currentPath, pageParams: pageParam })
       );
       return data;
     },
@@ -39,7 +39,7 @@ const useCreators = () => {
     staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!path,
+    enabled: !!currentPath,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -51,14 +51,14 @@ const useCreators = () => {
     () => listCreators?.pages.flatMap((page) => page.data) ?? [],
     [listCreators?.pages]
   );
+  // console.log(listCreatorsData)
 
   return { listCreatorsData, fetchNextPage, hasNextPage, isFetchingNextPage };
 };
 
-const useCreatorsDescription = (publicIdUser: string) => {
-  const queryClient = useQueryClient();
-
-  const { publicId } = useParams<{ publicId: string }>();
+const useCreatorsDescription = (id: string) => {
+  // const queryClient = useQueryClient();
+  const { id: targetId } = useParams<{ id: string }>();
 
   const [open, setOpen] = useState<ModalState>({
     isOpen: true,
@@ -68,29 +68,23 @@ const useCreatorsDescription = (publicIdUser: string) => {
 
   // * Creators Description
   const { data: creatorDescription } = useQuery({
-    queryKey: ["keyCreatorDescription", publicIdUser, publicId],
-    // queryFn: async () => {
-    //   // const queryKey = ["keyCreatorDescription", publicIdUser, publicId]
-    //   // if (queryClient.getQueryData(queryKey)) {
-    //   const URL = ROUTES_CREATORS.GET({
-    //     typeConfig: "creatorsDescription",
-    //     publicId: publicId,
-    //   });
-    //   const { data } = await axios.get(URL);
-    //   return data;
-    //   // }
-    // },
-    queryFn: async () => undefined,
+    queryKey: ["keyTargetCreatorDescription", id, targetId],
+    queryFn: async () => {
+      const URL = ROUTES_CREATORS.GET({
+        typeConfig: "creatorsDescription",
+        targetId: targetId,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
     staleTime: 1000 * 60 * 5,
-    enabled: !!publicId,
+    enabled: !!targetId,
     gcTime: 1000 * 60 * 60, // Cache data akan disimpan selama 1 jam
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
     retry: false,
   });
-
-  console.log(creatorDescription)
 
   // * List Creators Product
   const {
@@ -99,12 +93,12 @@ const useCreatorsDescription = (publicIdUser: string) => {
     hasNextPage: hasNextPageProduct,
     isFetchingNextPage: isFetchingNextPageProduct,
   } = useInfiniteQuery({
-    queryKey: ["keyListProductCreators", publicIdUser, publicId],
+    queryKey: ["keyListProductCreators", id, targetId],
     queryFn: async ({ pageParam = 1 }) => {
       const URL = ROUTES_CREATORS.GET({
         typeConfig: "listCreatorsProduct",
         pageParams: pageParam,
-        publicId: publicId,
+        targetId: targetId,
       });
       const { data } = await axios.get(URL);
       return data;
@@ -117,7 +111,7 @@ const useCreatorsDescription = (publicIdUser: string) => {
       return lastPage?.hasMore ? allPages.length + 1 : undefined;
     },
     initialPageParam: 1,
-    enabled: !!publicId && open.isValue === "Products",
+    enabled: !!targetId && open.isValue === "Products",
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -125,11 +119,11 @@ const useCreatorsDescription = (publicIdUser: string) => {
   });
 
   // ? child hook
-  const listCreatorKey = ["keyListProductCreators", publicIdUser, publicId];
+  const listCreatorKey = ["keyListProductCreators", id, targetId];
 
-  const { postLikePhoto } = usePost(publicIdUser, publicId, listCreatorKey);
+  const { postLikePhoto } = usePost(id, targetId, listCreatorKey);
 
-  const creatorDescriptionData: CreatorDescriptionType = useMemo(
+  const creatorDescriptionData: TTargetCreatorsDescription[] = useMemo(
     () => creatorDescription ?? [],
     [creatorDescription]
   );
@@ -137,6 +131,8 @@ const useCreatorsDescription = (publicIdUser: string) => {
     () => listProductCreators?.pages.flatMap((page) => page.data) ?? [],
     [listProductCreators?.pages]
   );
+
+  // console.log(listProductCreators);
 
   return {
     creatorDescriptionData,

@@ -27,6 +27,7 @@ const useCreatorVideo = ({
 }: UseCreatorVideoParams) => {
   const { type: currentPath } = useParams<{ type: string }>();
 
+  // * FOLDERS ======
   const { data: listFolderVideo } = useInfiniteQuery({
     queryKey: ["keyListFolderVideo", id, type],
     queryFn: async ({ pageParam = 1 }) => {
@@ -82,7 +83,8 @@ const useCreatorVideo = ({
     staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 60,
     initialPageParam: 1,
-    enabled: !!stateContent.year && !!stateContent.month && type === currentPath,
+    enabled:
+      !!stateContent.year && !!stateContent.month && type === currentPath,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
     refetchOnMount: false, // "always" => refetch jika stale saja
@@ -96,7 +98,7 @@ const useCreatorVideo = ({
     fetchNextPage: fetchNextPageItemFolder,
     hasNextPage: isHasPageItemFolder,
     isFetchingNextPage: isFetchingNextPageItemFolder,
-    refetch: isRefetchItemFolder,
+    refetch: refetchItemsVideo,
   } = useInfiniteQuery({
     queryKey: ["keyItemFolderVideo", id, stateFolder.isFolder],
     queryFn: async ({ pageParam = 1 }) => {
@@ -124,8 +126,21 @@ const useCreatorVideo = ({
     retry: false,
   });
 
+  // console.log(itemsVideo);
+
+
   // ? SUB =====
-  const { postVideo } = usePostVideo({ type: type });
+  const { postVideo } = usePostVideo({
+    keyFolderVideo: ["keyListFolderVideo", id, type],
+    keyListFolderVideo: [
+      "keyListItemFolderVideo",
+      id,
+      stateContent.year,
+      stateContent.month,
+    ],
+    keyItemsVideo: ["keyItemFolderVideo", id, stateFolder.isFolder],
+    type: type,
+  });
 
   // ! DATA
   // * LIST FOLDERS DATA
@@ -150,9 +165,15 @@ const useCreatorVideo = ({
     listFolderVideoData,
 
     // ? CONTENT
+    // ? 2
     listItemFolderVideoData,
     isFetchingListItemFolderVideo,
+
+    // ? 3
     ItemsVideoData,
+    refetchItemsVideo,
+
+    // * ACTION
     postVideo,
   };
 };

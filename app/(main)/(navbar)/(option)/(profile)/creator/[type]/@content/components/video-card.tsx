@@ -8,15 +8,10 @@ import { MdCheck, MdClose } from "react-icons/md";
 
 export type VideoItem = {
   idProduct: number;
-  refIdProduct: number;
   url: string;
   thumbnailUrl: string;
-  description: string;
   duration?: number;
-  category: string[];
-  hashtag: string[];
   folderName: string;
-  createdAt: string;
 };
 
 export interface ItemListStateNav {
@@ -37,7 +32,6 @@ const VideoCard = ({
   folderName: string;
 }) => {
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
-
   // console.log(`video data:`, data);
 
   // ? Navigation State
@@ -72,7 +66,6 @@ const VideoCard = ({
           break;
 
         case "delete":
-          // confirm + API delete
           console.log("DELETE VIDEO:", item.idProduct);
           break;
 

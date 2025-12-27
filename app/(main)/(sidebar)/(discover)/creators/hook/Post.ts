@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import { ROUTES_CREATORS } from "@/app/(main)/(sidebar)/(discover)/creators/config";
 import type { OriginalCreatorListData } from "../../type";
-import { PostDataLike } from "../../@modal/(.)[publicId]/type";
+import { PostDataLike } from "../@modal/(.)[publicId]/type";
 
 const usePost = (
   publicIdUser: string,
