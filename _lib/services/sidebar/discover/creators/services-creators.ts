@@ -77,7 +77,7 @@ export const GetListCreatorsProduct = async ({
 }) => {
   const query = await prisma.$queryRaw<
     any[]
-  >`SELECT upi.ref_id_product AS "idProduct", upi.description, upi.url, upi.hashtag, upi.category, up.created_at, COALESCE(SUM(upiv.like), 0)::int AS total_like, COALESCE(SUM(upiv.dislike), 0)::int AS total_dislike, upio.status
+  >`SELECT upi.ref_id_product AS "idProduct", upi.description, upi.url, upi.hashtag, upi.category, up.created_at, COUNT(*) FILTER (WHERE upiv.status = 'like')::int AS total_like, COUNT(*) FILTER (WHERE upiv.status = 'dislike')::int AS total_dislike, upio.status
     FROM users u
     JOIN users_product up ON (up.ref_id = u.id)
     JOIN users_product_image upi ON (upi.ref_id_product = up.id_product)
@@ -110,27 +110,32 @@ export const GetListCreatorsProduct = async ({
 };
 
 export const PostLikeImage = async (
-  publicId: string | undefined,
-  iuVote: number,
-  tarIuReceiver: number,
-  tarIuProduct: number,
-  like: number,
-  status: boolean,
+  id: string,
+  idVote: number,
+  refIdReceiver: string,
+  refIdProduct: number,
+  status: string,
   createdAt: Date
 ) => {
   try {
     return prisma.$transaction(async (tx) => {
-      const [senderIu] = await tx.$queryRaw<
-        { iu: number }[]
-      >`SELECT iu FROM users WHERE public_id = ${publicId}::uuid LIMIT 1`;
-      const [receiverIu] = await tx.$queryRaw<
-        { iu: number }[]
-      >`SELECT iu FROM users WHERE public_id = ${tarIuReceiver}::uuid LIMIT 1`;
-      const sender = senderIu.iu;
-      const receiver = receiverIu.iu;
-
-      await tx.$executeRaw`INSERT INTO users_product_image_vote (tar_iu_sender, tar_iu_receiver, tar_iu_product, iu_vote, "like", status, created_at) 
-      VALUES (${sender}, ${receiver}, ${tarIuProduct}, ${iuVote}, ${like}, ${status}, ${createdAt}::timestamp)`;
+      const queryCheck = await prisma.$queryRaw<
+        { status: "like" | "dislike" | null }[]
+      >`
+        SELECT status FROM users_product_image_vote WHERE ref_id_receiver = (SELECT id FROM users WHERE public_id = ${refIdReceiver}) AND ref_id_sender = (SELECT id FROM users WHERE public_id = ${id}) AND ref_id_product = ${refIdProduct}
+      `;
+      if (queryCheck.length === 0) {
+        await tx.$executeRaw`
+          INSERT INTO users_product_image_vote (created_at, id_vote, ref_id_product, ref_id_receiver, ref_id_sender, status)
+          VALUES (${createdAt}::timestamp, ${idVote}, ${refIdProduct},
+          (SELECT id FROM users WHERE public_id = ${refIdReceiver}), (SELECT id FROM users WHERE public_id = ${id}), ${status}::type_status_vote)
+        `;
+      } else {
+        await tx.$executeRaw`
+            UPDATE users_product_image_vote SET created_at = ${createdAt}::timestamp, status = ${status}::type_status_vote
+            WHERE ref_id_product = ${refIdProduct}
+          `;
+      }
     });
   } catch (err: any) {
     throw new Error(err.message || "Insert failed");

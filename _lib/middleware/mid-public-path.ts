@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 
-const PublicPath = ({
+const PublicPath = async ({
   pathname,
   role,
   req,
@@ -26,11 +26,14 @@ const PublicPath = ({
     return NextResponse.next();
   }
   if (!role && req.method !== "GET") {
-    return NextResponse.redirect(
-      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url)
+    return NextResponse.json(
+      { message: "Unauthorized", redirect: pathname },
+      { status: 401 }
     );
   }
-  if (role) return NextResponse.next();
 };
 
 export { PublicPath };
+
+
+// todo KONDISIKAN BESOK PROXY LAGI !!!

@@ -20,7 +20,7 @@ const page = async ({
     queryKey: key,
     queryFn: () =>
       GetTargetCreatorsDescription({
-        selfId: id,
+        // selfId: id,
         idTargetCreator: currentPath,
       }),
   });

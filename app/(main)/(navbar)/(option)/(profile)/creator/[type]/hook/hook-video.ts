@@ -160,7 +160,6 @@ const useCreatorVideo = ({
     () => itemsVideo?.pages.flatMap((page) => page?.data ?? []),
     [itemsVideo?.pages]
   );
-  // console.log(ItemsVideoData)
 
   return {
     listFolderVideoData,
@@ -173,6 +172,7 @@ const useCreatorVideo = ({
     // ? 3
     ItemsVideoData,
     refetchItemsVideo,
+    isFetchingItemFolder,
 
     // * ACTION
     postVideo,

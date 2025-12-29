@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useContext } from "react";
 import OptionBtn from "./options/option-btn";
 import { MdCheck, MdClose } from "react-icons/md";
+import { creatorContext } from "@/app/context";
+import Loading from "@/app/loading";
 
 export type VideoItem = {
   idProduct: number;
@@ -32,6 +34,7 @@ const VideoCard = ({
   folderName: string;
   setIsRender: any;
 }) => {
+  const { isFetchingItemFolder } = useContext(creatorContext);
   // console.log(`video data:`, data);
 
   // ? Navigation State
@@ -87,7 +90,10 @@ const VideoCard = ({
       {isOpenNav && (
         <OptionBtn isOpenNav={isOpenNav} setIsOpenNav={setIsOpenNav} />
       )}
-      {Array.isArray(data) &&
+      {isFetchingItemFolder ? (
+        <Loading />
+      ) : (
+        Array.isArray(data) &&
         data.map((i) => (
           <div
             key={i.idProduct}
@@ -222,7 +228,8 @@ const VideoCard = ({
               </div>
             </div>
           </div>
-        ))}
+        ))
+      )}
     </>
   );
 };

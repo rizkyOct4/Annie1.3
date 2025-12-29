@@ -14,6 +14,8 @@ const ProfilePath = async ({
     admin: `/admin`,
     creator: `/creator`,
   };
+
+  console.log('sss')
   // ? ROLE SPESIFIC
   if (!pathname.startsWith(rolePaths[role])) {
     return NextResponse.redirect(

@@ -111,13 +111,13 @@ export const PutImage = ({
 }) => {
   return prisma.$transaction(async (tx) => {
     // ? users_product DB
-    await tx.$queryRaw`
+    await tx.$executeRaw`
         UPDATE users_product
         SET folder_name = ${folderName}, created_at = ${updatedAt}::timestamp
         WHERE id_product = ${idProduct};
       `;
 
-    await tx.$queryRaw`
+    await tx.$executeRaw`
         UPDATE users_product_image
         SET description = ${description}, image_name = ${webpName}, url = ${url}, hashtag = ${hashtag}::varchar[], category = ${category}::varchar[]
         WHERE ref_id_product = ${idProduct}

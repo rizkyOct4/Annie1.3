@@ -123,13 +123,14 @@ model users_product_image_vote {
   ref_id_receiver                                       String      @db.Uuid
   ref_id_product                                        Int
   id_vote                                               Int           @id
-  like                                                  Int           @default(0)
-  dislike                                               Int           @default(0)
-  status                                                Boolean?      @default(false)
+  status                                                type_status_vote? 
   created_at                                            DateTime?     @default(now()) @db.Timestamp(6)
   users_product                                         users_product @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
   users_users_product_image_vote_tar_iu_receiverTousers users         @relation("users_product_image_vote_tar_iu_receiverTousers", fields: [ref_id_receiver], references: [id], onDelete: Cascade)
   users_users_product_image_vote_tar_iu_senderTousers   users         @relation("users_product_image_vote_tar_iu_senderTousers", fields: [ref_id_sender], references: [id], onDelete: Cascade)
+
+  @@index([status, ref_id_sender, ref_id_receiver, ref_id_product])
+  @@unique([ref_id_sender, ref_id_product])
 }
 
 
@@ -154,6 +155,11 @@ model users_product_video {
 enum type_product {
   photo
   video
+}
+
+enum type_status_vote {
+  like
+  dislike
 }
 
 enum user_gender {

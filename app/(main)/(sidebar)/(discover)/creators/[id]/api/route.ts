@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   GetTargetCreatorsDescription,
   GetListCreatorsProduct,
-  // PostLikeImage,
+  PostLikeImage,
 } from "@/_lib/services/sidebar/discover/creators/services-creators";
 import GetToken from "@/_lib/middleware/get-token";
 
@@ -39,35 +39,27 @@ export async function GET(
   }
 }
 
-// export async function POST(req: NextRequest) {
-//   try {
-//     const method = req.nextUrl.searchParams.get("action") ?? "";
-//     // const token = req.cookies.get("access_token")?.value;
-//     // const { publicId } = (await TokenHelper(token)) || {};
+export async function POST(req: NextRequest) {
+  try {
+    const action = req.nextUrl.searchParams.get("action");
+    const { id } = await GetToken();
 
-//     if (method === "post") {
-//       const {
-//         iu_vote,
-//         tar_iu_receiver,
-//         tar_iu_product,
-//         like,
-//         status,
-//         created_at,
-//       } = await req.json();
+    if (action === "post") {
+      const { idVote, refIdReceiver, refIdProduct, status, createdAt } =
+        await req.json();
 
-//       await PostLikeImage(
-//         publicId,
-//         iu_vote,
-//         tar_iu_receiver,
-//         tar_iu_product,
-//         like,
-//         status,
-//         created_at
-//       );
+      await PostLikeImage(
+        id,
+        idVote,
+        refIdReceiver,
+        refIdProduct,
+        status,
+        createdAt
+      );
 
-//       return NextResponse.json({ success: true });
-//     }
-//   } catch (err: any) {
-//     return NextResponse.json({ message: err.message }, { status: 500 });
-//   }
-// }
+      return NextResponse.json({ success: true });
+    }
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message }, { status: 500 });
+  }
+}

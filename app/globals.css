@@ -60,6 +60,18 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 99 !important;
+}
+.overlay-auth {
+  position: fixed;
+  top: 80px;
+  left: 80px;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 999 !important;
 }
 

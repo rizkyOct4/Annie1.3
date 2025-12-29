@@ -7,7 +7,6 @@ const GetToken = async () => {
 
   return {
     id: session?.publicId as string,
-    // originalId: session?.id as string,
     name: session?.name as string,
     role: session?.role as string,
   };

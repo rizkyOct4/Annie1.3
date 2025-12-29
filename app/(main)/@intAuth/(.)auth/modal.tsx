@@ -12,7 +12,7 @@ const ModalAuth = () => {
   return (
     <>
       {redirect && (
-        <div className="overlay">
+        <div className="overlay-auth">
           {!state ? (
             <Register setState={setState} />
           ) : (

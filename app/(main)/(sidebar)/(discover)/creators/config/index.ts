@@ -26,7 +26,7 @@ export const ROUTES_CREATORS = {
   POST: ({ key, params }: { key: "likePost"; params: string }) => {
     switch (key) {
       case "likePost":
-        return `${BASE_URL}/creators/${params}/api?action=post`;
+        return `/creators/${params}/api?action=post`;
       default:
         return "";
     }

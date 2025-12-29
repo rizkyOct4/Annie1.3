@@ -8,7 +8,7 @@ const proxy = async (req: NextRequest) => {
   const { role } = await GetToken();
 
   // * 1. Public Path
-  const publicRes = PublicPath({ pathname, role, req });
+  const publicRes = await PublicPath({ pathname, role, req });
   if (publicRes) return publicRes;
 
   // * 2. Profile Path (role-based path check)

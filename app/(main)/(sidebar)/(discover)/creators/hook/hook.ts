@@ -11,9 +11,13 @@ import {
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { usePost } from "./Post";
+// import { usePost } from "./Post";
+import { usePost } from "./sub/use-post-creators";
 import { ModalState } from "../types/interface";
-import type { TTargetCreatorsDescription } from "../types/type";
+import type {
+  TTargetCreatorsDescription,
+  TListCreatorProduct,
+} from "../types/type";
 
 const useCreators = (id: string) => {
   const currentPath = "creators";
@@ -119,20 +123,22 @@ const useCreatorsDescription = (id: string) => {
   });
 
   // ? child hook
-  const listCreatorKey = ["keyListProductCreators", id, targetId];
-
-  const { postLikePhoto } = usePost(id, targetId, listCreatorKey);
+  const { postLikePhoto } = usePost({
+    id: id,
+    targetId: targetId,
+    keyListProductCreators: ["keyListProductCreators", id, targetId],
+  });
 
   const creatorDescriptionData: TTargetCreatorsDescription[] = useMemo(
     () => creatorDescription ?? [],
     [creatorDescription]
   );
-  const listCreatorProductData: ListCreatorProductType[] = useMemo(
+  const listCreatorProductData: TListCreatorProduct[] = useMemo(
     () => listProductCreators?.pages.flatMap((page) => page.data) ?? [],
     [listProductCreators?.pages]
   );
 
-  // console.log(listProductCreators);
+  // console.log(listCreatorProductData);
 
   return {
     creatorDescriptionData,

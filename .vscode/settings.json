@@ -68,5 +68,8 @@
     "powershell.buttons.showPanelMovementButtons": false,
     "powershell.buttons.showRunButtons": false,
     "prettier.bracketSameLine": true,
-    "typescript.implementationsCodeLens.enabled": false
+    "typescript.implementationsCodeLens.enabled": false,
+    "vscode-pets.theme": "autumn",
+    "vscode-pets.petColor": "magical",
+    "vscode-pets.throwBallWithMouse": true
 }

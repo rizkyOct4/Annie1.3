@@ -6,15 +6,26 @@ import React, {
   useEffect,
   useState,
   useCallback,
-  memo
+  memo,
 } from "react";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { creatorsContext } from "@/app/context";
-import { BiDislike, BiLike } from "react-icons/bi";
 import { RandomId, LocalISOTime } from "@/_util/GenerateData";
 import { PostDataLike } from "./type";
 import { useRouter } from "next/navigation";
+import {
+  BiLike,
+  BiDislike,
+  BiBookmark,
+  BiCommentDetail,
+  BiInfoCircle,
+} from "react-icons/bi";
+
+interface ListProductState {
+  open: boolean;
+  idProduct: null | number;
+}
 
 const ListProducts = ({ creatorId }: { creatorId: string }) => {
   const {
@@ -24,6 +35,11 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
     isFetchingNextPageProduct,
     postLikePhoto,
   } = useContext(creatorsContext);
+
+  const [isOpen, setIsOpen] = useState<ListProductState>({
+    open: false,
+    idProduct: null,
+  });
 
   const router = useRouter();
 
@@ -54,21 +70,23 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
     async (
       e: React.SyntheticEvent,
       actionType: string,
-      iuProduct: number,
-      status: boolean
+      idProduct: number,
+      status?: string | null
     ) => {
       e.preventDefault();
       switch (actionType) {
-        case "likePost": {
-          if (status) return;
+        case "like":
+        case "dislike": {
+          if (status === actionType) return;
           try {
-            const postData: PostDataLike = {
-              iu_vote: RandomId(),
-              tar_iu_receiver: creatorId,
-              tar_iu_product: iuProduct,
-              like: 1,
-              status: true,
-              created_at: LocalISOTime(),
+            const postData = {
+              idVote: RandomId(),
+              refIdReceiver: creatorId,
+              refIdProduct: idProduct,
+              like: actionType === "like" ? 1 : null,
+              dislike: actionType === "dislike" ? 1 : null,
+              status: actionType,
+              createdAt: LocalISOTime(),
             };
             console.log(postData);
             await postLikePhoto(postData);
@@ -81,9 +99,16 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
           }
           break;
         }
+        case "description": {
+          setIsOpen((prev) => ({
+            open: prev.idProduct === idProduct ? false : true,
+            idProduct: prev.idProduct === idProduct ? null : idProduct,
+          }));
+          break;
+        }
       }
     },
-    [creatorId, postLikePhoto, router]
+    [creatorId, router, postLikePhoto]
   );
 
   return (
@@ -116,7 +141,7 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
             backdrop-blur-sm
           ">
               {/* Image section */}
-              <div className="relative w-full min-h-56">
+              <div className="relative w-full h-[90%]">
                 <Image
                   src={i.url}
                   alt={i.description}
@@ -124,95 +149,86 @@ const ListProducts = ({ creatorId }: { creatorId: string }) => {
                   sizes="(max-width: 240px) 100vw"
                   className="object-cover"
                 />
+                {isOpen.open && isOpen.idProduct === i.idProduct && (
+                  <div
+                    className="flex flex-col gap-1 absolute
+                bottom-0 w-full h-auto p-4 items-center justify-center
+                bg-black/80
+                ">
+                    <h1 className="text-sm text-gray-300 line-clamp-3">
+                      {i.description}
+                    </h1>
+                    <div className="flex flex-wrap gap-1.5">
+                      {i.category.map((cat: string) => (
+                        <span
+                          key={cat}
+                          className="px-2 py-0.5 text-[11px] font-medium rounded-md
+                    bg-white/10 text-gray-300 border border-white/10">
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
 
-                {/* Like button */}
-                <button
-                  type="submit"
-                  onClick={(e) =>
-                    handleAction(e, "likePost", i.iuProduct, i.status)
-                  }
-                  className="
-                absolute
-                top-3
-                right-3
-                w-9
-                h-9
-                flex
-                items-center
-                justify-center
-                rounded-full
-                bg-white/10
-                border border-white/20
-                backdrop-blur-sm
-              ">
-                  <BiLike
-                    size={20}
-                    className={i.status ? "text-red-500" : "text-blue-500"}
-                  />
-                </button>
+                    {i.hashtag.map((tag: string) => (
+                      <span
+                        key={tag}
+                        className="
+                      px-2
+                      py-0.5
+                      text-[11px]
+                      font-medium
+                      rounded-md
+                      bg-white/5
+                      text-gray-400
+                      border border-white/10
+                  ">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* Content */}
-              <div className="p-4 flex flex-col gap-2">
-                {/* Description */}
-                <h1 className="text-sm text-gray-300 line-clamp-3">
-                  {i.description}
-                </h1>
-
-                {/* Category & hashtag */}
-                <div className="flex flex-wrap gap-1">
-                  {i.category.map((cat: string) => (
-                    <span
-                      key={cat}
-                      className="
-                    px-2
-                    py-0.5
-                    text-[11px]
-                    font-medium
-                    rounded-md
-                    bg-white/10
-                    text-gray-300
-                    border border-white/10
-                  ">
-                      {cat}
+              <div className="flex items-center justify-between p-4 gap-2 h-[10%] w-full">
+                <div className="flex items-center gap-3 text-xs text-gray-400">
+                  <button
+                    className="flex items-center gap-1"
+                    type="button"
+                    onClick={(e) => handleAction(e, "like", i.idProduct, i.status)}>
+                    <span className="text-blue-500">
+                      <BiLike size={18} />
                     </span>
-                  ))}
+                    {i.totalLike ?? 0}
+                  </button>
 
-                  {i.hashtag.map((tag: string) => (
-                    <span
-                      key={tag}
-                      className="
-                    px-2
-                    py-0.5
-                    text-[11px]
-                    font-medium
-                    rounded-md
-                    bg-white/5
-                    text-gray-400
-                    border border-white/10
-                  ">
-                      #{tag}
+                  <button
+                    className="flex items-center gap-1"
+                    type="button"
+                    onClick={(e) => handleAction(e, "dislike", i.idProduct, i.status)}>
+                    <span className="text-gray-500">
+                      <BiDislike size={18} />
                     </span>
-                  ))}
+                    {i.totalDislike ?? 0}
+                  </button>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-white/10">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <span className="text-blue-500">
-                        <BiLike />
-                      </span>
-                      {i.totalLike ?? 0}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="text-gray-500">
-                        <BiDislike />
-                      </span>
-                      {i.totalDislike ?? 0}
-                    </span>
-                  </div>
-                  <span>{new Date(i.createdAt).toLocaleDateString()}</span>
+                <div className="flex items-center gap-4 text-gray-400">
+                  <button
+                    className="hover:text-white transition"
+                    onClick={(e) =>
+                      handleAction(e, "description", i.idProduct)
+                    }>
+                    <BiInfoCircle size={18} />
+                  </button>
+
+                  <button className="hover:text-white transition flex items-center gap-1">
+                    <BiCommentDetail size={18} />
+                    <span className="text-xs">{i.totalComment ?? 0}</span>
+                  </button>
+
+                  <button className="hover:text-yellow-400 transition">
+                    <BiBookmark size={18} />
+                  </button>
                 </div>
               </div>
             </div>

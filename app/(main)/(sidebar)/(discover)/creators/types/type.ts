@@ -23,12 +23,12 @@ export type TTargetCreatorsDescription = {
 };
 
 export type OriginalCreatorListData = {
-  data: ListCreatorProductType[];
+  data: TListCreatorProduct[];
   hasMore: boolean;
 };
 
-export type ListCreatorProductType = {
-  iuProduct: number;
+export type TListCreatorProduct = {
+  idProduct: number;
   description: string;
   url: string;
   hashtag: string[];
@@ -36,4 +36,17 @@ export type ListCreatorProductType = {
   createdAt: Date;
   totalLike: number;
   totalDislike: number;
+  status: string | null
 };
+
+
+// ? POST ACTION LIKE / DISLIKE
+export type TPostActionLikeOrDislike = {
+  idVote: number;
+  refIdReceiver: string;
+  refIdProduct: number;
+  like: number | null;
+  dislike: number | null;
+  status: string;
+  createdAt: Date
+}
