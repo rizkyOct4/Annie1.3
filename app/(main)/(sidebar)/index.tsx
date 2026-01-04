@@ -44,7 +44,7 @@ const Sidebar = () => {
       title: "Discover",
       menus: [
         { icon: <TbUserStar />, label: "Creators", to: "/creators" },
-        { icon: <BiCategory />, label: "Category", to: "/category" },
+        // { icon: <BiCategory />, label: "Category", to: "/category" },
       ],
     },
     {
