@@ -174,7 +174,7 @@ const Options = ({
                   </div>
 
                   {/* Badge */}
-                  <span
+                  {/* <span
                     className={`
                   min-w-6
                   text-center
@@ -184,10 +184,10 @@ const Options = ({
                   bg-white/10
                   border border-white/10
                   text-gray-300
-                  ${!item.count ? "invisible" : ""}
+                  ${!item?.count ? "invisible" : ""}
                 `}>
-                    {item.count || ""}
-                  </span>
+                    {item?.count || ""}
+                  </span> */}
                 </button>
 
                 {/* Logout confirm */}
