@@ -1,6 +1,5 @@
-// import Navbar from "./(navbar)/navbar";
-import Navbar from "./(navbar)/navbar";
-import Sidebar from "./(sidebar)/sidebar";
+import Sidebar from "./(sidebar)";
+import Navbar from "./(navbar)";
 
 export default function MainLayout({
   children,
