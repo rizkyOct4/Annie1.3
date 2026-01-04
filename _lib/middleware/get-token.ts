@@ -3,7 +3,7 @@ import { auth } from "@/app/api/auth/[...nextauth]/route";
 const GetToken = async () => {
   const token = await auth();
   const session = token?.user;
-  // console.log(`token`, session)
+  console.log(`token`, session)
 
   return {
     id: session?.publicId as string,
