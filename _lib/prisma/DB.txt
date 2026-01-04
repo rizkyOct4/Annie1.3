@@ -33,7 +33,7 @@ pnpm prisma migrate reset => reset semua ini DB !!!!
 
 !!! => pnpm prisma db push => pakai ini !!!!!
 // !! LAST => pnpm prisma validate
-// ? 1. npx prisma migrate dev --name init_neon -> ini migrate ke neon
+// ? 1. npx prisma migrate dev --name init_neon -> ini migrate ke neon -> Neon endpoint TANPA -pooler untuk migrate
 // ? 2. npx prisma migrate deploy -> 
 
 
