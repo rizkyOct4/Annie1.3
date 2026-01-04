@@ -20,7 +20,7 @@ export const ProfileSchema = z.object({
         link: z.string().optional(),
       })
     )
-    .transform((links) => links.filter((s) => s.link.trim() !== ""))
+    .transform((links) => links.filter((s: any) => s.link.trim() !== ""))
     .optional(),
   gender: z.string().nullable().optional(),
   phoneNumber: z.string().max(13, "* Max 13").nullable().optional(),

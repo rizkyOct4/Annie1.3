@@ -3,7 +3,6 @@ import {
   CapitalizeRegex,
   ForbiddenRegex,
   ForbiddenRegexEmail,
-  EmailRegex,
 } from "@/_util/Regex";
 
 // ! REGEX ini BERURUTAN METHODNYA !!!! PERHATIKAN URUTANNYA !

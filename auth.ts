@@ -10,11 +10,7 @@ import {
 } from "@/_lib/config";
 import { OAuthRegister, CredentialsLogin } from "@/_lib/services/services-auth";
 import { AUTH_SECRET } from "@/_lib/config";
-
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
+import type { User } from "next-auth";
 
 export const {
   handlers: { GET, POST },
@@ -42,16 +38,25 @@ export const {
           placeholder: "*****",
         },
       },
-      // ? credentials -> ini parameter dari login form kau !!!
-      async authorize(credentials?: LoginCredentials | undefined) {
-        if (!credentials?.email || !credentials?.password) {
+      async authorize(credentials) {
+        if (!credentials.email || !credentials.password) {
           return null;
         }
         const res = await CredentialsLogin({
           email: credentials.email,
           password: credentials.password,
         });
-        return res.user;
+
+        const user: User = {
+          id: String(res.user.publicId),
+          publicId: res.user.publicId,
+          email: res.user.email,
+          name: res.user.name,
+          role: res.user.role,
+          createdAt: res.user.createdAt,
+        };
+
+        return user;
       },
     }),
     Google({

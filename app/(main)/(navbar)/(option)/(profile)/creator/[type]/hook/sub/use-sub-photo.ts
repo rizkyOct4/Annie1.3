@@ -33,11 +33,11 @@ const usePost = ({
   keyFolder: Array<string>;
   keyListFolder: Array<string>;
   keyItemFolder: Array<string>;
-  rawKeyItemFolder?: {
+  rawKeyItemFolder: {
     key: string;
     id: string;
-    postFolder: string;
-  };
+    postFolder: string | undefined;
+  } | undefined;
   type: string;
 }) => {
   const queryClient = useQueryClient();
@@ -137,7 +137,7 @@ const usePost = ({
         }
       );
 
-      return { prevFolder, prevListFolderData, prevRawItem };
+      return { prevFolder, prevListFolderData, prevRawItem, rawKey };
     },
     onSuccess: (response) => {
       const { data } = response;
@@ -187,12 +187,12 @@ const usePost = ({
       console.error(error);
       if (
         context?.prevFolder &&
-        context?.prevListFolderData &&
-        context?.prevRawItem
+        context?.prevListFolderData
+        //  && context?.prevRawItem
       ) {
         queryClient.setQueryData(keyFolder, context.prevFolder);
         queryClient.setQueryData(keyListFolder, context.prevListFolderData);
-        queryClient.setQueryData(rawKeyItemFolder, context.prevRawItem);
+        // queryClient.setQueryData(rawKey, context.prevRawItem);
       }
     },
   });

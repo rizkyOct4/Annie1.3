@@ -4,13 +4,7 @@ import { getQueryClient } from "@/app/get-query-client";
 import GetToken from "@/_lib/middleware/get-token";
 import { GetTargetCreatorsDescription } from "@/_lib/services/sidebar/discover/creators/services-creators";
 
-const page = async ({
-  params,
-}: // searchParams,
-{
-  params: Promise<{ id: string }>;
-  // searchParams: Promise<{ searchParams: string }>;
-}) => {
+const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const currentPath = (await params).id;
   const queryClient = getQueryClient();
   const { id } = await GetToken();
@@ -20,8 +14,8 @@ const page = async ({
     queryKey: key,
     queryFn: () =>
       GetTargetCreatorsDescription({
-        // selfId: id,
         idTargetCreator: currentPath,
+        idSender: id,
       }),
   });
   return (

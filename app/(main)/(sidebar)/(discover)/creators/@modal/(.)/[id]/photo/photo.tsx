@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { creatorsContext } from "@/app/context";
 import { RandomId, LocalISOTime } from "@/_util/GenerateData";
-import { PostDataLike } from "./type";
+// import { PostDataLike } from "./type";
 import { useRouter } from "next/navigation";
 import {
   BiLike,

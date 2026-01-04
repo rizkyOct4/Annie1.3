@@ -50,14 +50,14 @@ const engagementData = [
 
 const Engagement = () => {
   const summary = engagementData.filter((d) => typeof d.value === "number");
-  const dailyGrowth =
-    engagementData.find((d) => d.type === "dailyGrowth")?.value || [];
+  // const dailyGrowth =
+  //   engagementData.find((d) => d.type === "dailyGrowth")?.value || [];
 
   return (
     <div className="flex flex-col gap-4 bg-white p-4 rounded-lg shadow-sm">
       {/* Ringkasan engagement */}
       <div className="flex justify-between gap-2">
-        {summary.map((item) => (
+        {summary.map((item: any) => (
           <div
             key={item.id}
             className="flex-1 bg-gray-50 p-2 rounded text-center"
@@ -74,8 +74,8 @@ const Engagement = () => {
       {/* Daily Growth */}
       <div className="flex flex-col gap-1">
         <p className="text-sm font-medium text-gray-600">Daily Growth</p>
-        <div className="flex gap-2 overflow-x-auto">
-          {dailyGrowth.map((d, idx) => (
+        {/* <div className="flex gap-2 overflow-x-auto">
+          {dailyGrowth.map((d: { date: string | any[]; value: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }, idx: React.Key | null | undefined) => (
             <div
               key={idx}
               className="flex flex-col items-center bg-gray-50 p-2 rounded min-w-[50px]"
@@ -84,7 +84,7 @@ const Engagement = () => {
               <span className="font-semibold">{d.value}</span>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );

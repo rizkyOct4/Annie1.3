@@ -100,11 +100,13 @@ export const CredentialsLogin = async ({
   email,
   password,
 }: {
-  email: string;
-  password: string;
+  email: any;
+  password: any;
 }) => {
   const userCheck: any[] =
-    await prisma.$queryRaw`SELECT public_id, email, password, first_name, last_name, role, created_at FROM users WHERE email = ${email}`;
+    await prisma.$queryRaw`
+    SELECT public_id, email, password, first_name, last_name, role, created_at FROM users
+    WHERE email = ${email}`;
 
   const passwordMatch = await bcrypt.compare(password, userCheck[0].password);
 

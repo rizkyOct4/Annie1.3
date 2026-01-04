@@ -2,7 +2,7 @@
 
 import { Plus, Video, Image as ImageIcon } from "lucide-react";
 import { useCallback, useContext, memo } from "react";
-import { IDashboard } from "../type/dashboard/interface";
+import type { IDashboard } from "../../types/dashboard/interface";
 import { creatorContext } from "@/app/context";
 
 const PostingBtn = ({
