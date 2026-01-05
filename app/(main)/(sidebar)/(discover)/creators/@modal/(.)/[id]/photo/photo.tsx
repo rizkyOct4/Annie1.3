@@ -122,8 +122,11 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
             console.log(payload);
             await postBookmarkUser(payload);
             // showToast({ type: "success", fallback: "Add Bookmark Success!" });
-          } catch (err) {
-            console.error(err);
+          } catch (err: any) {
+            if (err.status === 401) {
+              if (handleUnauthorized(err, router)) return;
+              console.error(err);
+            }
           }
           break;
         }

@@ -170,7 +170,7 @@ const useCreatorsDescription = (id: string) => {
     targetId: targetId,
   });
   const { postBookmarkUser } = usePostBookmark({
-    keyListProductCreators: ["keyListProductCreators", id, targetId],
+    keyListProductCreatorsB: ["keyListProductCreators", id, targetId],
     targetId: targetId,
   });
 

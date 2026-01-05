@@ -120,11 +120,11 @@ export const {
         token.email = profile.email;
         token.name = profile.name;
         token.role = fetch[0].role;
-        token.picture = profile.picture || fetch[0].picture || "";
+        token.image = profile.picture || fetch[0].picture || "";
         token.createdAt = fetch[0].createdAt ?? "";
       }
 
-      // console.log(`token sesion`, token);
+      console.log(`token sesion`, token);
       return token;
     },
     // ? INI YG AKAN DIGUNAKNA DI CLIENT !!

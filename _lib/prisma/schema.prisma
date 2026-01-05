@@ -227,7 +227,6 @@ model users_interactions_report {
 }
 
 
-
 enum type_product {
   photo
   video

@@ -20,8 +20,7 @@ export const GetAllCreators = async ({
   cacheLife("minutes");
   cacheTag(`all-creators`);
 
-  const query =
-    await prisma.$queryRaw<TAllCreators>`
+  const query = await prisma.$queryRaw<TAllCreators>`
     SELECT u.public_id, u.created_at, ud.username, ud.picture
       FROM users u
       LEFT JOIN users_description ud ON (ud.ref_id = u.id)
@@ -311,11 +310,26 @@ export const PostBookmarkUsers = async ({
   createdAt: Date;
 }) => {
   return prisma.$transaction(async (tx) => {
-    // ? INSERT INTERACTION
-    await tx.$executeRaw`
-      INSERT INTO users_interactions_bookmark (ref_id_product, ref_id_sender, status, type_bookmark, created_at)
-      VALUES (${idProduct}, (SELECT id FROM users WHERE public_id = ${idSender}), ${status}, ${typeBookmark}::type_product, ${createdAt}::timestamp)
+    const check = await tx.$queryRaw<{ ref_id_sender: string }[]>`
+      SELECT ref_id_sender FROM users_interactions_bookmark
+        WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
+          AND ref_id_product = ${idProduct}
     `;
+
+    // ? INSERT INTERACTION
+    if (check.length === 0) {
+      await tx.$executeRaw`
+        INSERT INTO users_interactions_bookmark (ref_id_product, ref_id_sender, status, type_bookmark, created_at)
+        VALUES (${idProduct}, (SELECT id FROM users WHERE public_id = ${idSender}), ${status}, ${typeBookmark}::type_product, ${createdAt}::timestamp)
+      `;
+    } else {
+      await tx.$executeRaw`
+        UPDATE users_interactions_bookmark SET
+        status = ${status}, created_at = ${createdAt}::timestamp
+          WHERE ref_id_product = ${idProduct}
+            AND ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
+      `;
+    }
 
     // ! UPDATE PRODUCT STATS
     await tx.$executeRaw`

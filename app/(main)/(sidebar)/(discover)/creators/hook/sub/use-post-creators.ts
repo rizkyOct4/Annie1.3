@@ -12,6 +12,7 @@ import {
   OriginalCreatorListData,
   TPostActionLikeOrDislike,
   TPostActionFollow,
+  TPostActionBookmark,
 } from "../../types/type";
 
 export const usePost = ({
@@ -157,10 +158,10 @@ export const usePostFollow = ({
 };
 
 export const usePostBookmark = ({
-  keyListProductCreators,
+  keyListProductCreatorsB,
   targetId,
 }: {
-  keyListProductCreators: Array<string>;
+  keyListProductCreatorsB: Array<string>;
   targetId: string;
 }) => {
   const queryClient = useQueryClient();
@@ -169,17 +170,17 @@ export const usePostBookmark = ({
 
   const { mutateAsync: postBookmarkUser } = useMutation({
     mutationFn: async (data) => await axios.post(URL, data),
-    onMutate: async (mutate: any) => {
+    onMutate: async (mutate: TPostActionBookmark) => {
       await queryClient.cancelQueries({
-        queryKey: keyListProductCreators,
+        queryKey: keyListProductCreatorsB,
       });
 
-      const prevListProductCreators = queryClient.getQueryData(
-        keyListProductCreators
+      const prevListProductCreatorsB = queryClient.getQueryData(
+        keyListProductCreatorsB
       );
 
       queryClient.setQueryData<InfiniteData<OriginalCreatorListData>>(
-        keyListProductCreators,
+        keyListProductCreatorsB,
         (oldData) => {
           if (!oldData) return oldData;
 
@@ -191,7 +192,7 @@ export const usePostBookmark = ({
                 i.idProduct === mutate.idProduct
                   ? {
                       ...i,
-                      status_bookmark: mutate.status,
+                      statusBookmark: mutate.status,
                     }
                   : i
               ),
@@ -200,14 +201,14 @@ export const usePostBookmark = ({
         }
       );
 
-      return { prevListProductCreators };
+      return { prevListProductCreatorsB };
     },
     onError: (error, _variables, context) => {
       console.error(error);
-      if (context?.prevListProductCreators) {
+      if (context?.prevListProductCreatorsB) {
         queryClient.setQueryData(
-          keyListProductCreators,
-          context.prevListProductCreators
+          keyListProductCreatorsB,
+          context.prevListProductCreatorsB
         );
       }
     },

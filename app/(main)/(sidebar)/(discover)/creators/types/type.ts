@@ -80,3 +80,9 @@ export type TPostActionFollow = {
   idReceiver: string;
   status: boolean;
 };
+export type TPostActionBookmark = {
+  idProduct: number;
+  status: boolean;
+  typeBookmark: string;
+  createdAt: Date
+}
