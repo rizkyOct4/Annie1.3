@@ -8,6 +8,7 @@ import VideoContainer from "./video/video";
 import OptionsMenu from "./option-menu";
 import FormEmail from "../../../form/form-email";
 import FormReport from "../../../form/form-report";
+import FormComment from "../../../form/form-comment";
 import { useParams } from "next/navigation";
 
 const ModalPopup = () => {
@@ -27,7 +28,9 @@ const ModalPopup = () => {
   const renderContent = useCallback(() => {
     switch (open.isValue) {
       case "Photos":
-        return <ImageContainer creatorId={id} />;
+        return (
+          <ImageContainer creatorId={id} setRenderAction={setRenderAction} />
+        );
       case "Videos":
         return (
           <VideoContainer
@@ -58,6 +61,9 @@ const ModalPopup = () => {
       }
       case "report": {
         return <FormReport setRenderAction={setRenderAction} />;
+      }
+      case "comment": {
+        return <FormComment setRenderAction={setRenderAction} />;
       }
     }
   }, [renderAction]);

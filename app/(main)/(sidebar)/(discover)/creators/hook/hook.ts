@@ -5,8 +5,6 @@ import {
   useQuery,
   keepPreviousData,
   useInfiniteQuery,
-  QueryClient,
-  useQueryClient,
 } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -67,7 +65,6 @@ const useCreators = (id: string) => {
 };
 
 const useCreatorsDescription = (id: string) => {
-  // const queryClient = useQueryClient();
   const { id: targetId } = useParams<{ id: string }>();
 
   // * STATE ==============

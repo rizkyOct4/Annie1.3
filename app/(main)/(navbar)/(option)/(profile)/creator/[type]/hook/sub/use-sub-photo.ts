@@ -572,6 +572,8 @@ const usePutGrouped = ({
       const prevItemData = queryClient.getQueryData(keyItemFolder);
       const prevUpdatePhoto = queryClient.getQueryData(keyUpdatePhoto);
 
+      // const isExistFolder = 
+
       // ? LIST FOLDER
       queryClient.setQueryData<InfiniteData<TOriginalListFolder>>(
         keyListItemFolder,

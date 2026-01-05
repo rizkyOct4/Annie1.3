@@ -4,9 +4,6 @@ import { GetAllCreators } from "@/_lib/services/sidebar/discover/creators/servic
 
 export async function GET(req: NextRequest) {
   try {
-    // const token = req.cookies.get("access_token")?.value;
-    // const { publicId } = (await TokenHelper(token)) || {};
-
     const sectionPage = Number(req.nextUrl.searchParams.get("section"));
     const limit = Number(req.nextUrl.searchParams.get("limit"));
     const offset = (sectionPage - 1) * limit;

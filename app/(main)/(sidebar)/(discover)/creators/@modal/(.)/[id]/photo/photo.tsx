@@ -11,8 +11,7 @@ import React, {
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { creatorsContext, profileContext } from "@/app/context";
-import { RandomId, LocalISOTime } from "@/_util/GenerateData";
-// import { PostDataLike } from "./type";
+import { LocalISOTime } from "@/_util/GenerateData";
 import { useRouter } from "next/navigation";
 import {
   BiLike,
@@ -29,7 +28,13 @@ interface ListProductState {
   idProduct: null | number;
 }
 
-const ImageContainer = ({ creatorId }: { creatorId: string }) => {
+const ImageContainer = ({
+  creatorId,
+  setRenderAction,
+}: {
+  creatorId: string;
+  setRenderAction: any;
+}) => {
   const {
     listCreatorProductData,
     fetchNextPageProduct,
@@ -109,6 +114,10 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
           }));
           break;
         }
+        case "comment": {
+          setRenderAction("comment");
+          break;
+        }
         case "addBookmark":
         case "removeBookmark": {
           try {
@@ -132,19 +141,13 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
         }
       }
     },
-    [postLikePhoto, router, id, creatorId, postBookmarkUser]
+    [postLikePhoto, router, id, creatorId, postBookmarkUser, setRenderAction]
   );
 
   return (
     <div
       ref={containerRef}
-      className="
-    w-full
-    flex-center
-    flex-wrap
-    gap-4
-    rounded-md
-  ">
+      className="w-full flex-center flex-wrap gap-4 rounded-md">
       {Array.isArray(listCreatorProductData) &&
         listCreatorProductData.map((i, idx) => {
           const isLast = idx === listCreatorProductData.length - 1;
@@ -247,7 +250,9 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
                     <BiInfoCircle size={18} />
                   </button>
 
-                  <button className="hover:text-white transition flex items-center gap-1">
+                  <button
+                    className="hover:text-white transition flex items-center gap-1"
+                    onClick={(e) => handleAction(e, "comment", i.idProduct)}>
                     <BiCommentDetail size={18} />
                     <span className="text-xs">{i.totalComment ?? 0}</span>
                   </button>

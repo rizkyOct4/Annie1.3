@@ -25,6 +25,7 @@ import type {
   UseDescriptionParams,
 } from "../context/type";
 import { useParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 // * CONTENT ====
 const useCreatorPhoto = ({
@@ -34,6 +35,8 @@ const useCreatorPhoto = ({
   id,
   type,
 }: UseCreatorPhotoParams) => {
+  const queryClient = useQueryClient();
+
   const { type: currentPath } = useParams<{ type: string }>();
 
   // ! START LIST FOLDERS ==========================
@@ -143,7 +146,6 @@ const useCreatorPhoto = ({
   });
   // ! END CONTENT ==========================
 
-  // console.log(itemFolderPhoto)
   // * UPDATE DATA
   const { data: getUpdatePhoto } = useQuery({
     queryKey: ["keyUpdatePhoto", id, updateState],
@@ -272,7 +274,6 @@ const useCreatorPhoto = ({
     keyItemFolder: ["keyItemFolderPhoto", id, stateFolder.isFolder],
     type: type,
   });
-  // console.log(itemFolderPhoto);
 
   return {
     // * LIST FOLDER PHOTO

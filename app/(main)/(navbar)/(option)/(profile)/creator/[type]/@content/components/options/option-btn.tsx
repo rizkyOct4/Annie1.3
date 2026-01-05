@@ -47,9 +47,16 @@ const OptionBtn = ({
     (e: React.SyntheticEvent, actionType: string) => {
       e.preventDefault();
       switch (actionType) {
-        case "move":
+        case "move": {
+          setTypeBtn(type);
+          setIsOpenNav((prev) => ({
+            ...prev,
+            idProduct: [],
+            type: prev.type === actionType ? "" : actionType,
+          }));
+          break;
+        }
         case "delete": {
-          if (actionType === "move") setTypeBtn(type);
           setIsOpenNav((prev) => ({
             ...prev,
             idProduct: [],

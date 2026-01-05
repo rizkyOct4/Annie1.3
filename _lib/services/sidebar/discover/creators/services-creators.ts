@@ -16,10 +16,6 @@ export const GetAllCreators = async ({
   limit: number;
   offset: number;
 }) => {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag(`all-creators`);
-
   const query = await prisma.$queryRaw<TAllCreators>`
     SELECT u.public_id, u.created_at, ud.username, ud.picture
       FROM users u
@@ -101,7 +97,7 @@ export const GetListCreatorsProduct = async ({
       WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
         AND type_bookmark = 'photo'::type_product
     ) uib ON (uib.ref_id_product = up.id_product)
-    WHERE u.public_id = ${idTarget}
+    WHERE u.public_id = ${idTarget} AND up.status = true
     ORDER BY up.created_at DESC
     LIMIT ${limit}
     OFFSET ${offset}

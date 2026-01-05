@@ -6,7 +6,6 @@ import type { TGetUpdateImage } from "../type";
 
 // * GET LIST POST FOLDER =======
 export const GetListPostFolder = async (id: string, type: string) => {
-
   const query = await prisma.$queryRaw<
     { folder_name: string }[]
   >`SELECT up.folder_name 
@@ -25,23 +24,14 @@ export const GetUpdateImage = async (id: string, idProduct: number) => {
   const query = await prisma.$queryRaw<TGetUpdateImage[]>`
     SELECT upi.ref_id_product AS "idProduct", upi.description,
     upi.image_name, upi.url, upi.hashtag, upi.category,
-    COUNT(*) FILTER (WHERE upiv.status = 'like')::int AS total_like,
-    COUNT(*) FILTER (WHERE upiv.status = 'dislike')::int AS total_dislike,
+    ups.like AS total_like,
+    ups.dislike AS total_dislike,
     up.folder_name, up.created_at
     FROM users_product_image upi
     JOIN users_product up ON (up.id_product = upi.ref_id_product)
     JOIN users u ON (u.id = up.ref_id)
-    LEFT JOIN users_product_image_vote upiv ON (upiv.ref_id_product = up.id_product)
+    JOIN users_photo_stats ups ON (ups.ref_id_product = up.id_product)
     WHERE upi.ref_id_product = ${idProduct} AND u.public_id = ${id}
-    GROUP BY
-      upi.description,
-      upi.ref_id_product,
-      upi.url,
-      upi.image_name,
-      upi.hashtag,
-      upi.category,
-      up.folder_name,
-      up.created_at
     `;
   return camelcaseKeys(query);
 };
@@ -193,10 +183,17 @@ export const DelGroupedPhoto = async ({
 }) => {
   return prisma.$transaction(async (tx) => {
     // ? users_product -> folder_name DB
-    await tx.$queryRaw`
+    await tx.$executeRaw`
         UPDATE users_product SET status = false
-        WHERE ref_id = ${id}::uuid AND id_product = ANY(${idProduct}) AND folder_name = ${prevFolder}
+          WHERE ref_id = (SELECT id FROM users WHERE public_id = ${id}) 
+        AND id_product = ANY(${idProduct}) AND folder_name = ${prevFolder}
       `;
+
+    await tx.$executeRaw`
+      UPDATE users_stats SET
+        total_image = GREATEST(users_stats.total_image - ${idProduct.length}, 0)
+      WHERE ref_id_user = (SELECT id FROM users WHERE public_id = ${id})
+    `;
   });
 };
 
