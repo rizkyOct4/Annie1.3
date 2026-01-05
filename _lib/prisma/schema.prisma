@@ -183,7 +183,7 @@ model users_interactions_comment {
 model users_interactions_bookmark {
   ref_id_product      Int
   ref_id_sender       String        @db.Uuid
-  status              Boolean
+  status              Boolean       @default(false)
   type_bookmark       type_product
   created_at          DateTime?     @default(now()) @db.Timestamp(6)
 

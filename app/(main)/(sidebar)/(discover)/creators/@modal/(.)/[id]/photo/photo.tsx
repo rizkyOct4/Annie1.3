@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import Image from "next/image";
 import { useInView } from "react-intersection-observer";
-import { creatorsContext } from "@/app/context";
+import { creatorsContext, profileContext } from "@/app/context";
 import { RandomId, LocalISOTime } from "@/_util/GenerateData";
 // import { PostDataLike } from "./type";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import {
   BiInfoCircle,
 } from "react-icons/bi";
 import { handleUnauthorized } from "@/_util/Unauthorized";
+import { showToast } from "@/_util/Toast";
 
 interface ListProductState {
   open: boolean;
@@ -35,7 +36,11 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
     hasNextPageProduct,
     isFetchingNextPageProduct,
     postLikePhoto,
+    postBookmarkUser,
   } = useContext(creatorsContext);
+
+  const { data: getData } = useContext(profileContext);
+  const id = getData?.id;
 
   const [isOpen, setIsOpen] = useState<ListProductState>({
     open: false,
@@ -104,9 +109,27 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
           }));
           break;
         }
+        case "addBookmark":
+        case "removeBookmark": {
+          try {
+            if (id === creatorId) return;
+            const payload = {
+              idProduct: idProduct,
+              status: actionType === "addBookmark" ? true : false,
+              typeBookmark: "photo",
+              createdAt: LocalISOTime(),
+            };
+            console.log(payload);
+            await postBookmarkUser(payload);
+            // showToast({ type: "success", fallback: "Add Bookmark Success!" });
+          } catch (err) {
+            console.error(err);
+          }
+          break;
+        }
       }
     },
-    [router, postLikePhoto]
+    [postLikePhoto, router, id, creatorId, postBookmarkUser]
   );
 
   return (
@@ -226,7 +249,22 @@ const ImageContainer = ({ creatorId }: { creatorId: string }) => {
                     <span className="text-xs">{i.totalComment ?? 0}</span>
                   </button>
 
-                  <button className="hover:text-yellow-400 transition">
+                  <button
+                    type="button"
+                    className={`${
+                      i.statusBookmark
+                        ? "text-yellow-400"
+                        : "hover:text-yellow-400 transition"
+                    }`}
+                    onClick={(e) =>
+                      handleAction(
+                        e,
+                        `${
+                          i.statusBookmark ? "removeBookmark" : "addBookmark"
+                        }`,
+                        i.idProduct
+                      )
+                    }>
                     <BiBookmark size={18} />
                   </button>
                 </div>

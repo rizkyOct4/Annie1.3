@@ -21,9 +21,10 @@ export const GetAllCreators = async ({
   cacheTag(`all-creators`);
 
   const query =
-    await prisma.$queryRaw<TAllCreators>`SELECT u.public_id, u.created_at, ud.username, ud.picture
-    FROM users u
-    LEFT JOIN users_description ud ON (ud.ref_id = u.id)
+    await prisma.$queryRaw<TAllCreators>`
+    SELECT u.public_id, u.created_at, ud.username, ud.picture
+      FROM users u
+      LEFT JOIN users_description ud ON (ud.ref_id = u.id)
     ORDER BY u.created_at ASC
     LIMIT ${limit}
     OFFSET ${offset}
@@ -64,7 +65,8 @@ export const GetTargetCreatorsDescription = async ({
     FROM users u 
     LEFT JOIN users_description ud ON (ud.ref_id = u.id)
     JOIN users_stats us ON (us.ref_id_user = u.id)
-    LEFT JOIN users_interactions_followers uif ON (uif.ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender}))
+    LEFT JOIN users_interactions_followers uif ON 
+      (uif.ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender}))
     WHERE u.public_id = ${idTargetCreator}
     `;
 
@@ -83,10 +85,9 @@ export const GetListCreatorsProduct = async ({
   limit: number;
   offset: number;
 }) => {
-  const query =
-    await prisma.$queryRaw<TListCreatorPhoto>`
+  const query = await prisma.$queryRaw<TListCreatorPhoto>`
     SELECT upi.ref_id_product AS id_product, upi.description, upi.url, upi.hashtag, upi.category, up.created_at, ups.like AS total_like, ups.dislike AS total_dislike,
-    uiv.action_vote::status_action_vote AS status
+    uiv.action_vote::status_action_vote AS status, COALESCE(uib.status, false) AS "statusBookmark" 
     FROM users u
     JOIN users_product up ON (up.ref_id = u.id)
     JOIN users_product_image upi ON (upi.ref_id_product = up.id_product)
@@ -95,6 +96,12 @@ export const GetListCreatorsProduct = async ({
       SELECT ref_id_product, action_vote FROM users_interactions_vote
       WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
     ) uiv ON (uiv.ref_id_product = up.id_product)
+    LEFT JOIN (
+      SELECT ref_id_product, status, type_bookmark
+      FROM users_interactions_bookmark
+      WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
+        AND type_bookmark = 'photo'::type_product
+    ) uib ON (uib.ref_id_product = up.id_product)
     WHERE u.public_id = ${idTarget}
     ORDER BY up.created_at DESC
     LIMIT ${limit}
@@ -219,8 +226,8 @@ export const PostLikeImage = async (
         `;
       // // ! UPDATE USERS STATS
       // await tx.$executeRaw`
-      //   UPDATE users_stats SET 
-      //     total_like = 
+      //   UPDATE users_stats SET
+      //     total_like =
       //       GREATEST(
       //         users_stats.total_like
       //         + CASE
@@ -290,5 +297,36 @@ export const PostFollowUsers = async ({
   });
 };
 
+export const PostBookmarkUsers = async ({
+  idSender,
+  idProduct,
+  status,
+  typeBookmark,
+  createdAt,
+}: {
+  idSender: string;
+  idProduct: number;
+  status: boolean;
+  typeBookmark: string;
+  createdAt: Date;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    // ? INSERT INTERACTION
+    await tx.$executeRaw`
+      INSERT INTO users_interactions_bookmark (ref_id_product, ref_id_sender, status, type_bookmark, created_at)
+      VALUES (${idProduct}, (SELECT id FROM users WHERE public_id = ${idSender}), ${status}, ${typeBookmark}::type_product, ${createdAt}::timestamp)
+    `;
 
-// TODO KONDISIKAN BESOK LAGI SAMA KAU QUERY !!! 
+    // ! UPDATE PRODUCT STATS
+    await tx.$executeRaw`
+      UPDATE users_photo_stats SET
+        bookmark = users_photo_stats.bookmark +
+          CASE 
+            WHEN ${status} = true THEN 1
+            WHEN ${status} = false THEN -1
+          ELSE 0
+          END
+      WHERE ref_id_product = ${idProduct}
+    `;
+  });
+};

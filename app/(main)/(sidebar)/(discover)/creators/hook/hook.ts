@@ -12,7 +12,11 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 // import { usePost } from "./Post";
-import { usePost, usePostFollow } from "./sub/use-post-creators";
+import {
+  usePost,
+  usePostBookmark,
+  usePostFollow,
+} from "./sub/use-post-creators";
 import { ModalState } from "../types/interface";
 import type {
   TTargetCreatorsDescription,
@@ -72,7 +76,7 @@ const useCreatorsDescription = (id: string) => {
     isValue: "Profile",
     isPublicId: null,
   });
-  const [sortVideo, setSortVideo] = useState<"latest" | "oldest">("latest")
+  const [sortVideo, setSortVideo] = useState<"latest" | "oldest">("latest");
 
   // * Creators Description
   const { data: creatorDescription } = useQuery({
@@ -165,6 +169,10 @@ const useCreatorsDescription = (id: string) => {
     keyDescriptionUser: ["keyTargetCreatorDescription", id, targetId],
     targetId: targetId,
   });
+  const { postBookmarkUser } = usePostBookmark({
+    keyListProductCreators: ["keyListProductCreators", id, targetId],
+    targetId: targetId,
+  });
 
   const creatorDescriptionData: TTargetCreatorsDescription[] = useMemo(
     () => creatorDescription ?? [],
@@ -185,7 +193,7 @@ const useCreatorsDescription = (id: string) => {
     [ListCreatorVideoData]
   );
 
-  // console.log(creatorDescriptionData);
+  // console.log(listCreatorProductData);
 
   return {
     creatorDescriptionData,
@@ -207,6 +215,7 @@ const useCreatorsDescription = (id: string) => {
     // ! ACTION
     postLikePhoto,
     postFollowUser,
+    postBookmarkUser,
   };
 };
 

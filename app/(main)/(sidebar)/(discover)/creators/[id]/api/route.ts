@@ -5,6 +5,7 @@ import {
   GetListCreatorsVideo,
   PostLikeImage,
   PostFollowUsers,
+  PostBookmarkUsers,
 } from "@/_lib/services/sidebar/discover/creators/services-creators";
 import GetToken from "@/_lib/middleware/get-token";
 import { revalidateTag } from "next/cache";
@@ -78,6 +79,18 @@ export async function POST(req: NextRequest) {
         });
 
         revalidateTag(`target-creators-description-${idReceiver}`, "max");
+        return NextResponse.json({ success: true });
+      }
+      case "bookmark": {
+        const { idProduct, status, typeBookmark, createdAt } = await req.json();
+        await PostBookmarkUsers({
+          idSender: id,
+          idProduct,
+          status,
+          typeBookmark,
+          createdAt,
+        });
+
         return NextResponse.json({ success: true });
       }
     }

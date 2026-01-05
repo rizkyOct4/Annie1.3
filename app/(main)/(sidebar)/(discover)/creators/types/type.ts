@@ -48,6 +48,7 @@ export type TListCreatorProduct = {
   totalLike: number;
   totalDislike: number;
   status: string | null;
+  status_bookmark: boolean;
 };
 
 export type TListCreatorVideo = {

@@ -30,6 +30,7 @@ export interface TListCreatorPhoto {
   total_like: number;
   total_dislike: number;
   status: boolean;
+  status_bookmark: boolean;
 }[]
 
 // ? VIDEO

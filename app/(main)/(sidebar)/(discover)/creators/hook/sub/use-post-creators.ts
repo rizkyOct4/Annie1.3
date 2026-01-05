@@ -155,3 +155,63 @@ export const usePostFollow = ({
 
   return { postFollowUser };
 };
+
+export const usePostBookmark = ({
+  keyListProductCreators,
+  targetId,
+}: {
+  keyListProductCreators: Array<string>;
+  targetId: string;
+}) => {
+  const queryClient = useQueryClient();
+
+  const URL = ROUTES_CREATORS.POST({ key: "bookmark", params: targetId });
+
+  const { mutateAsync: postBookmarkUser } = useMutation({
+    mutationFn: async (data) => await axios.post(URL, data),
+    onMutate: async (mutate: any) => {
+      await queryClient.cancelQueries({
+        queryKey: keyListProductCreators,
+      });
+
+      const prevListProductCreators = queryClient.getQueryData(
+        keyListProductCreators
+      );
+
+      queryClient.setQueryData<InfiniteData<OriginalCreatorListData>>(
+        keyListProductCreators,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((i: { idProduct: number }) =>
+                i.idProduct === mutate.idProduct
+                  ? {
+                      ...i,
+                      status_bookmark: mutate.status,
+                    }
+                  : i
+              ),
+            })),
+          };
+        }
+      );
+
+      return { prevListProductCreators };
+    },
+    onError: (error, _variables, context) => {
+      console.error(error);
+      if (context?.prevListProductCreators) {
+        queryClient.setQueryData(
+          keyListProductCreators,
+          context.prevListProductCreators
+        );
+      }
+    },
+  });
+
+  return { postBookmarkUser };
+};

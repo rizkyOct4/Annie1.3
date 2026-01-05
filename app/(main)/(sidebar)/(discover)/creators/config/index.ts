@@ -1,4 +1,3 @@
-
 export const ROUTES_CREATORS = {
   GET: ({
     typeConfig,
@@ -9,7 +8,7 @@ export const ROUTES_CREATORS = {
     typeConfig: string;
     pageParams?: number;
     targetId?: string;
-    key?: "photo" | "video" | "music"
+    key?: "photo" | "video" | "music";
   }) => {
     const limit = 10;
     switch (typeConfig) {
@@ -25,11 +24,19 @@ export const ROUTES_CREATORS = {
     }
   },
 
-  POST: ({ key, params }: { key: "like" | "follow"; params: string }) => {
+  POST: ({
+    key,
+    params,
+  }: {
+    key: "like" | "follow" | "bookmark";
+    params: string;
+  }) => {
     switch (key) {
       case "like":
         return `/creators/${params}/api?key=${key}&action=post`;
       case "follow":
+        return `/creators/${params}/api?key=${key}&action=post`;
+      case "bookmark":
         return `/creators/${params}/api?key=${key}&action=post`;
       default:
         return "";
