@@ -1,7 +1,5 @@
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { ForbiddenRegex } from "@/_util/Regex";
-
 
 // * ZOD OBJECT
 export const zEmailFormSchema = z.object({
@@ -9,12 +7,17 @@ export const zEmailFormSchema = z.object({
     .string()
     .max(30, "Max 30 characters")
     .refine((val) => !val.match(ForbiddenRegex()), {
-      message: `Invalide character`,
+      message: `* Invalide character`,
     }),
-  message: z
+  body: z
     .string()
     .max(80, "Max 80 characters")
     .refine((val) => !val.match(ForbiddenRegex()), {
-      message: `Invalide character`,
+      message: `* Invalide character`,
     }),
+});
+
+export const zCommentFormSchema = z.object({
+  body: z.string().max(80, "Max 80 characters"),
+  bodyReply: z.string().max(80, "Max 80 characters"),
 });

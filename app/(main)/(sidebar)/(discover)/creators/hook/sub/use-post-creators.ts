@@ -13,6 +13,7 @@ import {
   TPostActionLikeOrDislike,
   TPostActionFollow,
   TPostActionBookmark,
+  TPostActionComment,
 } from "../../types/type";
 
 export const usePost = ({
@@ -215,4 +216,41 @@ export const usePostBookmark = ({
   });
 
   return { postBookmarkUser };
+};
+
+export const usePostComment = ({
+  keyListPhotoComment,
+  targetId,
+}: {
+  keyListPhotoComment: Array<string | number | null>;
+  targetId: string;
+}) => {
+  const queryClient = useQueryClient();
+
+  const URL = ROUTES_CREATORS.POST({ key: "comment", params: targetId });
+
+  const { mutateAsync: postCommentUser } = useMutation({
+    mutationFn: async (data) => await axios.post(URL, data),
+    onMutate: async (mutate: TPostActionComment) => {
+      await queryClient.cancelQueries({
+        queryKey: keyListPhotoComment,
+      });
+
+      const prevKeyListPhotoComment =
+        queryClient.getQueryData(keyListPhotoComment);
+
+      return { prevKeyListPhotoComment };
+    },
+    onError: (error, _variables, context) => {
+      console.error(error);
+      if (context?.prevKeyListPhotoComment) {
+        queryClient.setQueryData(
+          keyListPhotoComment,
+          context.prevKeyListPhotoComment
+        );
+      }
+    },
+  });
+
+  return { postCommentUser };
 };

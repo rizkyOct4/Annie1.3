@@ -6,10 +6,12 @@ import CreatorDesc from "./creator-description";
 import ImageContainer from "./photo/photo";
 import VideoContainer from "./video/video";
 import OptionsMenu from "./option-menu";
-import FormEmail from "../../../form/form-email";
-import FormReport from "../../../form/form-report";
-import FormComment from "../../../form/form-comment";
 import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const FormEmail = dynamic(() => import("../../../form/form-email"));
+const FormReport = dynamic(() => import("../../../form/form-report"));
+const FormComment = dynamic(() => import("../../../form/form-comment"));
 
 const ModalPopup = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,7 +31,7 @@ const ModalPopup = () => {
     switch (open.isValue) {
       case "Photos":
         return (
-          <ImageContainer creatorId={id} setRenderAction={setRenderAction} />
+          <ImageContainer currentPath={id} setRenderAction={setRenderAction} />
         );
       case "Videos":
         return (
@@ -42,6 +44,7 @@ const ModalPopup = () => {
           <CreatorDesc
             data={creatorDescriptionData}
             setRenderAction={setRenderAction}
+            targetId={id}
           />
         );
     }
@@ -57,22 +60,24 @@ const ModalPopup = () => {
   const renderActions = useCallback(() => {
     switch (renderAction) {
       case "email": {
-        return <FormEmail setRenderAction={setRenderAction} />;
+        return <FormEmail setRenderAction={setRenderAction} currentPath={id} />;
       }
       case "report": {
         return <FormReport setRenderAction={setRenderAction} />;
       }
       case "comment": {
-        return <FormComment setRenderAction={setRenderAction} />;
+        return (
+          <FormComment setRenderAction={setRenderAction} currentPath={id} />
+        );
       }
     }
-  }, [renderAction]);
+  }, [renderAction, id]);
 
   return (
     <>
       <div className="overlay backdrop-blur-sm">
-        <div className="flex w-250 h-180 rounded-md relative overflow-hidden border-emerald-500 border">
-          <div className="flex flex-col md:flex-row h-auto">
+        <div className="flex w-250 h-180 rounded-xl relative overflow-hidden border-emerald-500 border">
+          <div className="flex flex-col md:flex-row h-full">
             <OptionsMenu open={open} setOpen={setOpen} />
           </div>
           <div className="w-full h-full p-4 overflow-y-auto">

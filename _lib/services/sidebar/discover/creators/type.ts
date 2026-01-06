@@ -33,6 +33,17 @@ export interface TListCreatorPhoto {
   status_bookmark: boolean;
 }[]
 
+export type TListCommentPhoto = {
+  body: string;
+  id_comment: number;
+  total_comment: number;
+  created_at: Date
+}[]
+
+
+
+
+
 // ? VIDEO
 export type TListCreatorVideo = {
   id_product: number;

@@ -1,4 +1,4 @@
-export const ROUTES_CREATORS = {
+export const ROUTES_CREATORS: any = {
   GET: ({
     typeConfig,
     pageParams,
@@ -23,12 +23,33 @@ export const ROUTES_CREATORS = {
         return "";
     }
   },
-
+  GET_ACTION: ({
+    typeConfig,
+    pageParams,
+    targetId,
+    key,
+    id_product,
+  }: {
+    typeConfig: string;
+    pageParams?: number;
+    targetId?: string;
+    key?: "photo" | "video" | "music";
+    id_product: number;
+  }) => {
+    const limit = 10;
+    switch (typeConfig) {
+      case "listProductPhotoComment":
+        return `/creators/${targetId}/api/get-action?key=${key}&id-product=${id_product}&section=${pageParams}&limit=${limit}`;
+      default:
+        return "";
+    }
+  },
+  // ! ACTIONS ============================
   POST: ({
     key,
     params,
   }: {
-    key: "like" | "follow" | "bookmark";
+    key: "like" | "follow" | "bookmark" | "email" | "comment";
     params: string;
   }) => {
     switch (key) {
@@ -37,6 +58,10 @@ export const ROUTES_CREATORS = {
       case "follow":
         return `/creators/${params}/api?key=${key}&action=post`;
       case "bookmark":
+        return `/creators/${params}/api?key=${key}&action=post`;
+      case "email":
+        return `/creators/${params}/api?key=${key}&action=post`;
+      case "comment":
         return `/creators/${params}/api?key=${key}&action=post`;
       default:
         return "";

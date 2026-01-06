@@ -3,31 +3,63 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { showToast } from "@/_util/Toast";
-import { zEmailFormSchema } from "../@modal/(.)/[id]/schema";
+import { zEmailFormSchema } from "../@modal/(.)/[id]/z-schema";
+import { ROUTES_CREATORS } from "../config";
+import axios from "axios";
+import { handleUnauthorized } from "@/_util/Unauthorized";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { LocalISOTime, RandomId } from "@/_util/GenerateData";
 
 type EmailFormSchema = z.infer<typeof zEmailFormSchema>;
 
-const FormEmail = ({ setRenderAction }: any) => {
-  const { register, handleSubmit, formState } = useForm<EmailFormSchema>({
-    // ? REGEXNYA DISINI TERJADI !!!!
+const FormEmail = ({
+  setRenderAction,
+  currentPath,
+}: {
+  setRenderAction: any;
+  currentPath: string;
+}) => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<EmailFormSchema>({
     resolver: zodResolver(zEmailFormSchema),
     mode: "onChange",
+    defaultValues: {
+      subject: "",
+      body: "",
+    },
   });
 
   const submit = handleSubmit(async (values) => {
     try {
-      const post = {
-        email: values.subject,
-        password: values.message,
+      const payload = {
+        subject: values.subject,
+        body: values.body,
+        idReceiver: currentPath,
+        idEmail: RandomId(),
+        status: true,
+        createdAt: LocalISOTime(),
       };
-      // const data = await getLogin(post);
-      // showToast({ type: "success", fallback: data });
-      // NavigateLogin(navigate, data.output?.role);
-      console.log(post);
-    } catch (error) {
-      console.error(error);
-      showToast({ type: "error", fallback: error });
+      console.log(payload);
+      setIsLoading(true);
+      const URL = ROUTES_CREATORS.POST({ key: "email", params: currentPath });
+      await axios.post(URL, payload);
+      reset();
+      setIsLoading(false);
+      setRenderAction("");
+    } catch (err: any) {
+      setIsLoading(false);
+      if (err.status === 401) {
+        if (handleUnauthorized(err, router)) return;
+        console.error(err);
+      }
     }
   });
 
@@ -78,9 +110,9 @@ const FormEmail = ({ setRenderAction }: any) => {
               outline-none
             "
             />
-            {formState.errors.subject && (
+            {errors.subject && (
               <p className="mt-1 text-xs text-red-400">
-                {formState.errors.subject.message}
+                {errors.subject.message}
               </p>
             )}
           </div>
@@ -91,7 +123,7 @@ const FormEmail = ({ setRenderAction }: any) => {
             <textarea
               rows={5}
               placeholder="Input your message..."
-              {...register("message")}
+              {...register("body")}
               required
               className="
               w-full resize-none rounded-lg
@@ -102,16 +134,15 @@ const FormEmail = ({ setRenderAction }: any) => {
               outline-none
             "
             />
-            {formState.errors.message && (
-              <p className="mt-1 text-xs text-red-400">
-                {formState.errors.message.message}
-              </p>
+            {errors.body && (
+              <p className="mt-1 text-xs text-red-400">{errors.body.message}</p>
             )}
           </div>
 
           {/* ACTION */}
           <div className="flex justify-end pt-2">
             <button
+              disabled={isLoading}
               type="submit"
               className="
               px-4 py-2
@@ -121,7 +152,7 @@ const FormEmail = ({ setRenderAction }: any) => {
               text-gray-200
               font-medium
             ">
-              Send
+              {isLoading ? "..." : "Send"}
             </button>
           </div>
         </form>

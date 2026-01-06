@@ -6,9 +6,11 @@ import {
   PostLikeImage,
   PostFollowUsers,
   PostBookmarkUsers,
+  PostEmailUsers,
 } from "@/_lib/services/sidebar/discover/creators/services-creators";
 import GetToken from "@/_lib/middleware/get-token";
 import { revalidateTag } from "next/cache";
+import { PostCommentPhoto } from "@/_lib/services/sidebar/discover/creators/action/services-action";
 
 export async function GET(
   req: NextRequest,
@@ -93,8 +95,50 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true });
       }
+      case "email": {
+        const { subject, body, idReceiver, idEmail, status, createdAt } =
+          await req.json();
+
+        await PostEmailUsers({
+          subject,
+          body,
+          idReceiver,
+          idSender: id,
+          idEmail,
+          status,
+          createdAt,
+        });
+
+        return NextResponse.json({ success: true });
+      }
+      case "comment": {
+        const {
+          refIdProduct,
+          idComment,
+          refIdReceiver,
+          body,
+          typeComment,
+          createdAt,
+        } = await req.json();
+
+        await PostCommentPhoto({
+          refIdProduct,
+          idComment,
+          refIdSender: id,
+          refIdReceiver,
+          body,
+          typeComment,
+          createdAt,
+        });
+        return NextResponse.json({ success: true });
+      }
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }
+
+
+// todo KONDISIKAN BESOK TABEL COMMENT + SUB-COMMENT !! BELUM FIX !!
+// TODO -> CACHE COMMENT BELUM FIX !! GETNYA BELUM PAS MUNGKIN?? 
+// todo kondisikan lagi besok ini !!!

@@ -5,6 +5,7 @@ import type {
   TAllCreators,
   TListCreatorVideo,
   TListCreatorPhoto,
+  TListCommentPhoto,
   TTargetCreatorsDescription,
 } from "./type";
 
@@ -81,8 +82,9 @@ export const GetListCreatorsProduct = async ({
   offset: number;
 }) => {
   const query = await prisma.$queryRaw<TListCreatorPhoto>`
-    SELECT upi.ref_id_product AS id_product, upi.description, upi.url, upi.hashtag, upi.category, up.created_at, ups.like AS total_like, ups.dislike AS total_dislike,
-    uiv.action_vote::status_action_vote AS status, COALESCE(uib.status, false) AS "statusBookmark" 
+    SELECT upi.ref_id_product AS id_product, upi.description, upi.url, upi.hashtag, upi.category, up.created_at,
+      ups.like AS total_like, ups.dislike AS total_dislike, ups.comment AS total_comment,
+      uiv.action_vote::status_action_vote AS status, COALESCE(uib.status, false) AS "statusBookmark" 
     FROM users u
     JOIN users_product up ON (up.ref_id = u.id)
     JOIN users_product_image upi ON (upi.ref_id_product = up.id_product)
@@ -153,6 +155,45 @@ export const GetListCreatorsVideo = async ({
   `;
 
   const hasMore = offset + limit < Number(checkAmount[0].amount_video);
+
+  const data = camelcaseKeys(query);
+
+  return { data, hasMore };
+};
+
+export const GetListCommentPhoto = async ({
+  idProduct,
+  limit,
+  offset,
+  typeComment,
+}: {
+  idProduct: number;
+  limit: number;
+  offset: number;
+  typeComment: string;
+}) => {
+  const query = await prisma.$queryRaw<TListCommentPhoto>`
+    SELECT uic.body, ct.id_comment, ups.comment AS total_comment, ct.created_at
+      FROM comment_threads ct
+      LEFT JOIN users_interactions_comment uic ON (uic.ref_id_comment = ct.id_comment)
+      JOIN users_photo_stats ups ON (ups.ref_id_product = ct.ref_id_product)
+    WHERE ct.ref_id_product = ${idProduct}
+      AND ct.type_comment = ${typeComment}::type_product
+    ORDER BY
+      ct.created_at DESC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `;
+
+  if (!query) return [];
+
+  const check = await prisma.$queryRaw<{ total_comment: number }[]>`
+    SELECT comment AS total_comment
+      FROM users_photo_stats
+    WHERE ref_id_product = ${idProduct}
+  `;
+
+  const hasMore = offset + limit < Number(check[0].total_comment);
 
   const data = camelcaseKeys(query);
 
@@ -338,5 +379,45 @@ export const PostBookmarkUsers = async ({
           END
       WHERE ref_id_product = ${idProduct}
     `;
+  });
+};
+
+export const PostEmailUsers = ({
+  subject,
+  body,
+  idReceiver,
+  idSender,
+  idEmail,
+  status,
+  createdAt,
+}: {
+  subject: string;
+  body: string;
+  idReceiver: string;
+  idSender: string;
+  idEmail: number;
+  status: boolean;
+  createdAt: Date;
+}) => {
+  return prisma.$transaction(async (tx) => {
+    // ! DB email_threads
+    const queryCheck = await tx.$queryRaw<{ id_email: number }[]>`
+      SELECT id_email FROM email_threads WHERE id_email = ${idEmail}
+    `;
+    if (queryCheck.length === 0) {
+      await tx.$executeRaw`
+        INSERT INTO email_threads (id_email, total_email, created_at)
+          VALUES (${idEmail}, ${1}, ${createdAt}::timestamp)`;
+    } else {
+      await tx.$executeRaw`
+        UPDATE email_threads SET
+          total_email = email_threads.total_email + 1
+        WHERE id_email = ${idEmail}`;
+    }
+
+    // ? DB interactions
+    await tx.$executeRaw`
+      INSERT INTO users_interactions_email (ref_id_email, ref_id_sender, ref_id_receiver, subject, body, status_receiver, status_sender, created_at)
+        VALUES (${idEmail}, (SELECT id FROM users WHERE public_id = ${idSender}), (SELECT id FROM users WHERE public_id = ${idReceiver}), ${subject}, ${body}, ${false}, ${status}, ${createdAt}::timestamp)`;
   });
 };

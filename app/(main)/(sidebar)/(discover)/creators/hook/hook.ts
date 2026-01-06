@@ -7,13 +7,13 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-// import { usePost } from "./Post";
 import {
   usePost,
   usePostBookmark,
   usePostFollow,
+  usePostComment,
 } from "./sub/use-post-creators";
 import { ModalState } from "../types/interface";
 import type {
@@ -66,6 +66,9 @@ const useCreators = (id: string) => {
 
 const useCreatorsDescription = (id: string) => {
   const { id: targetId } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const view = searchParams.get("view");
+  // console.log(view)
 
   // * STATE ==============
   const [open, setOpen] = useState<ModalState>({
@@ -74,6 +77,11 @@ const useCreatorsDescription = (id: string) => {
     isPublicId: null,
   });
   const [sortVideo, setSortVideo] = useState<"latest" | "oldest">("latest");
+
+  // ? COMMENT SECTION
+  const [idComment, setIdComment] = useState<number | null>(null);
+
+  // * STATE END ==============
 
   // * Creators Description
   const { data: creatorDescription } = useQuery({
@@ -128,6 +136,38 @@ const useCreatorsDescription = (id: string) => {
     retry: false,
   });
 
+  // * List Creators Photos Comments
+  const { data: listProductPhotoComment } = useInfiniteQuery({
+    queryKey: ["keyListProductPhotoComment", id, targetId, idComment],
+    queryFn: async ({ pageParam = 1 }) => {
+      const URL = ROUTES_CREATORS.GET_ACTION({
+        typeConfig: "listProductPhotoComment",
+        pageParams: pageParam,
+        targetId: targetId,
+        key: "photo",
+        id_product: idComment,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+    staleTime: 1000 * 60 * 3,
+    gcTime: 1000 * 60 * 60,
+
+    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.hasMore ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
+    enabled: !!targetId && open.isValue === "Photos" && !!idComment,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
+
+  // console.log(`List Comment:`, listProductPhotoComment)
+
+  // ! VIDEO SECTION =========================
   // * List Creators Videos
   const { data: listProductCreatorsVideo } = useInfiniteQuery({
     queryKey: ["keyListProductCreatorsVideo", id, targetId],
@@ -170,7 +210,17 @@ const useCreatorsDescription = (id: string) => {
     keyListProductCreatorsB: ["keyListProductCreators", id, targetId],
     targetId: targetId,
   });
+  const { postCommentUser } = usePostComment({
+    keyListPhotoComment: [
+      "keyListProductPhotoComment",
+      id,
+      targetId,
+      idComment,
+    ],
+    targetId: targetId,
+  });
 
+  // * DATA ===========================================================
   const creatorDescriptionData: TTargetCreatorsDescription[] = useMemo(
     () => creatorDescription ?? [],
     [creatorDescription]
@@ -179,6 +229,7 @@ const useCreatorsDescription = (id: string) => {
     () => listProductCreators?.pages.flatMap((page) => page.data) ?? [],
     [listProductCreators?.pages]
   );
+  const listCreatorProductDataComment = useMemo(() => listProductPhotoComment?.pages.flatMap((page) => page.data) ?? [], [listProductPhotoComment?.pages])
 
   // * VIDEO LIST
   const ListCreatorVideoData: TListCreatorVideo[] = useMemo(
@@ -190,11 +241,11 @@ const useCreatorsDescription = (id: string) => {
     [ListCreatorVideoData]
   );
 
-  // console.log(listCreatorProductData);
 
   return {
     creatorDescriptionData,
     listCreatorProductData,
+    listCreatorProductDataComment,
     fetchNextPageProduct,
     hasNextPageProduct,
     isFetchingNextPageProduct,
@@ -208,11 +259,14 @@ const useCreatorsDescription = (id: string) => {
     setOpen,
     sortVideo,
     setSortVideo,
+    idComment,
+    setIdComment,
 
     // ! ACTION
     postLikePhoto,
     postFollowUser,
     postBookmarkUser,
+    postCommentUser,
   };
 };
 

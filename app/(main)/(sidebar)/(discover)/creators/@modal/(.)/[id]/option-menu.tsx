@@ -33,10 +33,6 @@ const OptionsMenu = ({
       label: "Music",
       icon: <FaMusic size={18} />,
     },
-    // {
-    //   label: "Products",
-    //   icon: <FaBoxOpen size={18} />,
-    // },
   ];
 
   return (

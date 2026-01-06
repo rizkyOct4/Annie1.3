@@ -17,24 +17,26 @@ import {
 import { creatorsContext, profileContext } from "@/app/context";
 import { showToast } from "@/_util/Toast";
 import { handleUnauthorized } from "@/_util/Unauthorized";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { TPostActionFollow } from "../../../types/type";
+import Link from "next/link";
+
 
 const CreatorDesc = ({
   data,
   setRenderAction,
+  targetId,
 }: {
   data: TTargetCreatorsDescription[];
   setRenderAction: any;
+  targetId: string;
 }) => {
   const { postFollowUser } = useContext(creatorsContext);
   const { data: getData } = useContext(profileContext);
   const sessionId = getData?.id;
 
-  const [isLoading, setIsLoading] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { id: targetId } = useParams<{ id: string }>();
 
   const creator = data?.[0];
   // console.log(creator)
@@ -71,7 +73,7 @@ const CreatorDesc = ({
         case "follow": {
           try {
             if (sessionId === targetId) return;
-            setIsLoading(true)
+            setIsLoading(true);
             const payload: TPostActionFollow = {
               idReceiver: targetId,
               status: true,
@@ -91,7 +93,7 @@ const CreatorDesc = ({
         case "unfollow": {
           try {
             if (sessionId === targetId) return;
-            setIsLoading(true)
+            setIsLoading(true);
             const payload: TPostActionFollow = {
               idReceiver: targetId,
               status: false,
@@ -163,12 +165,30 @@ const CreatorDesc = ({
           {/* ===== ACTION BAR ===== */}
           <div className="flex items-center gap-2">
             {/* {creator?.email && ( */}
-            <button
-              // href={`mailto:${creator?.email}`}
-              type="button"
-              onClick={() => setRenderAction("email")}
-              title="Send Email"
-              className="
+            {sessionId === targetId ? (
+              <Link
+                href="/customize"
+                title="Customize"
+                className="
+                  p-2 rounded-lg
+                  bg-white/5
+                  border border-white/10
+                  text-gray-300
+                  hover:text-emerald-400
+                  hover:bg-white/10
+                  transition
+                "
+              >
+              Edit
+              </Link>
+            ) : null}
+            {sessionId === targetId ? null : (
+              <button
+                // href={`mailto:${creator?.email}`}
+                type="button"
+                onClick={() => setRenderAction("email")}
+                title="Send Email"
+                className="
                   p-2 rounded-lg
                   bg-white/5
                   border border-white/10
@@ -177,10 +197,10 @@ const CreatorDesc = ({
                   hover:bg-white/10
                   transition
                 ">
-              <FaEnvelope className="w-4 h-4" />
-            </button>
+                <FaEnvelope className="w-4 h-4" />
+              </button>
+            )}
 
-            {/* COPY PROFILE */}
             <button
               type="button"
               onClick={() => handleAction("copyProfile")}
@@ -197,10 +217,11 @@ const CreatorDesc = ({
               <FaLink className="w-4 h-4" />
             </button>
 
-            <button
-              onClick={() => setRenderAction("report")}
-              title="Report Creator"
-              className="
+            {sessionId === targetId ? null : (
+              <button
+                onClick={() => setRenderAction("report")}
+                title="Report Creator"
+                className="
                 p-2 rounded-lg
                 bg-white/5
                 border border-white/10
@@ -209,8 +230,9 @@ const CreatorDesc = ({
                 hover:bg-red-500/10
                 transition
               ">
-              <FaFlag className="w-4 h-4" />
-            </button>
+                <FaFlag className="w-4 h-4" />
+              </button>
+            )}
 
             <button
               type="button"
@@ -232,7 +254,7 @@ const CreatorDesc = ({
         : "text-gray-400 hover:text-green-400 hover:bg-green-500/10"
     }
   `}>
-              <p>{creator?.totalFollowers}</p>
+              <p>{creator?.totalFollowers ?? 0}</p>
               {creator?.statusFollow ? (
                 <FaUserCheck className="w-4 h-4" />
               ) : (

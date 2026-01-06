@@ -56,17 +56,17 @@ export type TListCreatorVideo = {
   createdAt: Date;
   description: string;
   duration: number;
-  hashtag: string[]
+  hashtag: string[];
   idProduct: number;
   status: null | boolean;
   thumbnailUrl: string;
   totalLike: number;
   totalDislike: number;
-  url: string
-}
+  url: string;
+};
 
 // ? POST ACTION LIKE / DISLIKE
-export type TPostActionLikeOrDislike = {
+export interface TPostActionLikeOrDislike {
   idVote: number;
   refIdReceiver: string;
   refIdProduct: number;
@@ -74,15 +74,24 @@ export type TPostActionLikeOrDislike = {
   dislike: number | null;
   status: string;
   createdAt: Date;
-};
+}
 
-export type TPostActionFollow = {
+export interface TPostActionFollow {
   idReceiver: string;
   status: boolean;
-};
-export type TPostActionBookmark = {
+}
+export interface TPostActionBookmark {
   idProduct: number;
   status: boolean;
   typeBookmark: string;
-  createdAt: Date
+  createdAt: Date;
+}
+
+export interface TPostActionComment {
+  refIdProduct: number;
+  idComment: number;
+  refIdReceiver: string;
+  body: string;
+  typeComment: "comment" | "subComment"
+  createdAt: Date;
 }

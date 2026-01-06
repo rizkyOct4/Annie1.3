@@ -23,10 +23,13 @@ model users {
   ref_table_interaction_followers_target                                                 users_interactions_followers[]                 @relation("users_target")
   ref_table_interaction_followers_sender                                                 users_interactions_followers[]                 @relation("users_sender")
   ref_table_interaction_vote_sender                                                      users_interactions_vote[]           @relation("video_vote_sender")
-  ref_table_interaction_comment                                                          users_interactions_comment[]
   ref_table_interaction_bookmark                                                         users_interactions_bookmark[]
-  ref_table_interaction_report_sender                                                           users_interactions_report[]          @relation("report_sender")
-  ref_table_interaction_report_receiver                                                           users_interactions_report[]          @relation("report_receiver")
+  ref_table_interaction_report_sender                                                    users_interactions_report[]          @relation("report_sender")
+  ref_table_interaction_report_receiver                                                  users_interactions_report[]          @relation("report_receiver")
+  ref_table_interaction_email_sender                                                     users_interactions_email[]          @relation("email_sender")
+  ref_table_interaction_email_receiver                                                     users_interactions_email[]          @relation("email_receiver")
+  ref_table_interaction_comment_sender                                                     users_interactions_comment[]          @relation("comment_sender")
+  ref_table_interaction_comment_receiver                                                     users_interactions_comment[]          @relation("comment_receiver")
 
   @@index([role])
   @@index([created_at])
@@ -74,9 +77,9 @@ model users_product {
   ref_table_photo_stats        users_photo_stats?
   ref_table_video_stats        users_video_stats?
   ref_table_users_interaction_vote    users_interactions_vote[]
-  ref_table_users_interaction_comment   users_interactions_comment[]
   ref_table_users_interaction_bookmark   users_interactions_bookmark[]
   ref_table_users_interaction_report   users_interactions_report[]
+  ref_table_comment_threads             comment_threads[]
 
   @@index([ref_id], name: "idx_ref_id")
   @@index([created_at], name: "idx_created_at")
@@ -118,6 +121,8 @@ model users_photo_stats {
   views               Int?      @default(0)
   like                Int?      @default(0)
   dislike             Int?      @default(0)
+  comment             Int?      @default(0)
+  sub_comment         Int?      @default(0)
   share               Int?      @default(0)
   bookmark            Int?      @default(0)
   report              Int?      @default(0)
@@ -128,6 +133,7 @@ model users_photo_stats {
   @@index([views])
   @@index([like, dislike])
   @@index([share])
+  @@index([comment])
   @@index([bookmark])
   @@index([report])
 }
@@ -137,6 +143,7 @@ model users_video_stats {
   views               Int?      @default(0)
   like                Int?      @default(0)
   dislike             Int?      @default(0)
+  comment             Int?      @default(0)
   share               Int?      @default(0)
   bookmark            Int?      @default(0)
   report              Int?      @default(0)
@@ -146,6 +153,7 @@ model users_video_stats {
   @@index([ref_id_product])
   @@index([views])
   @@index([like, dislike])
+  @@index([comment])
   @@index([share])
   @@index([bookmark])
   @@index([report])
@@ -163,21 +171,6 @@ model users_interactions_vote {
  
   @@index([ref_id_product])
   @@unique([ref_id_product, ref_id_sender])
-}
-
-model users_interactions_comment {
-  parent_id_comment   Int           @id
-  type_comment        type_product
-  ref_id_product      Int
-  ref_id_sender       String        @db.Uuid
-  text                String
-  created_at          DateTime?     @default(now()) @db.Timestamp(6)
-
-  @@index([parent_id_comment])
-  @@index([ref_id_sender])
-
-  this_ref_comment               users_product       @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)          
-  this_ref_comment_sender        users               @relation(fields: [ref_id_sender], references: [id], onDelete: Cascade)          
 }
 
 model users_interactions_bookmark {
@@ -223,8 +216,71 @@ model users_interactions_report {
   this_ref_sender     users      @relation("report_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)    
   this_ref_receiver   users      @relation("report_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)    
   this_ref_product    users_product?   @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
+}
+
+
+model email_threads {
+  id_email    Int      @unique
+  total_email Int      @default(0)
+  created_at  DateTime @default(now()) @db.Timestamp(6)
+
+  ref_table_users_interactions_email    users_interactions_email[]
+}
+
+model users_interactions_email {
+  ref_id_email        Int            @id
+  ref_id_sender       String         @db.Uuid 
+  ref_id_receiver     String         @db.Uuid
+  subject             String         
+  body                String         @default("")
+  status_sender       Boolean        @default(false)
+  status_receiver     Boolean        @default(false)
+  created_at          DateTime?      @default(now()) @db.Timestamp(6)
+
+  @@index([ref_id_sender])
+  @@index([ref_id_receiver])
+  @@index([status_sender])
+  @@index([status_receiver])
+
+  this_ref_email      email_threads      @relation(fields: [ref_id_email], references: [id_email], onDelete: Cascade)    
+  this_ref_sender     users      @relation("email_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)    
+  this_ref_receiver   users      @relation("email_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)
+}
+
+
+model comment_threads {
+  ref_id_product    Int         @id
+  id_comment        Int         @unique
+  type_comment      type_product
+  created_at        DateTime    @default(now()) @db.Timestamp(6)
+
+  this_ref_comment    users_product      @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
+
+  ref_table_users_interactions_comment      users_interactions_comment[]
+
+  @@index([ref_id_product])
+  @@index([type_comment])
+  @@index([created_at])
 
 }
+
+model users_interactions_comment {
+  ref_id_comment      Int           @id
+  ref_id_sender       String        @db.Uuid
+  ref_id_receiver     String        @db.Uuid
+  body                String
+  created_at          DateTime?     @default(now()) @db.Timestamp(6)
+
+  @@index([ref_id_comment])
+  @@index([ref_id_sender])
+  @@index([ref_id_receiver])
+
+  this_ref_id_comment        comment_threads      @relation(fields: [ref_id_comment], references: [id_comment], onDelete: Cascade)          
+  this_ref_comment_sender        users            @relation("comment_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)          
+  this_ref_comment_receiver      users            @relation("comment_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)          
+}
+
+
 
 
 enum type_product {

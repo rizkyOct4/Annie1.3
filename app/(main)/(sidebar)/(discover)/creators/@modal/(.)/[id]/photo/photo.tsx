@@ -29,10 +29,10 @@ interface ListProductState {
 }
 
 const ImageContainer = ({
-  creatorId,
+  currentPath,
   setRenderAction,
 }: {
-  creatorId: string;
+  currentPath: string;
   setRenderAction: any;
 }) => {
   const {
@@ -42,6 +42,7 @@ const ImageContainer = ({
     isFetchingNextPageProduct,
     postLikePhoto,
     postBookmarkUser,
+    setIdComment,
   } = useContext(creatorsContext);
 
   const { data: getData } = useContext(profileContext);
@@ -115,13 +116,16 @@ const ImageContainer = ({
           break;
         }
         case "comment": {
+          setIdComment(idProduct)
+          const newUrl = `/creators/${currentPath}?view=comment`;
+          history.pushState({}, "", newUrl);
           setRenderAction("comment");
           break;
         }
         case "addBookmark":
         case "removeBookmark": {
           try {
-            if (id === creatorId) return;
+            if (id === currentPath) return;
             const payload = {
               idProduct: idProduct,
               status: actionType === "addBookmark" ? true : false,
@@ -141,7 +145,7 @@ const ImageContainer = ({
         }
       }
     },
-    [postLikePhoto, router, id, creatorId, postBookmarkUser, setRenderAction]
+    [postLikePhoto, router, setIdComment, currentPath, setRenderAction, id, postBookmarkUser]
   );
 
   return (

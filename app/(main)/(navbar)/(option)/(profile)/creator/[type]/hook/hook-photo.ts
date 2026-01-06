@@ -35,7 +35,6 @@ const useCreatorPhoto = ({
   id,
   type,
 }: UseCreatorPhotoParams) => {
-  const queryClient = useQueryClient();
 
   const { type: currentPath } = useParams<{ type: string }>();
 
