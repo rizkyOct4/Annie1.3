@@ -30,6 +30,8 @@ model users {
   ref_table_interaction_email_receiver                                                     users_interactions_email[]          @relation("email_receiver")
   ref_table_interaction_comment_sender                                                     users_interactions_comment[]          @relation("comment_sender")
   ref_table_interaction_comment_receiver                                                     users_interactions_comment[]          @relation("comment_receiver")
+  ref_table_interaction_sub_comment_sender                                                     users_interactions_sub_comment[]          @relation("sub_comment_sender")
+  ref_table_interaction_sub_comment_receiver                                                     users_interactions_sub_comment[]          @relation("sub_comment_receiver")
 
   @@index([role])
   @@index([created_at])
@@ -249,23 +251,24 @@ model users_interactions_email {
 
 
 model comment_threads {
-  ref_id_product    Int         @id
+  ref_id_product    Int         
   id_comment        Int         @unique
-  type_comment      type_product
+  type_comment      type_comment
   created_at        DateTime    @default(now()) @db.Timestamp(6)
 
   this_ref_comment    users_product      @relation(fields: [ref_id_product], references: [id_product], onDelete: Cascade)
 
   ref_table_users_interactions_comment      users_interactions_comment[]
+  ref_table_sub_comment_threads             sub_comment_threads[]
 
   @@index([ref_id_product])
   @@index([type_comment])
   @@index([created_at])
-
 }
 
 model users_interactions_comment {
-  ref_id_comment      Int           @id
+  id                  Int           @id @default(autoincrement())
+  ref_id_comment      Int           
   ref_id_sender       String        @db.Uuid
   ref_id_receiver     String        @db.Uuid
   body                String
@@ -279,6 +282,40 @@ model users_interactions_comment {
   this_ref_comment_sender        users            @relation("comment_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)          
   this_ref_comment_receiver      users            @relation("comment_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)          
 }
+
+model sub_comment_threads {
+  ref_id_comment    Int         
+  id_sub_comment    Int         @unique
+  type_comment      type_comment
+  created_at        DateTime    @default(now()) @db.Timestamp(6)
+
+  this_ref_sub_comment    comment_threads      @relation(fields: [ref_id_comment], references: [id_comment], onDelete: Cascade)
+
+  ref_table_users_interactions_sub_omment      users_interactions_sub_comment[]
+
+  @@index([ref_id_comment])
+  @@index([type_comment])
+  @@index([created_at])
+}
+
+model users_interactions_sub_comment {
+  id_sub              Int           @id @default(autoincrement())
+  ref_id_comment      Int           
+  ref_id_sender       String        @db.Uuid
+  ref_id_receiver     String        @db.Uuid
+  body                String
+  created_at          DateTime?     @default(now()) @db.Timestamp(6)
+
+  @@index([ref_id_comment])
+  @@index([ref_id_sender])
+  @@index([ref_id_receiver])
+
+  this_ref_id_comment        sub_comment_threads      @relation(fields: [ref_id_comment], references: [id_sub_comment], onDelete: Cascade)          
+  this_ref_sub_comment_sender        users            @relation("sub_comment_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)          
+  this_ref_sub_comment_receiver      users            @relation("sub_comment_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)          
+}
+
+
 
 
 
@@ -315,4 +352,9 @@ enum type_report {
   image
   video
   music
+}
+
+enum type_comment{
+  comment
+  sub_comment
 }

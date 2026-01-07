@@ -24,22 +24,24 @@ export const ROUTES_CREATORS: any = {
     }
   },
   GET_ACTION: ({
-    typeConfig,
     pageParams,
     targetId,
     key,
-    id_product,
+    idProduct,
+    idSubComment,
   }: {
-    typeConfig: string;
     pageParams?: number;
     targetId?: string;
-    key?: "photo" | "video" | "music";
-    id_product: number;
+    key: "comment" | "sub_comment";
+    idProduct?: number;
+    idSubComment?: number;
   }) => {
     const limit = 10;
-    switch (typeConfig) {
-      case "listProductPhotoComment":
-        return `/creators/${targetId}/api/get-action?key=${key}&id-product=${id_product}&section=${pageParams}&limit=${limit}`;
+    switch (key) {
+      case "comment":
+        return `/creators/${targetId}/api/get-action?key=${key}&id-product=${idProduct}&section=${pageParams}&limit=${limit}`;
+      case "sub_comment":
+        return `/creators/${targetId}/api/get-action?key=${key}&id-sub-comment=${idSubComment}&section=${pageParams}&limit=${limit}`;
       default:
         return "";
     }

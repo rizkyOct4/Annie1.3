@@ -10,7 +10,10 @@ import {
 } from "@/_lib/services/sidebar/discover/creators/services-creators";
 import GetToken from "@/_lib/middleware/get-token";
 import { revalidateTag } from "next/cache";
-import { PostCommentPhoto } from "@/_lib/services/sidebar/discover/creators/action/services-action";
+import {
+  PostCommentPhoto,
+  PostSubCommentPhoto,
+} from "@/_lib/services/sidebar/discover/creators/action/services-action";
 
 export async function GET(
   req: NextRequest,
@@ -132,13 +135,31 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json({ success: true });
       }
+      case "sub_comment": {
+        const {
+          refIdComment,
+          idSubComment,
+          refIdReceiver,
+          body,
+          typeComment,
+          createdAt,
+        } = await req.json();
+
+        await PostSubCommentPhoto({
+          refIdComment,
+          idSubComment,
+          refIdSender: id,
+          refIdReceiver,
+          body,
+          typeComment,
+          createdAt,
+        });
+        return NextResponse.json({ success: true });
+      }
     }
   } catch (err: any) {
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }
 
-
-// todo KONDISIKAN BESOK TABEL COMMENT + SUB-COMMENT !! BELUM FIX !!
-// TODO -> CACHE COMMENT BELUM FIX !! GETNYA BELUM PAS MUNGKIN?? 
-// todo kondisikan lagi besok ini !!!
+// todo KONDISIKAN LAGI CACHE , ROUTE URL UNTUK SUB INI LAGI !!

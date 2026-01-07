@@ -170,15 +170,16 @@ export const GetListCommentPhoto = async ({
   idProduct: number;
   limit: number;
   offset: number;
-  typeComment: string;
+  typeComment: "comment";
 }) => {
   const query = await prisma.$queryRaw<TListCommentPhoto>`
-    SELECT uic.body, ct.id_comment, ups.comment AS total_comment, ct.created_at
+    SELECT ud.username, uic.body, ct.id_comment, ups.comment AS total_comment, ct.created_at
       FROM comment_threads ct
       LEFT JOIN users_interactions_comment uic ON (uic.ref_id_comment = ct.id_comment)
+      JOIN users_description ud ON (ud.ref_id = uic.ref_id_sender)
       JOIN users_photo_stats ups ON (ups.ref_id_product = ct.ref_id_product)
     WHERE ct.ref_id_product = ${idProduct}
-      AND ct.type_comment = ${typeComment}::type_product
+      AND ct.type_comment = ${typeComment}::type_comment
     ORDER BY
       ct.created_at DESC
     LIMIT ${limit}
@@ -194,6 +195,46 @@ export const GetListCommentPhoto = async ({
   `;
 
   const hasMore = offset + limit < Number(check[0].total_comment);
+
+  const data = camelcaseKeys(query);
+
+  return { data, hasMore };
+};
+
+export const GetListSubCommentPhoto = async({
+  idComment,
+  limit,
+  offset,
+  typeComment,
+}: {
+  idComment: number;
+  limit: number;
+  offset: number;
+  typeComment: "sub_comment";
+}) => {
+  const query = await prisma.$queryRaw<any>`
+    SELECT ud.username, uisc.body, sct.id_sub_comment, ups.sub_comment AS total_sub_comment, sct.created_at AS sub_created_at
+      FROM sub_comment_threads sct
+      LEFT JOIN users_interactions_sub_comment uisc ON (uisc.ref_id_comment = sct.id_sub_comment)
+      JOIN users_description ud ON (ud.ref_id = uisc.ref_id_sender)
+      JOIN users_photo_stats ups ON (ups.ref_id_product = sct.ref_id_comment)
+    WHERE sct.ref_id_comment = ${idComment}
+      AND sct.type_comment = ${typeComment}::type_comment
+    ORDER BY
+      sct.created_at DESC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `;
+
+  if (!query) return [];
+
+  const check = await prisma.$queryRaw<{ total_sub_comment: number }[]>`
+    SELECT sub_comment AS total_sub_comment
+      FROM users_photo_stats
+    WHERE ref_id_product = (SELECT ref_id_product FROM comment_threads WHERE id_comment = ${idComment})
+  `;
+
+  const hasMore = offset + limit < Number(check[0].total_sub_comment);
 
   const data = camelcaseKeys(query);
 

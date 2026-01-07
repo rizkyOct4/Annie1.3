@@ -18,16 +18,6 @@ const Get = async () => {
               ARINDA
             </h2>
           </div>
-
-          <div className="relative w-28 h-28 overflow-hidden border border-white/20 rounded-md">
-            <Image
-              priority
-              src="/photo/FOTowebp.webp"
-              alt="Profile"
-              fill
-              className="object-cover"
-            />
-          </div>
         </div>
 
         <div className="flex gap-8">

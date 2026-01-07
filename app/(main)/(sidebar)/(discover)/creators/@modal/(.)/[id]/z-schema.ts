@@ -20,4 +20,5 @@ export const zEmailFormSchema = z.object({
 export const zCommentFormSchema = z.object({
   body: z.string().max(80, "Max 80 characters"),
   bodyReply: z.string().max(80, "Max 80 characters"),
+  idComment: z.number().optional(),
 });

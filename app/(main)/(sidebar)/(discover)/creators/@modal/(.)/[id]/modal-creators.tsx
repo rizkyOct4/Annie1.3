@@ -23,6 +23,8 @@ const ModalPopup = () => {
     ListCreatorVideoData,
     sortItemVideo,
     sortVideo,
+    listCreatorProductDataComment,
+    listCreatorProductDataSubComment,
   } = useContext(creatorsContext);
 
   const [renderAction, setRenderAction] = useState<string>("");
@@ -67,11 +69,21 @@ const ModalPopup = () => {
       }
       case "comment": {
         return (
-          <FormComment setRenderAction={setRenderAction} currentPath={id} />
+          <FormComment
+            setRenderAction={setRenderAction}
+            currentPath={id}
+            data={listCreatorProductDataComment}
+            subData={listCreatorProductDataSubComment}
+          />
         );
       }
     }
-  }, [renderAction, id]);
+  }, [
+    renderAction,
+    id,
+    listCreatorProductDataComment,
+    listCreatorProductDataSubComment,
+  ]);
 
   return (
     <>

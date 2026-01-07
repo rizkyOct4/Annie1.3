@@ -34,6 +34,7 @@ export interface TListCreatorPhoto {
 }[]
 
 export type TListCommentPhoto = {
+  username: string;
   body: string;
   id_comment: number;
   total_comment: number;

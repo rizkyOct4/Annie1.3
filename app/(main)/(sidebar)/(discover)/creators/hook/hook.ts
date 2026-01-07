@@ -78,8 +78,8 @@ const useCreatorsDescription = (id: string) => {
   });
   const [sortVideo, setSortVideo] = useState<"latest" | "oldest">("latest");
 
-  // ? COMMENT SECTION
   const [idComment, setIdComment] = useState<number | null>(null);
+  const [idSubComment, setIdSubComment] = useState<number | null>(null);
 
   // * STATE END ==============
 
@@ -136,16 +136,16 @@ const useCreatorsDescription = (id: string) => {
     retry: false,
   });
 
+  // ? COMMENT SECTIO
   // * List Creators Photos Comments
   const { data: listProductPhotoComment } = useInfiniteQuery({
     queryKey: ["keyListProductPhotoComment", id, targetId, idComment],
     queryFn: async ({ pageParam = 1 }) => {
       const URL = ROUTES_CREATORS.GET_ACTION({
-        typeConfig: "listProductPhotoComment",
         pageParams: pageParam,
         targetId: targetId,
-        key: "photo",
-        id_product: idComment,
+        key: "comment",
+        idProduct: idComment,
       });
       const { data } = await axios.get(URL);
       return data;
@@ -165,7 +165,34 @@ const useCreatorsDescription = (id: string) => {
     retry: false,
   });
 
-  // console.log(`List Comment:`, listProductPhotoComment)
+  // * List Creators Photos Sub Comments
+  const { data: listProductPhotoSubComment } = useInfiniteQuery({
+    queryKey: ["keyListProductPhotoSubComment", id, targetId, idSubComment],
+    queryFn: async ({ pageParam = 1 }) => {
+      const URL = ROUTES_CREATORS.GET_ACTION({
+        pageParams: pageParam,
+        targetId: targetId,
+        key: "sub_comment",
+        idSubComment: idSubComment,
+      });
+      const { data } = await axios.get(URL);
+      return data;
+    },
+    staleTime: 1000 * 60 * 3,
+    gcTime: 1000 * 60 * 60,
+
+    // ? ketika melakukan fetchNextPage maka akan memanggil queryFn kembali
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.hasMore ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
+    enabled: !!targetId && open.isValue === "Photos" && !!idSubComment,
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Tidak refetch saat kembali ke aplikasi
+    refetchOnMount: false, // "always" => refetch jika stale saja
+    retry: false,
+  });
+
 
   // ! VIDEO SECTION =========================
   // * List Creators Videos
@@ -229,7 +256,14 @@ const useCreatorsDescription = (id: string) => {
     () => listProductCreators?.pages.flatMap((page) => page.data) ?? [],
     [listProductCreators?.pages]
   );
-  const listCreatorProductDataComment = useMemo(() => listProductPhotoComment?.pages.flatMap((page) => page.data) ?? [], [listProductPhotoComment?.pages])
+  const listCreatorProductDataComment = useMemo(
+    () => listProductPhotoComment?.pages.flatMap((page) => page.data) ?? [],
+    [listProductPhotoComment?.pages]
+  );
+  const listCreatorProductDataSubComment = useMemo(
+    () => listProductPhotoSubComment?.pages.flatMap((page) => page.data) ?? [],
+    [listProductPhotoSubComment?.pages]
+  );
 
   // * VIDEO LIST
   const ListCreatorVideoData: TListCreatorVideo[] = useMemo(
@@ -241,11 +275,11 @@ const useCreatorsDescription = (id: string) => {
     [ListCreatorVideoData]
   );
 
-
   return {
     creatorDescriptionData,
     listCreatorProductData,
     listCreatorProductDataComment,
+    listCreatorProductDataSubComment,
     fetchNextPageProduct,
     hasNextPageProduct,
     isFetchingNextPageProduct,
@@ -261,6 +295,7 @@ const useCreatorsDescription = (id: string) => {
     setSortVideo,
     idComment,
     setIdComment,
+    setIdSubComment,
 
     // ! ACTION
     postLikePhoto,
