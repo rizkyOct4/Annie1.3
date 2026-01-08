@@ -83,7 +83,7 @@ export const GetListCreatorsProduct = async ({
 }) => {
   const query = await prisma.$queryRaw<TListCreatorPhoto>`
     SELECT upi.ref_id_product AS id_product, upi.description, upi.url, upi.hashtag, upi.category, up.created_at,
-      ups.like AS total_like, ups.dislike AS total_dislike, ups.comment AS total_comment,
+      ups.like AS total_like, ups.dislike AS total_dislike, ups.comment AS "totalComment",
       uiv.action_vote::status_action_vote AS status, COALESCE(uib.status, false) AS "statusBookmark" 
     FROM users u
     JOIN users_product up ON (up.ref_id = u.id)

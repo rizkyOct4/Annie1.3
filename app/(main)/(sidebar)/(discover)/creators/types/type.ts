@@ -47,8 +47,9 @@ export type TListCreatorProduct = {
   createdAt: Date;
   totalLike: number;
   totalDislike: number;
+  totalComment: number;
   status: string | null;
-  status_bookmark: boolean;
+  statusBookmark: boolean;
 };
 
 export type TListCreatorVideo = {
