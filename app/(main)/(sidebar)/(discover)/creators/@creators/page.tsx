@@ -1,8 +1,8 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import CreatorsCard from "../creators-card";
-import GetToken from "@/_lib/middleware/get-token";
-import { getQueryClient } from "@/app/get-query-client";
-import { GetAllCreators } from "@/_lib/services/sidebar/discover/creators/services-creators";
+// import CreatorsCard from "../creators-card";
+// import GetToken from "@/_lib/middleware/get-token";
+// import { getQueryClient } from "@/app/get-query-client";
+// import { GetAllCreators } from "@/_lib/services/sidebar/discover/creators/services-creators";
 import CreatorsPage from "./modal";
 
 const page = async () => {
