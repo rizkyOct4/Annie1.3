@@ -11,11 +11,12 @@ export default function MainLayout({
   return (
     <>
       <Navbar />
-      <section className="flex">
+
+      <section className="flex w-full min-h-screen">
         <Sidebar />
-        <main
-          className="flex-1 min-h-screen bg-black/60 py-4 px-10 w-full ml-20
-    ">
+
+        {/* MAIN CONTENT */}
+        <main className="flex-1 bg-black/60 py-12 pl-30 w-full pr-10">
           {intAuth}
           {children}
         </main>

@@ -51,7 +51,7 @@ export const ROUTES_CREATORS: any = {
     key,
     params,
   }: {
-    key: "like" | "follow" | "bookmark" | "email" | "comment";
+    key: "like" | "follow" | "bookmark" | "email" | "comment" | "sub_comment";
     params: string;
   }) => {
     switch (key) {
@@ -64,6 +64,8 @@ export const ROUTES_CREATORS: any = {
       case "email":
         return `/creators/${params}/api?key=${key}&action=post`;
       case "comment":
+        return `/creators/${params}/api?key=${key}&action=post`;
+      case "sub_comment":
         return `/creators/${params}/api?key=${key}&action=post`;
       default:
         return "";

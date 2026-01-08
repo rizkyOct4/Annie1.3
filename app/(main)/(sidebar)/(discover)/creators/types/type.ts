@@ -65,6 +65,33 @@ export type TListCreatorVideo = {
   url: string;
 };
 
+
+
+// ? COMMENT SECTION
+export type OriginalTListPhotoComment = {
+  data: TListPhotoComment[];
+  hasMore: boolean;
+};
+export type TListPhotoComment = {
+  username: string;
+  body:string;
+  idComment: number;
+  totalSubComment: number;
+  createdAt: Date
+}
+export type OriginalTListPhotoSubComment = {
+  data: TListPhotoSubComment[];
+  hasMore: boolean;
+};
+export type TListPhotoSubComment = {
+  username: string;
+  body:string;
+  idSubComment: number;
+  subCreatedAt: Date
+}
+
+
+
 // ? POST ACTION LIKE / DISLIKE
 export interface TPostActionLikeOrDislike {
   idVote: number;
@@ -92,6 +119,15 @@ export interface TPostActionComment {
   idComment: number;
   refIdReceiver: string;
   body: string;
-  typeComment: "comment" | "subComment"
+  typeComment: "comment";
+  createdAt: Date;
+}
+
+export interface TPostActionSubComment {
+  refIdComment: number;
+  idSubComment: number;
+  refIdReceiver: string;
+  body: string;
+  typeComment: "sub_comment";
   createdAt: Date;
 }

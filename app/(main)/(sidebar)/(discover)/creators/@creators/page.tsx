@@ -3,6 +3,7 @@ import CreatorsCard from "../creators-card";
 import GetToken from "@/_lib/middleware/get-token";
 import { getQueryClient } from "@/app/get-query-client";
 import { GetAllCreators } from "@/_lib/services/sidebar/discover/creators/services-creators";
+import CreatorsPage from "./modal";
 
 const page = async () => {
   const currentPath = "creators";
@@ -23,7 +24,8 @@ const page = async () => {
 
   return (
     // <HydrationBoundary state={dehydrate(queryClient)}>
-    <CreatorsCard currentPath={currentPath} />
+    // <CreatorsCard currentPath={currentPath} />
+    <CreatorsPage currentPath={currentPath}/>
     // </HydrationBoundary>
   );
 };

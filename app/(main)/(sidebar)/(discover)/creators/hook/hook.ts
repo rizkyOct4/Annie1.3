@@ -14,12 +14,15 @@ import {
   usePostBookmark,
   usePostFollow,
   usePostComment,
+  usePostSubComment,
 } from "./sub/use-post-creators";
 import { ModalState } from "../types/interface";
 import type {
   TTargetCreatorsDescription,
   TListCreatorProduct,
   TListCreatorVideo,
+  TListPhotoComment,
+  TListPhotoSubComment,
 } from "../types/type";
 import { SortASC } from "@/_util/GenerateData";
 
@@ -64,11 +67,8 @@ const useCreators = (id: string) => {
   return { listCreatorsData, fetchNextPage, hasNextPage, isFetchingNextPage };
 };
 
-const useCreatorsDescription = (id: string) => {
-  const { id: targetId } = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
-  const view = searchParams.get("view");
-  // console.log(view)
+const useCreatorsDescription = (id: string, username: string) => {
+  const { id: targetId } = useParams<{ id: string }>() ?? "";
 
   // * STATE ==============
   const [open, setOpen] = useState<ModalState>({
@@ -136,7 +136,7 @@ const useCreatorsDescription = (id: string) => {
     retry: false,
   });
 
-  // ? COMMENT SECTIO
+  // ? COMMENT SECTION ======================
   // * List Creators Photos Comments
   const { data: listProductPhotoComment } = useInfiniteQuery({
     queryKey: ["keyListProductPhotoComment", id, targetId, idComment],
@@ -193,7 +193,6 @@ const useCreatorsDescription = (id: string) => {
     retry: false,
   });
 
-
   // ! VIDEO SECTION =========================
   // * List Creators Videos
   const { data: listProductCreatorsVideo } = useInfiniteQuery({
@@ -245,6 +244,23 @@ const useCreatorsDescription = (id: string) => {
       idComment,
     ],
     targetId: targetId,
+    selfUsername: username,
+  });
+  const { postSubCommentUser } = usePostSubComment({
+    keyListPhotoComment: [
+      "keyListProductPhotoComment",
+      id,
+      targetId,
+      idComment,
+    ],
+    keyListPhotoSubComment: [
+      "keyListProductPhotoSubComment",
+      id,
+      targetId,
+      idSubComment,
+    ],
+    targetId: targetId,
+    selfUsername: username,
   });
 
   // * DATA ===========================================================
@@ -256,11 +272,11 @@ const useCreatorsDescription = (id: string) => {
     () => listProductCreators?.pages.flatMap((page) => page.data) ?? [],
     [listProductCreators?.pages]
   );
-  const listCreatorProductDataComment = useMemo(
+  const listCreatorProductDataComment: TListPhotoComment[] = useMemo(
     () => listProductPhotoComment?.pages.flatMap((page) => page.data) ?? [],
     [listProductPhotoComment?.pages]
   );
-  const listCreatorProductDataSubComment = useMemo(
+  const listCreatorProductDataSubComment: TListPhotoSubComment[] = useMemo(
     () => listProductPhotoSubComment?.pages.flatMap((page) => page.data) ?? [],
     [listProductPhotoSubComment?.pages]
   );
@@ -302,6 +318,7 @@ const useCreatorsDescription = (id: string) => {
     postFollowUser,
     postBookmarkUser,
     postCommentUser,
+    postSubCommentUser,
   };
 };
 

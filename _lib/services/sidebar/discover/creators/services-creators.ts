@@ -161,6 +161,8 @@ export const GetListCreatorsVideo = async ({
   return { data, hasMore };
 };
 
+
+
 export const GetListCommentPhoto = async ({
   idProduct,
   limit,
@@ -173,11 +175,15 @@ export const GetListCommentPhoto = async ({
   typeComment: "comment";
 }) => {
   const query = await prisma.$queryRaw<TListCommentPhoto>`
-    SELECT ud.username, uic.body, ct.id_comment, ups.comment AS total_comment, ct.created_at
+    SELECT ud.username, uic.body, ct.id_comment, COALESCE(ups.sub_comment, 0)::int AS total_sub_comment, ct.created_at
       FROM comment_threads ct
       LEFT JOIN users_interactions_comment uic ON (uic.ref_id_comment = ct.id_comment)
       JOIN users_description ud ON (ud.ref_id = uic.ref_id_sender)
-      JOIN users_photo_stats ups ON (ups.ref_id_product = ct.ref_id_product)
+      LEFT JOIN (
+        SELECT ref_id_comment, COALESCE(COUNT(ref_id_comment), 0) AS sub_comment
+          FROM sub_comment_threads
+          GROUP BY ref_id_comment
+      ) ups ON (ups.ref_id_comment = ct.id_comment)
     WHERE ct.ref_id_product = ${idProduct}
       AND ct.type_comment = ${typeComment}::type_comment
     ORDER BY
@@ -213,11 +219,10 @@ export const GetListSubCommentPhoto = async({
   typeComment: "sub_comment";
 }) => {
   const query = await prisma.$queryRaw<any>`
-    SELECT ud.username, uisc.body, sct.id_sub_comment, ups.sub_comment AS total_sub_comment, sct.created_at AS sub_created_at
+    SELECT ud.username, uisc.body, sct.id_sub_comment AS "idSubComment", sct.created_at AS "subCreatedAt"
       FROM sub_comment_threads sct
       LEFT JOIN users_interactions_sub_comment uisc ON (uisc.ref_id_comment = sct.id_sub_comment)
       JOIN users_description ud ON (ud.ref_id = uisc.ref_id_sender)
-      JOIN users_photo_stats ups ON (ups.ref_id_product = sct.ref_id_comment)
     WHERE sct.ref_id_comment = ${idComment}
       AND sct.type_comment = ${typeComment}::type_comment
     ORDER BY

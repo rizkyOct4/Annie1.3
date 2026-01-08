@@ -20,6 +20,7 @@ const ModalPopup = () => {
     open,
     setOpen,
     creatorDescriptionData,
+    listCreatorProductData,
     ListCreatorVideoData,
     sortItemVideo,
     sortVideo,
@@ -33,7 +34,11 @@ const ModalPopup = () => {
     switch (open.isValue) {
       case "Photos":
         return (
-          <ImageContainer currentPath={id} setRenderAction={setRenderAction} />
+          <ImageContainer
+            currentPath={id}
+            data={listCreatorProductData}
+            setRenderAction={setRenderAction}
+          />
         );
       case "Videos":
         return (
@@ -53,6 +58,7 @@ const ModalPopup = () => {
   }, [
     open.isValue,
     id,
+    listCreatorProductData,
     sortVideo,
     sortItemVideo,
     ListCreatorVideoData,

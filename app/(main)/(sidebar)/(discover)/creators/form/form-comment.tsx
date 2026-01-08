@@ -9,7 +9,7 @@ import { handleUnauthorized } from "@/_util/Unauthorized";
 import { useContext, useState, useCallback } from "react";
 import { creatorsContext } from "@/app/context";
 import { RandomId, LocalISOTime } from "@/_util/GenerateData";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type CommentFormSchema = z.infer<typeof zCommentFormSchema>;
 
@@ -31,9 +31,16 @@ const FormComment = ({
   subData: any[];
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const view = searchParams.get("view") ?? "";
 
-  const { idComment, setIdComment, setIdSubComment, postCommentUser } =
-    useContext(creatorsContext);
+  const {
+    idComment,
+    setIdComment,
+    setIdSubComment,
+    postCommentUser,
+    postSubCommentUser,
+  } = useContext(creatorsContext);
 
   const [isOpen, setIsOpen] = useState<IFormState>({
     open: false,
@@ -106,23 +113,20 @@ const FormComment = ({
     try {
       // console.log(`Reply: `, values.bodyReply);
       const payload = {
-        refIdComment: values.idComment,
+        refIdComment: isOpen.idComment,
         idSubComment: RandomId(),
         refIdReceiver: currentPath,
         body: values.bodyReply,
         typeComment: "sub_comment",
         createdAt: LocalISOTime(),
       };
-      console.log(payload)
-      // console.log(payload);
+      console.log(payload);
       setIsLoading(true);
-      // const URL = ROUTES_CREATORS.POST({ key: "email", params: currentPath });
-      // await axios.post(URL, payload);
-      // reset();
-      // setIsLoading(false);
-      // setRenderAction("");
+      await postSubCommentUser(payload);
+      setIsLoading(false);
+      reset();
     } catch (err: any) {
-      // setIsLoading(false);
+      setIsLoading(false);
       if (err.status === 401) {
         if (handleUnauthorized(err, router)) return;
         console.error(err);
@@ -131,9 +135,11 @@ const FormComment = ({
   });
 
   return (
-    <div className="overlay">
-      <div
-        className="
+    <>
+      {view && (
+        <div className="overlay">
+          <div
+            className="
           relative
           w-250
           rounded-xl
@@ -143,110 +149,112 @@ const FormComment = ({
           h-180
           p-4
         ">
-        <div className="flex items-center justify-between h-[6%]">
-          <h3 className="text-sm font-semibold text-gray-200">Comments</h3>
+            <div className="flex items-center justify-between h-[6%]">
+              <h3 className="text-sm font-semibold text-gray-200">Comments</h3>
 
-          <button
-            type="button"
-            onClick={() => {
-              const newUrl = `/creators/${currentPath}`;
-              history.pushState({}, "", newUrl);
-              setIdComment(null);
-              setRenderAction("");
-            }}
-            className="
+              <button
+                type="button"
+                onClick={() => {
+                  const newUrl = `/creators/${currentPath}`;
+                  history.pushState({}, "", newUrl);
+                  setIdComment(null);
+                  setRenderAction("");
+                }}
+                className="
               p-1.5
               rounded-lg
               text-gray-400
               hover:text-gray-200
               hover:bg-white/10
             ">
-            ✕
-          </button>
-        </div>
+                ✕
+              </button>
+            </div>
 
-        <div className="flex gap-4 h-[94%]">
-          <div className="relative w-70 shrink-0 rounded-lg overflow-hidden border border-white/10">
-            <Image
-              src="/photo/7.webp"
-              alt="Preview"
-              fill
-              sizes="(max-width: 240px) 100vw"
-              className="object-cover"
-            />
-          </div>
+            <div className="flex gap-4 h-[94%]">
+              <div className="relative w-70 shrink-0 rounded-lg overflow-hidden border border-white/10">
+                <Image
+                  src="/photo/7.webp"
+                  alt="Preview"
+                  fill
+                  sizes="(max-width: 240px) 100vw"
+                  className="object-cover"
+                />
+              </div>
 
-          <div className="flex-1 flex flex-col rounded-lg border border-white/10 bg-white/5">
-            <div className="flex-1 overflow-y-auto p-3 space-y-3">
-              {Array.isArray(data) && data.length > 0 ? (
-                data.map((i: any) => (
-                  <div
-                    className="p-3 border-b border-white/10"
-                    key={i.idComment}>
-                    <div className="flex gap-3">
-                      {/* CONTENT */}
-                      <div className="flex flex-col flex-1 gap-1">
-                        <p className="text-xs text-gray-400">{i.username}</p>
+              <div className="flex-1 flex flex-col rounded-lg border border-white/10 bg-white/5">
+                <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                  {Array.isArray(data) && data.length > 0 ? (
+                    data.map((i: any) => (
+                      <div
+                        className="p-3 border-b border-white/10"
+                        key={i.idComment}>
+                        <div className="flex gap-3">
+                          {/* CONTENT */}
+                          <div className="flex flex-col flex-1 gap-1">
+                            <p className="text-xs text-gray-400">
+                              {i.username}
+                            </p>
 
-                        <p className="text-sm text-gray-200 leading-relaxed">
-                          {i.body}
-                        </p>
+                            <p className="text-sm text-gray-200 leading-relaxed">
+                              {i.body}
+                            </p>
 
-                        {/* ACTION BAR */}
-                        <div className="mt-2 flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleAction("openReply", i.idComment)
-                            }
-                            className="text-xs text-gray-400 hover:text-gray-300 transition-colors">
-                            View replies {i.totalComment}
-                          </button>
-                        </div>
-                        {/* // ? SUB comment */}
-                        <div
-                          className={`ml-4 space-y-3 border-l ${
-                            isOpen.idComment === i.idComment
-                              ? "border-emerald-500"
-                              : "border-white/10"
-                          } pl-4`}>
-                          {isOpen &&
-                            isOpen.idComment === i.idComment &&
-                            isOpen.openReply && (
-                              <>
-                                {Array.isArray(subData) && subData.length > 0
-                                  ? subData.map((s) => (
-                                      <div className="mt-2">
-                                        <p className="text-xs text-gray-500 mb-0.5">
-                                          {s.username}
-                                        </p>
-                                        <p className="text-sm text-gray-300">
-                                          {s.body}
-                                        </p>
-                                      </div>
-                                    ))
-                                  : null}
-                                <form
-                                  onSubmit={replySubmit}
-                                  className="flex items-center gap-2 pt-1">
-                                  <input
-                                    type="hidden"
-                                    value={i.idComment}
-                                    {...register("idComment", {
-                                      valueAsNumber: true,
-                                    })}
-                                  />
-                                  <input
-                                    {...register("bodyReply")}
-                                    placeholder="Reply..."
-                                    className="flex-1 rounded-md bg-white/5 border border-white/10
+                            {/* ACTION BAR */}
+                            <div className="mt-2 flex items-center gap-3">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleAction("openReply", i.idComment)
+                                }
+                                className="text-xs text-gray-400 hover:text-gray-300 transition-colors">
+                                {i.totalSubComment > 0 ? (
+                                  <>View replies {i.totalSubComment}</>
+                                ) : (
+                                  <>Reply</>
+                                )}
+                              </button>
+                            </div>
+                            {/* // ? SUB comment */}
+                            <div
+                              className={`ml-4 space-y-3 border-l ${
+                                isOpen.idComment === i.idComment
+                                  ? "border-emerald-500"
+                                  : "border-white/10"
+                              } pl-4`}>
+                              {isOpen &&
+                                isOpen.idComment === i.idComment &&
+                                isOpen.openReply && (
+                                  <>
+                                    {Array.isArray(subData) &&
+                                    subData.length > 0
+                                      ? subData.map((s) => (
+                                          <div
+                                            className="mt-2"
+                                            key={s.idSubComment}>
+                                            <p className="text-xs text-gray-500 mb-0.5">
+                                              {s.username}
+                                            </p>
+                                            <p className="text-sm text-gray-300">
+                                              {s.body}
+                                            </p>
+                                          </div>
+                                        ))
+                                      : null}
+                                    <form
+                                      onSubmit={replySubmit}
+                                      className="flex items-center gap-2 pt-1">
+                                      <input
+                                        {...register("bodyReply")}
+                                        placeholder="Reply..."
+                                        className="flex-1 rounded-md bg-white/5 border border-white/10
                                   px-3 py-1.5 text-sm text-gray-200 outline-none"
-                                  />
+                                      />
 
-                                  <button
-                                    disabled={isLoading}
-                                    type="submit"
-                                    className="
+                                      <button
+                                        disabled={isLoading}
+                                        type="submit"
+                                        className="
               px-3 py-1.5
               rounded-md
               bg-white/10
@@ -255,26 +263,28 @@ const FormComment = ({
               text-gray-200
               hover:bg-white/20
             ">
-                                    Reply
-                                  </button>
-                                </form>
-                              </>
-                            )}
+                                        Reply
+                                      </button>
+                                    </form>
+                                  </>
+                                )}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-400">No comments yet.</p>
-              )}
-            </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-400">No comments yet.</p>
+                  )}
+                </div>
 
-            <form className="p-3 flex items-center gap-2" onSubmit={newSubmit}>
-              <input
-                {...register("body")}
-                placeholder="Write a comment..."
-                className="
+                <form
+                  className="p-3 flex items-center gap-2"
+                  onSubmit={newSubmit}>
+                  <input
+                    {...register("body")}
+                    placeholder="Write a comment..."
+                    className="
                   flex-1
                   rounded-lg
                   bg-white/5
@@ -283,12 +293,12 @@ const FormComment = ({
                   text-sm text-gray-200
                   outline-none
                 "
-              />
+                  />
 
-              <button
-                disabled={isLoading}
-                type="submit"
-                className="
+                  <button
+                    disabled={isLoading}
+                    type="submit"
+                    className="
                   px-4 py-2
                   rounded-lg
                   bg-white/10
@@ -297,13 +307,15 @@ const FormComment = ({
                   text-gray-200
                   hover:bg-white/20
                 ">
-                Send
-              </button>
-            </form>
+                    Send
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

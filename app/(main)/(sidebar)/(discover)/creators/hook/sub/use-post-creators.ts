@@ -10,10 +10,13 @@ import axios from "axios";
 import {
   TTargetCreatorsDescription,
   OriginalCreatorListData,
+  OriginalTListPhotoComment,
+  OriginalTListPhotoSubComment,
   TPostActionLikeOrDislike,
   TPostActionFollow,
   TPostActionBookmark,
   TPostActionComment,
+  TPostActionSubComment,
 } from "../../types/type";
 
 export const usePost = ({
@@ -221,9 +224,11 @@ export const usePostBookmark = ({
 export const usePostComment = ({
   keyListPhotoComment,
   targetId,
+  selfUsername,
 }: {
   keyListPhotoComment: Array<string | number | null>;
   targetId: string;
+  selfUsername: string;
 }) => {
   const queryClient = useQueryClient();
 
@@ -239,6 +244,35 @@ export const usePostComment = ({
       const prevKeyListPhotoComment =
         queryClient.getQueryData(keyListPhotoComment);
 
+      queryClient.setQueryData<InfiniteData<OriginalTListPhotoComment>>(
+        keyListPhotoComment,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => {
+              const hasMore = page.hasMore;
+              if (!hasMore) {
+                return {
+                  ...page,
+                  data: [
+                    ...page.data,
+                    {
+                      username: selfUsername,
+                      body: mutate.body,
+                      idComment: mutate.idComment,
+                      totalSubComment: 0,
+                      createdAt: mutate.createdAt,
+                    },
+                  ],
+                };
+              }
+            }),
+          };
+        }
+      );
+
       return { prevKeyListPhotoComment };
     },
     onError: (error, _variables, context) => {
@@ -253,4 +287,108 @@ export const usePostComment = ({
   });
 
   return { postCommentUser };
+};
+
+export const usePostSubComment = ({
+  keyListPhotoComment,
+  keyListPhotoSubComment,
+  targetId,
+  selfUsername,
+}: {
+  keyListPhotoComment: Array<string | number | null>;
+  keyListPhotoSubComment: Array<string | number | null>;
+  targetId: string;
+  selfUsername: string;
+}) => {
+  const queryClient = useQueryClient();
+
+  const URL = ROUTES_CREATORS.POST({ key: "sub_comment", params: targetId });
+
+  const { mutateAsync: postSubCommentUser } = useMutation({
+    mutationFn: async (data) => await axios.post(URL, data),
+    onMutate: async (mutate: TPostActionSubComment) => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: keyListPhotoComment }),
+        queryClient.cancelQueries({ queryKey: keyListPhotoSubComment }),
+      ]);
+
+      const prevKeyListPhotoComment =
+        queryClient.getQueryData(keyListPhotoComment);
+      const prevKeyListPhotoSubComment = queryClient.getQueryData(
+        keyListPhotoSubComment
+      );
+
+      // ? id parent comment
+      queryClient.setQueryData<InfiniteData<OriginalTListPhotoComment>>(
+        keyListPhotoComment,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((i: { idComment: number; totalSubComment: number; }) =>
+                i.idComment === mutate.refIdComment
+                  ? {
+                      ...i,
+                      totalSubComment: i.totalSubComment + 1,
+                    }
+                  : i
+              ),
+            })),
+          };
+        }
+      );
+
+      // ? sub comment
+      queryClient.setQueryData<InfiniteData<OriginalTListPhotoSubComment>>(
+        keyListPhotoSubComment,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            pages: oldData?.pages.map((page: any) => {
+              const hasMore = page.hasMore;
+              if (!hasMore) {
+                return {
+                  ...page,
+                  data: [
+                    ...page.data,
+                    {
+                      username: selfUsername,
+                      body: mutate.body,
+                      idSubComment: mutate.idSubComment,
+                      subCreatedAt: mutate.createdAt,
+                    },
+                  ],
+                };
+              }
+            }),
+          };
+        }
+      );
+
+      return { prevKeyListPhotoComment, prevKeyListPhotoSubComment };
+    },
+    onError: (error, _variables, context) => {
+      console.error(error);
+      if (
+        context?.prevKeyListPhotoComment &&
+        context?.prevKeyListPhotoSubComment
+      ) {
+        queryClient.setQueryData(
+          keyListPhotoComment,
+          context.prevKeyListPhotoComment
+        );
+        queryClient.setQueryData(
+          keyListPhotoComment,
+          context.prevKeyListPhotoSubComment
+        );
+      }
+    },
+  });
+
+  return { postSubCommentUser };
 };

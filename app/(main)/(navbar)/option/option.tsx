@@ -31,13 +31,6 @@ const Options = ({
       section: "Activity",
       items: [
         {
-          label: "Notification",
-          icon: <FaBell className="w-4 h-4" />,
-          link: "/notification",
-          actionType: "notification",
-          count: 5,
-        },
-        {
           label: "Email",
           icon: <FaEnvelope className="w-4 h-4" />,
           link: "/email",

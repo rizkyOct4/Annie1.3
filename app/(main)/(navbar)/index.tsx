@@ -4,11 +4,13 @@ import { useState, useCallback, memo } from "react";
 import { SlOptionsVertical } from "react-icons/sl";
 import { FiBell } from "react-icons/fi";
 import Options from "./option/option";
+import Link from "next/link";
+import NotificationContent from "../@notification/(.)notification/page";
 
 const Navbar = () => {
-  const [open, setOpen] = useState<"notif" | "option" | null>(null);
+  const [open, setOpen] = useState<"notification" | "option" | null>(null);
 
-  const toggle = useCallback((type: "notif" | "option") => {
+  const toggle = useCallback((type: "notification" | "option") => {
     setOpen((prev) => (prev === type ? null : type));
   }, []);
 
@@ -24,8 +26,9 @@ const Navbar = () => {
           border border-white/10
         ">
         <button
+          // href="/notification"
           title="Notifications"
-          onClick={() => toggle("notif")}
+          onClick={() => toggle("notification")}
           aria-label="Notifications"
           className={`
             w-10 h-10
@@ -33,7 +36,7 @@ const Navbar = () => {
             rounded-xl
             transition-all duration-200
             ${
-              open === "notif"
+              open === "notification"
                 ? "bg-emerald-500/20 text-emerald-400"
                 : "bg-white/5 text-gray-200 hover:bg-white/10"
             }
@@ -61,15 +64,10 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* PANELS */}
       {open === "option" && <Options setState={() => setOpen(null)} />}
-      {open === "notif" && (
-        <div className="absolute right-0 mt-3">
-          {/* Notification Panel Placeholder */}
-        </div>
-      )}
+      {open === "notification" && <NotificationContent setState={setOpen} />}
     </div>
   );
 };
 
-export default Navbar
+export default memo(Navbar);

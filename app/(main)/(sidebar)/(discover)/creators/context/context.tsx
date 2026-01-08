@@ -11,9 +11,10 @@ interface CategoryContextProps {
 const CreatorsContext: React.FC<CategoryContextProps> = ({ children }) => {
   const { data: getData } = useContext(profileContext);
   const id = getData?.id;
+  const username = getData?.username
 
   const a = useCreators(id)
-  const b = useCreatorsDescription(id)
+  const b = useCreatorsDescription(id, username)
 
   const values = {
     ...a,

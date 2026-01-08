@@ -21,6 +21,7 @@ import {
   BiInfoCircle,
 } from "react-icons/bi";
 import { handleUnauthorized } from "@/_util/Unauthorized";
+import type { TListCreatorProduct } from "../../../../types/type";
 import { showToast } from "@/_util/Toast";
 
 interface ListProductState {
@@ -30,13 +31,14 @@ interface ListProductState {
 
 const ImageContainer = ({
   currentPath,
+  data,
   setRenderAction,
 }: {
   currentPath: string;
+  data: TListCreatorProduct[];
   setRenderAction: any;
 }) => {
   const {
-    listCreatorProductData,
     fetchNextPageProduct,
     hasNextPageProduct,
     isFetchingNextPageProduct,
@@ -83,7 +85,8 @@ const ImageContainer = ({
       e: React.SyntheticEvent,
       actionType: string,
       idProduct: number,
-      status?: string | null
+      status?: string | null,
+      url?: string
     ) => {
       e.preventDefault();
       switch (actionType) {
@@ -116,7 +119,7 @@ const ImageContainer = ({
           break;
         }
         case "comment": {
-          setIdComment(idProduct)
+          setIdComment(idProduct);
           const newUrl = `/creators/${currentPath}?view=comment`;
           history.pushState({}, "", newUrl);
           setRenderAction("comment");
@@ -145,16 +148,24 @@ const ImageContainer = ({
         }
       }
     },
-    [postLikePhoto, router, setIdComment, currentPath, setRenderAction, id, postBookmarkUser]
+    [
+      postLikePhoto,
+      router,
+      setIdComment,
+      currentPath,
+      setRenderAction,
+      id,
+      postBookmarkUser,
+    ]
   );
 
   return (
     <div
       ref={containerRef}
       className="w-full flex-center flex-wrap gap-4 rounded-md">
-      {Array.isArray(listCreatorProductData) &&
-        listCreatorProductData.map((i, idx) => {
-          const isLast = idx === listCreatorProductData.length - 1;
+      {Array.isArray(data) &&
+        data.map((i, idx) => {
+          const isLast = idx === data.length - 1;
           return (
             <div
               key={i.idProduct}
@@ -256,7 +267,7 @@ const ImageContainer = ({
 
                   <button
                     className="hover:text-white transition flex items-center gap-1"
-                    onClick={(e) => handleAction(e, "comment", i.idProduct)}>
+                    onClick={(e) => handleAction(e, "comment", i.idProduct, i.url)}>
                     <BiCommentDetail size={18} />
                     <span className="text-xs">{i.totalComment ?? 0}</span>
                   </button>
