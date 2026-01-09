@@ -25,11 +25,13 @@ export const config = {
     `/(admin|creator)/:path*`,
     `/category/:path*`,
     `/creators/:path*`,
-    // ? OPTION BAR ====
-    `/notification/:path*`,
     `/customize/:path*`,
+    `/:path*`,
   ],
 };
+// export const config = {
+//   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+// };
 
 // todo kau perbaiki lagi besok PROXY NI !!! KONDISIKAN !!
 // todo INTERCEPT ?? LOGIN AMAN TAPI ETC ??

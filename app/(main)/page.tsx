@@ -1,8 +1,9 @@
 "use client";
 
 import { memo, useState } from "react";
+// import ActionToast from "@/_util/action-toast";
 
-const dummyPosts = Array.from({ length: 6 });
+const dummyPosts = Array.from({ length: 2 });
 const creators = Array.from({ length: 5 });
 const friends = Array.from({ length: 4 });
 
@@ -20,10 +21,19 @@ type TabType = "photos" | "videos" | "music";
 const HomeContent = () => {
   const [tab, setTab] = useState<TabType>("photos");
 
+  // const handleAction = useCallback((actionType: string) => {
+  //   switch (actionType) {
+  //     case "explore": {
+  //       ActionToast({ type: "info" });
+  //       break;
+  //     }
+  //   }
+  // }, []);
+
   return (
     <div className="w-full h-full text-gray-200 overflow-x-hidden">
       {/* wrapper mengikuti MAIN */}
-      <div className="max-w-350 mx-auto py-10">
+      <div className="max-w-350 mx-auto relative">
         {/* ================= HERO HEADER ================= */}
         <div className="mb-12 flex flex-col gap-4">
           <h1 className="text-4xl font-bold tracking-tight leading-tight">
@@ -38,7 +48,9 @@ const HomeContent = () => {
           </p>
 
           <div className="flex gap-4 mt-2">
-            <button className="px-5 py-2 rounded-md bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition">
+            <button
+              className="px-5 py-2 rounded-md bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 transition"
+              >
               Start Exploring
             </button>
 
@@ -120,15 +132,11 @@ const HomeContent = () => {
               </div>
 
               <div className="flex gap-4 overflow-x-auto pb-1">
-                {Array.from({ length: 8 }).map((_, i) => (
+                {Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
                     className={`rounded-md bg-white/10 shrink-0
-                      ${
-                        tab === "music"
-                          ? "min-w-[220px] h-[70px]"
-                          : "min-w-[220px] h-[140px]"
-                      }`}
+                      ${tab === "music" ? "min-w-55 h-17.5" : "min-w-55 h-35"}`}
                   />
                 ))}
               </div>
@@ -156,7 +164,7 @@ const HomeContent = () => {
                   </div>
 
                   {/* content */}
-                  <div className="h-[180px] bg-white/10 rounded-md" />
+                  <div className="h-45 bg-white/10 rounded-md" />
 
                   {/* actions */}
                   <div className="flex justify-between text-sm text-gray-400">
@@ -185,7 +193,7 @@ const HomeContent = () => {
           </div>
 
           {/* ================= RIGHT COLUMN ================= */}
-          <div className="w-[300px] shrink-0 flex flex-col gap-6 sticky top-24">
+          <div className="w-75 shrink-0 flex flex-col gap-6 sticky top-24">
             {/* ---------- SEARCH ---------- */}
             <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
               <p className="text-sm text-gray-400">Search</p>

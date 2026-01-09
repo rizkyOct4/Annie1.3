@@ -46,6 +46,7 @@ model users_description {
   location       String?      
   picture        String?      
   social_link    Json?        @default("[]")
+  interest       String[]      @default([])    
   updated_at     DateTime?    
   users          users        @relation(fields: [ref_id], references: [id], onDelete: Cascade)
 }
@@ -314,9 +315,6 @@ model users_interactions_sub_comment {
   this_ref_sub_comment_sender        users            @relation("sub_comment_sender", fields: [ref_id_sender], references: [id], onDelete: Cascade)          
   this_ref_sub_comment_receiver      users            @relation("sub_comment_receiver", fields: [ref_id_receiver], references: [id], onDelete: Cascade)          
 }
-
-
-
 
 
 

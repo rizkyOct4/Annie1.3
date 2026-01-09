@@ -27,6 +27,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }
-
-// todo PERBAIKI SAMA KAU MIDDLEWARE !! DARI PATH /NOTIFICATION LOGIN BERMASALAH !! FIXKAN BESOK !!
-// EDM Relax #4】Chill & Focus Lo-Fi EDM 🎧 Background Music for Study, Work & Everyday Moments

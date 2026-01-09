@@ -17,8 +17,8 @@ interface CreatorContextProps {
 }
 
 const CreatorContext: React.FC<CreatorContextProps> = ({ children }) => {
-  const { data: getData } = useContext(profileContext);
-  const id = getData?.id;
+  const { profileData } = useContext(profileContext);
+  const id = profileData[0]?.id;
   const { type } = useParams<{ type: string }>();
 
   // ? HELPER

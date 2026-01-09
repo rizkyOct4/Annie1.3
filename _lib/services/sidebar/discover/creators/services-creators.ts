@@ -60,9 +60,11 @@ export const GetTargetCreatorsDescription = async ({
     us.total_image AS "totalPhoto", us.total_video AS "totalVideo", us.total_followers AS "totalFollowers", COALESCE(uif.status, false) AS "statusFollow"
     FROM users u 
     LEFT JOIN users_description ud ON (ud.ref_id = u.id)
-    JOIN users_stats us ON (us.ref_id_user = u.id)
+    LEFT JOIN users_stats us ON (us.ref_id_user = u.id)
     LEFT JOIN users_interactions_followers uif ON 
-      (uif.ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender}))
+      (uif.ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
+        AND (uif.ref_id_receiver = (SELECT id FROM users WHERE public_id = ${idTargetCreator}))
+      )
     WHERE u.public_id = ${idTargetCreator}
     `;
 
@@ -86,9 +88,9 @@ export const GetListCreatorsProduct = async ({
       ups.like AS total_like, ups.dislike AS total_dislike, ups.comment AS "totalComment",
       uiv.action_vote::status_action_vote AS status, COALESCE(uib.status, false) AS "statusBookmark" 
     FROM users u
-    JOIN users_product up ON (up.ref_id = u.id)
-    JOIN users_product_image upi ON (upi.ref_id_product = up.id_product)
-    JOIN users_photo_stats ups ON (ups.ref_id_product = up.id_product)
+    LEFT JOIN users_product up ON (up.ref_id = u.id)
+    LEFT JOIN users_product_image upi ON (upi.ref_id_product = up.id_product)
+    LEFT JOIN users_photo_stats ups ON (ups.ref_id_product = up.id_product)
     LEFT JOIN (
       SELECT ref_id_product, action_vote FROM users_interactions_vote
       WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
@@ -136,7 +138,7 @@ export const GetListCreatorsVideo = async ({
     SELECT upv.ref_id_product AS id_product, upv.description, upv.url, upv.thumbnail_url, upv.duration, upv.hashtag, upv.category, up.created_at,
     COALESCE(uvs.like, 0) AS total_like, COALESCE(uvs.dislike, 0) AS total_dislike, uiv.action_vote::status_action_vote AS status
       FROM users_product_video upv
-      JOIN users_product up ON (up.id_product = upv.ref_id_product)
+      LEFT JOIN users_product up ON (up.id_product = upv.ref_id_product)
       LEFT JOIN users_video_stats uvs ON (uvs.ref_id_product = up.id_product)
       LEFT JOIN (
         SELECT ref_id_product, action_vote FROM users_interactions_vote
@@ -257,7 +259,9 @@ export const PostLikeImage = async (
     const queryCheck = await prisma.$queryRaw<
       { status: "like" | "dislike" | null }[]
     >`
-        SELECT action_vote FROM users_interactions_vote WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${id}) AND ref_id_product = ${refIdProduct} LIMIT 1
+        SELECT action_vote FROM users_interactions_vote 
+          WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${id})
+          AND ref_id_product = ${refIdProduct} LIMIT 1
       `;
     if (queryCheck.length === 0) {
       await tx.$executeRaw`
@@ -342,7 +346,9 @@ export const PostFollowUsers = async ({
 }) => {
   return prisma.$transaction(async (tx) => {
     const queryCheck = await tx.$queryRaw<{ ref_id_sender: string }[]>`
-      SELECT ref_id_sender FROM users_interactions_followers WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
+      SELECT ref_id_sender FROM users_interactions_followers 
+        WHERE ref_id_sender = (SELECT id FROM users WHERE public_id = ${idSender})
+        AND ref_id_receiver = (SELECT id FROM users WHERE public_id = ${idReceiver})
     `;
 
     if (queryCheck.length === 0) {

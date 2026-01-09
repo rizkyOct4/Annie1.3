@@ -9,20 +9,20 @@ interface CategoryContextProps {
 }
 
 const CreatorsContext: React.FC<CategoryContextProps> = ({ children }) => {
-  const { data: getData } = useContext(profileContext);
-  const id = getData?.id;
-  const username = getData?.username
+  const { profileData } = useContext(profileContext);
+  const id = profileData[0]?.id;
+  const username = profileData[0]?.username;
 
-  const a = useCreators(id)
-  const b = useCreatorsDescription(id, username)
+  const a = useCreators(id);
+  const b = useCreatorsDescription(id, username);
 
-  const values = {
+  const value = {
     ...a,
     ...b,
-  }
+  };
 
   return (
-    <creatorsContext.Provider value={values}>
+    <creatorsContext.Provider value={value}>
       {children}
     </creatorsContext.Provider>
   );

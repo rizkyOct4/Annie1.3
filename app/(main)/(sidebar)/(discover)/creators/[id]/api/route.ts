@@ -161,5 +161,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }
-
-// todo KONDISIKAN LAGI CACHE , ROUTE URL UNTUK SUB INI LAGI !!

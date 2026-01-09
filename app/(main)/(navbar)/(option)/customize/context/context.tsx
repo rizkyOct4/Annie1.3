@@ -9,9 +9,9 @@ interface CustomizeContextProps {
 }
 
 const CustomizeContext: React.FC<CustomizeContextProps> = ({ children }) => {
-  const { data: getData } = useContext(profileContext);
-  const id = getData?.id;
-  const currentPath = "customize"
+  const { profileData } = useContext(profileContext);
+  const id = profileData[0]?.id;
+  const currentPath = "customize";
 
   const a = useCustomize({ id, currentPath });
   const value = {

@@ -14,11 +14,14 @@ const PublicPath = async ({
     `/auth`,
     `/category`,
     `/notification`,
-    // `/customize`,
+    `/report`,
+    `/legal`,
+    `/getting-started`,
     `/creators`,
     "/_next/",
   ];
 
+  // console.log(pathname);
   if (
     publicPaths.some((path) => pathname.startsWith(path)) &&
     req.method === "GET"
@@ -27,7 +30,13 @@ const PublicPath = async ({
   }
   if (!role && req.method !== "GET") {
     return NextResponse.json(
-      { message: "Unauthorized", redirect: pathname.replace("/api", "") },
+      {
+        message: "Unauthorized",
+        // redirect: pathname.replace("/api", ""),
+        redirect: pathname.startsWith("/api")
+          ? "/"
+          : pathname.replace("/api", ""),
+      },
       { status: 401 }
     );
   }

@@ -14,7 +14,7 @@ import {
   FiFlag,
 } from "react-icons/fi";
 import { VscCommentDiscussion } from "react-icons/vsc";
-import { BiLogoDailymotion, BiCategory } from "react-icons/bi";
+import { BiLogoDailymotion } from "react-icons/bi";
 import { SiGooglemeet } from "react-icons/si";
 import { TbUserStar } from "react-icons/tb";
 import Link from "next/link";
@@ -166,4 +166,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar
+export default memo(Sidebar)

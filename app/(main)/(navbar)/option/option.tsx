@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  FaBell,
-  FaSignOutAlt,
-  FaCheck,
-  FaCog,
-  FaEnvelope,
-} from "react-icons/fa";
+import { FaSignOutAlt, FaCheck, FaCog, FaEnvelope } from "react-icons/fa";
 import { IoIosLogIn } from "react-icons/io";
 import { GiPlagueDoctorProfile } from "react-icons/gi";
 import { profileContext } from "@/app/context";
@@ -20,9 +14,9 @@ const Options = ({
 }: {
   setState: React.Dispatch<React.SetStateAction<any>>;
 }) => {
-  const { data: getData, setData } = useContext(profileContext);
-  const id = getData?.id;
-  const role = getData?.role;
+  const { profileData } = useContext(profileContext);
+  const id = profileData[0]?.id;
+  const role = profileData[0]?.role;
   const router = useRouter();
   const pathname = usePathname();
 
@@ -93,7 +87,7 @@ const Options = ({
         case "confirmLogout":
           try {
             await signOut({ redirectTo: "/" });
-            setData(null);
+            // setData(null);
             setState(false);
             showToast({ type: "success", fallback: "Logout Success" });
           } catch (error) {
@@ -104,7 +98,7 @@ const Options = ({
           console.warn("Unknown action:", actionType);
       }
     },
-    [router, setState, setData]
+    [router, setState]
   );
 
   return (
@@ -165,25 +159,8 @@ const Options = ({
                     <span className="text-base">{item.icon}</span>
                     <span>{item.label}</span>
                   </div>
-
-                  {/* Badge */}
-                  {/* <span
-                    className={`
-                  min-w-6
-                  text-center
-                  text-xs font-semibold
-                  px-2 py-0.5
-                  rounded-md
-                  bg-white/10
-                  border border-white/10
-                  text-gray-300
-                  ${!item?.count ? "invisible" : ""}
-                `}>
-                    {item?.count || ""}
-                  </span> */}
                 </button>
 
-                {/* Logout confirm */}
                 {isLogout && (
                   <div className="flex items-center gap-1 pr-2">
                     <button

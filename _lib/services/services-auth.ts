@@ -103,9 +103,9 @@ export const CredentialsLogin = async ({
   email: any;
   password: any;
 }) => {
-  const userCheck: any[] =
-    await prisma.$queryRaw`
-    SELECT public_id, email, password, first_name, last_name, role, created_at FROM users
+  const userCheck: any[] = await prisma.$queryRaw`
+    SELECT public_id, email, password, first_name, last_name, role, created_at 
+    FROM users
     WHERE email = ${email}`;
 
   const passwordMatch = await bcrypt.compare(password, userCheck[0].password);
@@ -129,4 +129,13 @@ export const CredentialsLogin = async ({
     success: true,
     user: camelcaseKeys(rawData),
   };
+};
+
+export const GetProfileUser = async ({ id }: { id: string | undefined }) => {
+  return await prisma.$queryRaw<any[]>`
+    SELECT us.total_views, us.total_followers, us.total_image, us.total_music, us.total_video, us.total_report, ud.interest
+      FROM users u
+      JOIN users_description ud ON (ud.ref_id = u.id)
+      LEFT JOIN users_stats us ON (us.ref_id_user = u.id)
+    WHERE u.public_id = ${id}`;
 };

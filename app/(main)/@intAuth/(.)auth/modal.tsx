@@ -12,11 +12,11 @@ const ModalAuth = () => {
   return (
     <>
       {redirect && (
-        <div className="overlay-auth">
+        <div className="overlay-auth backdrop-blur-sm">
           {!state ? (
             <Register setState={setState} />
           ) : (
-            <Login setState={setState} redirect={redirect} />
+            <Login setState={setState} redirect={redirect}/>
           )}
         </div>
       )}

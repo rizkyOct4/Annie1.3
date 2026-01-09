@@ -7,7 +7,7 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   usePost,

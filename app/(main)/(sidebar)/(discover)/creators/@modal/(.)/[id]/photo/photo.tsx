@@ -23,6 +23,7 @@ import {
 import { handleUnauthorized } from "@/_util/Unauthorized";
 import type { TListCreatorProduct } from "../../../../types/type";
 import { showToast } from "@/_util/Toast";
+import EmptyProduct from "@/_util/empty-product";
 
 interface ListProductState {
   open: boolean;
@@ -162,8 +163,8 @@ const ImageContainer = ({
   return (
     <div
       ref={containerRef}
-      className="w-full flex-center flex-wrap gap-4 rounded-md">
-      {Array.isArray(data) &&
+      className="w-full h-full flex-center flex-wrap gap-4 rounded-md">
+      {Array.isArray(data) && data.length > 0 ? (
         data.map((i, idx) => {
           const isLast = idx === data.length - 1;
           return (
@@ -267,7 +268,9 @@ const ImageContainer = ({
 
                   <button
                     className="hover:text-white transition flex items-center gap-1"
-                    onClick={(e) => handleAction(e, "comment", i.idProduct, i.url)}>
+                    onClick={(e) =>
+                      handleAction(e, "comment", i.idProduct, i.url)
+                    }>
                     <BiCommentDetail size={18} />
                     <span className="text-xs">{i.totalComment ?? 0}</span>
                   </button>
@@ -294,9 +297,11 @@ const ImageContainer = ({
               </div>
             </div>
           );
-        })}
+        })
+      ) : (
+        <EmptyProduct />
+      )}
 
-      {/* Loading */}
       {isFetchingNextPageProduct && (
         <div className="w-full flex justify-center py-4 text-gray-400">
           <span>Loading more products...</span>

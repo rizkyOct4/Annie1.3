@@ -134,7 +134,7 @@ const NotificationContent = ({
             </div>
 
             {/* ================= RIGHT ================= */}
-            <div className="w-[280px] flex flex-col gap-5">
+            <div className="w-70 flex flex-col gap-5">
               {/* FILTER */}
               <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
                 <h4 className="font-semibold text-sm">Filter</h4>
