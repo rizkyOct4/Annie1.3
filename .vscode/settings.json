@@ -3,7 +3,7 @@
     "workbench.secondarySideBar.showLabels": true,
     "workbench.iconTheme": "vscode-icons",
     "workbench.sideBar.location": "right",
-    "workbench.statusBar.visible": false,
+    "workbench.statusBar.visible": true,
     "workbench.tips.enabled": true,
     "workbench.view.alwaysShowHeaderActions": false,
     "workbench.view.showQuietly": {
