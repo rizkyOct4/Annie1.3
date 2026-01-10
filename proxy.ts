@@ -11,9 +11,9 @@ const proxy = async (req: NextRequest) => {
   // const currentPath = referer ? new URL(referer).pathname : "/";
   // console.log(`Proxy:`,currentPath);
 
-  // // * 1. Public Path
-  // const publicRes = await PublicPath({ pathname, role, req });
-  // if (publicRes) return publicRes;
+  // * 1. Public Path
+  const publicRes = await PublicPath({ pathname, role, req });
+  if (publicRes) return publicRes;
 
   // * 2. Profile Path (role-based path check)
   const profileRes = await ProfilePath({ role, pathname, req });
@@ -30,6 +30,8 @@ export const config = {
     `/category/:path*`,
     `/creators/:path*`,
     `/customize/:path*`,
+    `/((?!|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)`,
+
     // `/:path*`,
     // `/:getting-started`,
     // `/:legal`,
