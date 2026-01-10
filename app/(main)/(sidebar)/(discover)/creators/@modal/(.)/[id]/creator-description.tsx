@@ -8,7 +8,6 @@ import {
   FaInstagram,
   FaTwitter,
   FaGithub,
-  FaLinkedin,
   FaYoutube,
   FaGlobe,
   FaUserPlus,
@@ -32,8 +31,8 @@ const CreatorDesc = ({
   targetId: string;
 }) => {
   const { postFollowUser } = useContext(creatorsContext);
-  const { data: getData } = useContext(profileContext);
-  const sessionId = getData?.id;
+  const { profileData } = useContext(profileContext);
+  const sessionId = profileData?.id;
 
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
