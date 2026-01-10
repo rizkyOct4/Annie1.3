@@ -21,7 +21,7 @@ export const {
   session: {
     strategy: "jwt",
     maxAge: 60 * 60 * 24 * 1, // ? 1 hari -> login bertahan
-    updateAge: 60 * 60, // ? refreshh login
+    updateAge: 60 * 60 * 12, // ? refreshh login
   },
   providers: [
     Credentials({

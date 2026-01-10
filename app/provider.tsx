@@ -14,7 +14,6 @@ const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const value = {
     ...data,
   }
-  // console.log(value)
 
   return (
     <profileContext.Provider value={value}>{children}</profileContext.Provider>

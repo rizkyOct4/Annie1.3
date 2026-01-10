@@ -29,9 +29,12 @@ export const CredentialRegister = async ({
     const [userDb] = await tx.$queryRaw<
       { id: string }[]
     >`INSERT INTO users (first_name, last_name, email, password, role, public_id) VALUES 
-      (${firstName}, ${lastName}, ${email}, ${passwordHash}, ${role}::user_role, ${publicId}) RETURNING id`;
+      (${firstName}, ${lastName}, ${email}, ${passwordHash}, ${role}::user_role, ${publicId}) 
+      RETURNING id`;
 
-    await tx.$executeRaw`INSERT INTO users_description (ref_id, username, gender) VALUES (${userDb.id}::uuid, ${username}, ${gender}::user_gender)`;
+    await tx.$executeRaw`
+    INSERT INTO users_description (ref_id, username, gender)
+    VALUES (${userDb.id}::uuid, ${username}, ${gender}::user_gender)`;
   });
 };
 

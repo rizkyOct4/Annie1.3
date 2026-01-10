@@ -15,7 +15,12 @@ const ProfilePath = async ({
     creator: `/creator`,
   };
 
-  // console.log('test')
+  if (role === undefined) {
+    return NextResponse.redirect(
+      new URL(`/auth?redirect=${encodeURIComponent(pathname)}`, req.url)
+    );
+  }
+
   // ? ROLE SPESIFIC
   if (!pathname.startsWith(rolePaths[role])) {
     return NextResponse.redirect(

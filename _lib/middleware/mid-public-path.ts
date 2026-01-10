@@ -11,9 +11,9 @@ const PublicPath = async ({
 }) => {
   // * Public Path ===========
   const publicPaths = [
+    `/`,
     `/auth`,
     `/category`,
-    `/notification`,
     `/report`,
     `/legal`,
     `/getting-started`,
@@ -21,7 +21,6 @@ const PublicPath = async ({
     "/_next/",
   ];
 
-  // console.log(pathname);
   if (
     publicPaths.some((path) => pathname.startsWith(path)) &&
     req.method === "GET"
@@ -32,10 +31,7 @@ const PublicPath = async ({
     return NextResponse.json(
       {
         message: "Unauthorized",
-        // redirect: pathname.replace("/api", ""),
-        redirect: pathname.startsWith("/api")
-          ? "/"
-          : pathname.replace("/api", ""),
+        redirectTo: pathname.replace("/api", ""),
       },
       { status: 401 }
     );
@@ -44,6 +40,3 @@ const PublicPath = async ({
 };
 
 export { PublicPath };
-
-// todo KONDISIKAN BESOK PROXY LAGI !!!
-// ! item list folder foto cache masih bug ??

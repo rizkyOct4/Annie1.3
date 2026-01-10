@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState, useCallback } from "react";
+import { useContext, useState, useCallback, useEffect } from "react";
 import { profileContext } from "@/app/context";
 import { LocalISOTime } from "@/_util/GenerateData";
 import { handleUnauthorized } from "@/_util/Unauthorized";
@@ -20,10 +20,16 @@ const interests = [
 
 const InterestOnboardingModal = ({ setState }: { setState: any }) => {
   const router = useRouter();
+  const { profileData, postInterest } = useContext(profileContext);
 
   const [selected, setSelected] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { postInterest } = useContext(profileContext);
+
+  useEffect(() => {
+    if(profileData[0]?.interest) {
+      setSelected(profileData[0]?.interest)
+    }
+  },[profileData])
 
   const toggle = (v: string) => {
     setSelected((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
@@ -41,6 +47,7 @@ const InterestOnboardingModal = ({ setState }: { setState: any }) => {
         setIsLoading(true);
         await postInterest(payload);
         setIsLoading(false);
+        setState(false);
       } catch (err: any) {
         if (err.status === 401) {
           if (handleUnauthorized(err, router)) return;
@@ -48,11 +55,11 @@ const InterestOnboardingModal = ({ setState }: { setState: any }) => {
         }
       }
     },
-    [selected, router, postInterest]
+    [selected, postInterest, setState, router]
   );
 
   return (
-    <div className="overlay backdrop-blur-sm flex-center">
+    <div className="overlay backdrop-blur-sm">
       <div className="relative w-full max-w-lg mx-4 bg-black border border-white/10 rounded-xl p-6 flex flex-col gap-6">
         {/* HEADER */}
         <button

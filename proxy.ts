@@ -7,9 +7,13 @@ const proxy = async (req: NextRequest) => {
   const pathname = req.nextUrl.pathname;
   const { role } = await GetToken();
 
-  // * 1. Public Path
-  const publicRes = await PublicPath({ pathname, role, req });
-  if (publicRes) return publicRes;
+  // const referer = req.headers.get("referer") ?? "/"; // ? init dari BROWSER !! liat di NETWORK !!
+  // const currentPath = referer ? new URL(referer).pathname : "/";
+  // console.log(`Proxy:`,currentPath);
+
+  // // * 1. Public Path
+  // const publicRes = await PublicPath({ pathname, role, req });
+  // if (publicRes) return publicRes;
 
   // * 2. Profile Path (role-based path check)
   const profileRes = await ProfilePath({ role, pathname, req });
@@ -26,34 +30,15 @@ export const config = {
     `/category/:path*`,
     `/creators/:path*`,
     `/customize/:path*`,
-    `/:path*`,
+    // `/:path*`,
+    // `/:getting-started`,
+    // `/:legal`,
+    // `/:report`,
   ],
 };
+
 // export const config = {
-//   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+//   matcher: [
+//     `/((?!api|auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)`,
+//   ],
 // };
-
-// todo kau perbaiki lagi besok PROXY NI !!! KONDISIKAN !!
-// todo INTERCEPT ?? LOGIN AMAN TAPI ETC ??
-// todo GANTI SELECT OPTION !! BUAT SEMANTIC !!
-
-//  * 085212635051 (bg dimas)
-
-// todo buat besok SAMA KAU SSG LAGI !!!
-// todo JANGAN SIBUK NAMBAH FITUR AJA KAU !! PERBAIKI MIDDLEWARE KAU SAMPAI FIX !!! BUAT SESIMPLE MUNGKIN
-// TODO withCredentials -> middleware kau besok kondisikan !! masih PR sama kau
-
-// todo getToken -> masih mentah belum di decode -> MIDDLEWARE
-// todo getSession -> data udah siap digunakan di server compoennt
-
-// todo SECURITY UNTUK HTTPS REQUEST, BUAT DI MIDDLEWATE + ROUTE HANDLER !!!
-// todo SECURITY KAU !! BUAT URL PATH KAU GENERAL AJA, JANGAN KASIH ID SPESIFIK USER !!
-// todo buat SPESIFIKASI DATA mengerucut ke route handler kau !!
-// todo liat semua fetching url kau !! jangan kasih id SECRET !!! PERBAIKI BESOK !!
-// ! ) di SERVER (Route Handler):
-// ! Server tidak percaya apapun dari client, tetapi mengambil:
-// ! const { id } = await GetToken();
-// ! 2) Horizontal Privilege Escalation (BOLA)
-// ! Tidak bisa, karena data diambil based on token, bukan param
-
-// ! RATE LIMIT -> REDIS !!! CARI SAMA KAU !! BUT SOON !!
